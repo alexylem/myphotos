@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>My Photos</title>
+
+	<!-- Bootstrap -->
+	<link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="lib/multiselect/css/bootstrap-multiselect.css">
+	<link rel="stylesheet" href="css/my.css">
+</head>
+<body>
+	<div id='container'></div>
+	<script id='template' type='text/ractive'>
+		<nav class="navbar navbar-default" role="navigation">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="{{#if view !== 'album'}}hide{{/if}} navbar-brand addtooltip" title="Album Settings" data-toggle="modal" href="#myModal">
+						<span class="glyphicon glyphicon-{{folder.visibility == 'public' ? 'globe' : (folder.visibility == 'restricted' ? 'user' : 'lock')}}"></span> {{folder.name}}
+					</a>
+					{{#if view == 'home'}}
+					<span class="navbar-brand">MyPhotos</span>
+					{{/if}}
+
+				</div>
+				<ul class="nav navbar-nav">
+					<li>
+						{{#if photoid !== false}}
+						<button on-click="close" type="button" class="btn btn-default navbar-btn">
+							<span class="glyphicon glyphicon-remove"></span> Fermer
+						</button>
+						{{else}}
+						{{#if folder.name}}
+						<button on-click="cwd:{{folder.parentpath}}" type="button" class="btn btn-default navbar-btn">
+							<span class="glyphicon glyphicon-chevron-left"></span> Retour
+						</button>
+						{{/if}}
+						{{/if}}
+					</li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<li class="{{#if view !== 'photo'}}hide{{/if}}">
+						<a class="addtooltip" title="Favorite" href="#"><span class="glyphicon glyphicon-star-empty"></span></a>
+					</li>
+					<li class="{{#if view !== 'photo'}}hide{{/if}}">
+						<a class="addtooltip" title="Set as cover" href="#" on-click="cover"><span class="glyphicon glyphicon-picture"></span></a>
+					</li>
+					<li class="{{#if view !== 'photo'}}hide{{/if}}">
+						<a class="addtooltip" title="Add to Smart Album" href="#"><span class="glyphicon glyphicon-tags"></span></a>
+					</li>
+					<li class="{{#if view !== 'album'}}hide{{/if}}">
+						<a class="addtooltip" title="Download Album" href="#"><span class="glyphicon glyphicon-download-alt"></span></a>
+					</li>
+					<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+									<h4 class="modal-title" id="myModalLabel">Sharing Options</h4>
+								</div>
+								<div class="modal-body">
+									<p>Define the visiblity for album <strong>{{folder.name}}</strong></p>
+									<div class="radio">
+										<label>
+											<input type="radio" name="{{folder.visibility}}" value="private" checked>
+											<span class="glyphicon glyphicon-lock" aria-hidden="true"></span> Private
+											<p class="help-block">Only visible by Admin accounts.</p>
+										</label>
+									</div>
+									<div class="radio">
+										<label>
+											<input type="radio" name="{{folder.visibility}}" value="public">
+											<span class="glyphicon glyphicon-globe" aria-hidden="true"></span> Public
+											<p class="help-block">Visible by everyone without authentication.</p>
+										</label>
+									</div>
+									<div class="radio">
+										<label>
+											<input type="radio" name="{{folder.visibility}}" value="restricted">
+											<span class="glyphicon glyphicon-user" aria-hidden="true"></span> Restricted
+											<p class="help-block">Visible by a selection of groups</p>
+										</label>
+									</div>
+									{{#if folder.visibility == 'restricted'}}
+									<div class="col-md-offset-1">
+										<select value='{{folder.groups}}' multiple>
+											{{#each groups}}
+											<option>{{this}}</option>
+											{{/each}}
+										</select>
+										<p class="help-block">Use <kbd>Ctrl</kbd> or <kbd>Cmd</kbd> to select multiple groups:</p>
+									</div>
+									{{/if}}
+									<div class="checkbox">
+										<label>
+											<input type="checkbox" value="">
+											Apply recursively to all sub-albums
+										</label>
+									</div>
+								</div>
+								<div class="modal-footer">
+									<small>Changes are saved automatically.</small>
+								</div>
+							</div>
+						</div>
+					</div>
+					<li class="{{#if !user || view !== 'home'}}hide{{/if}}">
+						<a class="addtooltip" title="Generate Thumbnails" href="cron.php" target="_blank"><span class="glyphicon glyphicon-retweet"></span></a>
+					</li>
+					<li title="Sign-in with Google" class="addtooltip g-signin {{#if user}}hide{{/if}}">
+						<span class="g-signin"
+							data-width="iconOnly"
+							data-scope="https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/userinfo.email"
+							data-clientid="320030776284-01dr10ur7ni4opbjgum9g266vrn29u4f.apps.googleusercontent.com"
+							data-redirecturi="postmessage"
+							data-cookiepolicy="single_host_origin"
+							data-callback="signInCallback">
+						</span>
+					</li>
+					{{#user}}
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{displayName}} <span class="caret"></span></a>
+						<ul class="dropdown-menu" role="menu">
+							{{#isadmin}}
+							<li><a data-toggle="modal" href="#groupsModal"><span class="glyphicon glyphicon-user"></span> Groups & people</a></li>
+							{{/if}}
+							<li><a on-click="logout" href="#"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+							<li><a on-click="revoke" href="#"><span class="glyphicon glyphicon-remove"></span> Revoke</a></li>
+						</ul>
+					</li>
+					{{/if}}
+					<div class="modal fade" id="groupsModal" tabindex="-1" role="dialog">
+								<div class="modal-dialog modal-lg">
+									<div class="modal-content">
+										<div class="modal-header">
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+											<h4 class="modal-title" id="myModalLabel">Groups</h4>
+										</div>
+										<div class="modal-body">
+											{{#if groups}}
+											<div class="btn-toolbar">
+											{{#each groups:i}}
+												<div class="btn-group">
+													<button type="button" class="btn btn-warning btn-sm {{#if userfilter == this}}active{{/if}}" on-click="filterpeople:{{this}}">{{this}}</button>
+													<button type="button" class="btn btn-default btn-sm" on-click="removegroup:{{i}}"><span class="glyphicon glyphicon-remove"></span></button>
+												</div>
+											{{/each}}
+											</div>
+											<br />
+											{{else}}
+											
+											<div class="alert alert-info well-sm">
+													Start by adding some Groups below
+												</div>
+
+											{{/if}}
+											<form id="addgroupform" class="form-inline">
+												<div class="form-group">
+											      <input type="text" class="form-control input-sm" value="{{newgroup}}" placeholder="ex: Family" required>
+											       <button class="btn btn-info btn-sm" type="submit"><span class="glyphicon glyphicon-plus"></span></button>
+											    </div>
+											</form>
+											<hr />
+											<h4>People</h4>
+											{{#if userfilter}}
+												<div class="well well-sm pull-left">
+													Showing people in {{userfilter}} <a href="#" class="alert-link" on-click="filterpeople:false">See all</a>
+												</div>
+											{{/if}}
+											<table class="table table-striped table-hover">
+											<thead>
+												<tr>
+													<th>Name</th>
+													<th>Email</th>
+													<th>Groups</th>
+												</tr>
+											</thead>
+ 											<tbody>
+												{{#if users}}
+													{{#each users:i}}
+													{{#if filter (this)}}
+													<tr>
+														<td>{{name}} <a href="#" on-click="removeuser:{{i}}"><span class="glyphicon glyphicon-remove"></span></a></td>
+														<td>{{email}}</td>
+														<td>{{this.groups}}</td>
+													</tr>
+													{{/if}}
+													{{/each}}
+												{{else}}
+													<tr>
+														<td colspan="3"><em>Add a person below</em></td>
+													</tr>
+												{{/if}}
+											</tbody>
+											</table>
+											<form class="form-inline" on-submit="adduser">
+											  <div class="form-group">
+											    <input type="text" class="form-control input-sm" value="{{newname}}" placeholder="ex: Mum">
+											  </div>
+											  <div class="form-group">
+											    <input type="email" class="form-control input-sm" value="{{newemail}}" placeholder="ex: email@address.com">
+											  </div>
+											  <div class="form-group">
+											    <select id="multiselect" class="form-control input-sm" value='{{newgroups}}' multiple="multiple">
+													  {{#each groups}}
+													  	<option>{{this}}</option>
+													  {{/each}}
+												</select>
+											  </div>
+											  <button type="submit" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-plus"></span></button>
+											</form>
+										</div>
+										<div class="modal-footer">
+											<small>Changes are saved automatically.</small>
+										</div>
+									</div>
+								</div>
+							</div>
+			</ul>
+		</div>
+	</nav>
+	<div class="container">
+
+		{{#each messages}}
+		<div class="alert alert-{{type}} alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			{{message}}
+		</div>
+		{{/each}}
+
+		{{#if view == 'photo'}}
+		<div class="view">
+			<button on-click="previous" type="button" class="btn btn-default btn-lg previous"
+			{{#unless photoid}} disabled="disabled" {{/unless}}
+			>
+			<span class="glyphicon glyphicon-chevron-left"></span>
+		</button>
+		<img title="{{photos[photoid].filename}}" src="{{photos[photoid].fileurl}}">
+		<button on-click="next" type="button" class="btn btn-default btn-lg next"
+		{{#if photoid == photos.length-1}} disabled="disabled" {{/if}}
+		>
+		<span class="glyphicon glyphicon-chevron-right"></span>
+	</button>
+</div>
+
+{{else}}
+
+{{#if folders}}
+<h5>Albums</h5>
+{{#each folders}}
+<div class="thumb">
+	<a href="#" on-click="cwd:{{filepath}}">
+		<img title="{{filename}}" src="{{coverurl}}">
+		<div class="cover">
+			<span class="glyphicon glyphicon-{{visibility == 'public' ? 'globe' : (visibility == 'restricted' ? 'user' : 'lock')}}"></span> {{filename}}
+		</div>
+	</a>
+</div>
+{{/each}}
+<div class="clearfix"></div>
+<hr />
+{{/if}}
+
+{{#if photos}}
+<h5>Photos</h5>
+{{#each photos}}
+<div class="thumb">
+	<a href="#" on-click="view:{{@index}}">
+		<img title="{{filename}}" src="{{thumburl}}">
+	</a>
+</div>
+{{/each}}
+{{/if}}
+{{/if}}
+
+</div>
+</script>
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="lib/jquery/jquery-2.1.1.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="lib/bootstrap/js/bootstrap.min.js"></script>
+<script src="lib/validation/dist/jquery.validate.min.js"></script>
+
+<script src='lib/ractive/ractive.min.js'></script>
+
+<script src="lib/multiselect/js/bootstrap-multiselect.js"></script>
+
+<script src="js/utils.js"></script>
+<script src="js/my.js"></script>
+
+<!-- Async Google Plus sign-in library -->
+<script src="https://apis.google.com/js/platform.js"></script>
+<script src="https://apis.google.com/js/client:plusone.js"></script>
+</body>
+</html>

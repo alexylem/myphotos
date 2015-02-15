@@ -1,0 +1,96 @@
+.navbar-brand
+{
+    position: absolute;
+    width: 100%;
+    left: 0;
+    text-align: center;
+    margin: auto;    
+}
+
+.navbar-brand:focus {
+	outline: none; /* remove blue outline when closing modal */
+}
+
+.g-signin {
+	margin: 6px;
+}
+
+tr .glyphicon-remove {
+	visibility: hidden;
+}
+tr:hover .glyphicon-remove {
+	visibility: visible;
+}
+
+input.error {
+    color: #a94442 !important;
+    background-color: #ee5f5b !important;
+    border: 1px solid #ed4d63 !important;
+}
+
+.view {
+    top: 52px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: absolute;
+    width: auto;
+    height: auto;
+    background-color: black;
+}
+
+.previous, .next {
+	position: absolute;
+	top: 50%;
+	margin-top: -26px;
+}
+
+.previous {
+	left: 10px;
+}
+
+.next {
+	right: 10px;
+}
+
+.view img {
+	object-fit: contain;
+	width: 100%;
+	height: 100%;
+}
+
+.thumb {
+	float: left;
+	margin: 10px;
+}
+
+.thumb a {
+	position: relative;
+	display: block;
+}
+
+.thumb img {
+	object-fit: cover;
+	height: 200px;
+	width: 200px;
+	border: 2px solid #ccc;
+	border-radius: 2px;
+}
+
+.thumb .cover {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	bottom: 0px;
+	right: 0px;
+	text-align: center;
+	padding-top: 170px;
+	margin: 2px;
+	background: -moz-linear-gradient(top, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.8) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0)), color-stop(60%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,0.8))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 60%,rgba(0,0,0,0.8) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 60%,rgba(0,0,0,0.8) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 60%,rgba(0,0,0,0.8) 100%); /* IE10+ */
+	background: linear-gradient(to bottom,rgba(0,0,0,0) 0,rgba(0,0,0,0) 60%,rgba(0,0,0,.5) 80%,rgba(0,0,0,.9) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#cc000000',GradientType=0 ); /* IE6-9 */
+}
