@@ -53,7 +53,7 @@ switch($_REQUEST['action']) {
 				if (hasaccess ($visibility))
 					$folders[] = array (
 						'filepath'		=> $filepath,
-						'coverurl'		=> $config['photourl'].$filepath.$config['thumbsdir'].$settings->cover,
+						'coverurl'		=> 'img.php?f='.$filepath.$config['thumbsdir'].$settings->cover,
 						'visibility'	=> @$settings->visibility,
 						'filename'		=> $file->getFilename(),
 						'updated'		=> $file->getMTime()
@@ -61,8 +61,8 @@ switch($_REQUEST['action']) {
 			} else {
 				$files[] = array (
 					'filepath'	=> $dir.$file->getFilename(),
-					'fileurl'	=> $config['photourl'].$dir.$file->getFilename(),
-					'thumburl'	=> $config['photourl'].$dir.$config['thumbsdir'].$file->getFilename(),
+					'fileurl'	=> 'img.php?f='.$dir.$file->getFilename(),
+					'thumburl'	=> 'img.php?f='.$dir.$config['thumbsdir'].$file->getFilename(),
 					'filename'	=> $file->getFilename(),
 					'size'		=> $file->getSize(),
 					'type'		=> mime_content_type($file->getRealPath()),
