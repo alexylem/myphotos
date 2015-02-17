@@ -133,6 +133,7 @@ gallery.on ('logout', function () {
 		}
 	});
 });
+/*
 gallery.on ('revoke', function () {
 	my.get({
 		url: 'plus.php',
@@ -143,6 +144,7 @@ gallery.on ('revoke', function () {
 		}
 	});
 });
+*/
 
 // Keyboard shortcuts
 $(document).keydown(function(e) {

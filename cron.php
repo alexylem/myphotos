@@ -5,6 +5,8 @@ set_time_limit(0); // unlimited script time limit
 header( 'Content-Encoding: none; ' ); // disable compression for stepped display
 ob_start(); // start output buffering
 
+session_start();
+
 // Settings
 include ('config.php');
 include ('lib/wideimage/WideImage.php');
@@ -22,14 +24,28 @@ $outputs = array (
 // URL Parameters
 $action = isset($_REQUEST['action'])?$_REQUEST['action']:'form';
 $output = isset($_REQUEST['output'])?$_REQUEST['output']:3;
-$simulate = isset($_REQUEST['simulate']);
+$simulate = isset($_REQUEST['simulate'])?$_REQUEST['simulate']:false;
 
 switch ($action) {
 	case 'reset':
+		session_unset ();
 		genThumbs ($config['photopath'], $config['thumbsdir'], true, $output, $simulate);
+		summary ();
 		break;
     case 'genthumbs':
-		genThumbs ($config['photopath'], $config['thumbsdir'], false, $output, $simulate);
+    	session_unset ();
+		prepare ($config['photopath'], $config['thumbsdir'], false, $output, $simulate);
+		$_SESSION['tasks'] = array_reverse($_SESSION['tasks']); // reverse for using pop (faster than shift)
+		$_SESSION['tasks_total'] = count($_SESSION['tasks']);
+		$_SESSION['tasks_done'] = 0;
+		summary ();
+    	break;
+    case 'execute':
+    	if (count ($_SESSION['tasks']))
+    		header("refresh:0;url=cron.php?action=execute&output=$output&simulate=$simulate");
+    	echo '<h1>Execution</h1>';
+    	echo progressbar ($_SESSION['tasks_done'], $_SESSION['tasks_total']);
+    	execute (2);
     	break;
     case 'form':
     default:
@@ -42,16 +58,16 @@ switch ($action) {
     	foreach ($outputs as $value => $label)
     		 echo '<input id="'.$value.'" type="radio" name="output" value="'.$value.'" />'.
     		 '<label for="'.$value.'">'.$label.'</label><br />';
-    	echo  '<strong>Options</strong><br/>'.
-    		  '<label><input type="checkbox" name="simulate" value="true" checked>Simulate</label><br />'.
-    		  '<input type="submit" value="Go" />'.
+    	echo  '<strong>Options</strong><br />'.
+    		  '<label><input type="checkbox" name="simulate" checked="checked">Simulate</label><br />'.
+    		  '<input type="submit" value="Next" />'.
     		  '</form>';
     	break;
 }
 
 // Main functions
-function genThumbs ($dir, $thumbsdir, $reset = false, $output = 'verbose', $simulate = false) {
-	global $config;
+function prepare ($dir, $thumbsdir, $reset = false, $output = 'verbose', $simulate = false) {
+	global $config, $summary;
 
 	debug ("entering in $dir");
 	$dir = rtrim($dir, '\\/');
@@ -62,95 +78,174 @@ function genThumbs ($dir, $thumbsdir, $reset = false, $output = 'verbose', $simu
 	if (is_dir($thumbspath)) {
 		debug ('ok it exists');
 		if ($reset) {
-			ongoing ("deleting $thumbspath");
-			if ($simulate) warning ('Simulated');
-			elseif (delTree ($thumbspath)) success ();
-			else error ();
+			debug ("will delete $thumbspath");
+			addTask ('thumbdir', 'delete', $thumbspath);
 		}
 	} else {
 		debug ("does not exist");
 		if (!$reset) {
-			ongoing ("creating $thumbspath");
-			if ($simulate) warning ('Simulated');
-			elseif (mkdir ($thumbspath)) success ();
-			else error ();
+			ongoing ("will create $thumbspath");
+			addTask ('thumbdir', 'create', $thumbspath);
 		}
 	}
-
+	
 	debug ("checking .myphotos exists...");
 	$jsonpath = $dir.'/.myphotos';
 	if (file_exists ($jsonpath)) {
 		debug ('ok it exists');
 		if ($reset) {
-			ongoing ("deleting $jsonpath");
-			if ($simulate) warning ('Simulated');
-			elseif (unlink ($jsonpath)) success ();
-			else error ();
+			debug ("will delete $jsonpath");
+			addTask ('setting', 'delete', "$jsonpath");
 		}
 	} else {
 		debug ("does not exist");
 		if (!$reset) {
-			debug ('searching for album default cover in thumbs');
-			
-			$photos = glob($thumbspath . "{*.jpeg,*.jpg,*.png,*.gif,*.bmp}", GLOB_BRACE|GLOB_NOSORT);
-			$cover = '';
-			if (count($photos)) {
-				$cover = basename ($photos[0]);
-				debug ("found $cover");
-			} else
-				warning ('no cover found');
-			
-			$settings = array (
-				'cover' => $cover,
-				'visibility' => $config['defaultvisibility']
-			);
-			
-			ongoing ("creating $jsonpath");
-			if ($simulate) warning ('Simulated');
-			
-			else {
-				$json = fopen($jsonpath, 'w+');
-				if ($json
-					&& fwrite($json, json_encode($settings))
-					&& fclose($json))
-					success ();
-				else
-					error ();
-			}
+			debug ("will create $jsonpath");
+			addTask ('setting', 'create', "$jsonpath");
 		}
 	}
-	
+
+	// to list supported files in album for .myphotos
+	$files = array ();
+
+	// Scan directory
 	foreach (scandir($dir) as $f) {
 		if (strpos($f, '.') !== 0) {
 			if (is_dir("$dir/$f")) {
-				genThumbs("$dir/$f", $thumbsdir, $reset, $output, $simulate);
+				prepare("$dir/$f", $thumbsdir, $reset, $output, $simulate);
 			} elseif (!$reset) {
-				if (in_array (strtolower(substr($f, strrpos($f, '.') + 1)), array ('jpeg', 'jpg', 'png', 'gif', 'bmp'))) {
-					debug ("checking if thumb exists for $dir/$f");
-					$thumbfile = $dir.'/'.$thumbsdir.$f;
-					if (file_exists($thumbfile)) {
-						debug ("$thumbfile already exists");
-					} else {
-						ongoing ("$thumbfile does not exist, creating it");
-						if ($simulate)
-							warning ('Simulated');
-						else {
-							$original = WideImage::loadFromFile("$dir/$f");
-							$thumb = $original->resize(200, 200, 'outside');
-							$thumb->saveToFile($thumbfile);
-							success ();
+				// Read extension instead of mime type for perf
+				$ext = strtolower(substr(strrchr($f, "."), 1));
+				switch ($ext) {
+					case 'gif':
+					case 'jpg':
+					case 'jpeg':
+					case 'png':
+					case 'bmp':
+						debug ("checking if thumb exists for $dir/$f");
+						$thumbfile = $dir.'/'.$thumbsdir.$f;
+						if (file_exists($thumbfile)) {
+							debug ("$thumbfile already exists");
+						} else {
+							debug ("$thumbfile does not exist, will create it");
+							addTask ('thumb', 'create', "$dir/$f");
 						}
-					}
+						$files[] = $f; // add filename to list for album .myphoto
+						break;
+
+					// TODO Add other supported types here
+					
+					default:
+						warning ('Unsupported media: '.$f);
 				}
-				else
-					warning ("$f is not an image");
 			}
 		}
 	}
 }
 
+function execute ($nb) {
+	global $simulate, $config;
+
+	debug ("Will process maximum of $nb tasks");
+	while ($nb-- > 0 && $task = array_pop ($_SESSION['tasks'])) {
+		$_SESSION['tasks_done']++;
+
+		$file = $task['file'];
+		switch ($task['type']) {
+
+			case 'setting':
+				if ($task['operation'] == 'create') {
+					$dir = dirname($file);
+					debug ("searching for album default cover in $dir");
+					chdir($dir);
+					$photos = glob('*.{jpeg,JPEG,jpg,JPG,png,PNG,gif,GIF,bmp,BMP}', GLOB_BRACE|GLOB_NOSORT);
+					$cover = '';
+					if (count($photos)) {
+						$cover = $photos[0];
+						debug ("found $cover");
+					} else
+						warning ('no cover found');
+					
+					$settings = array (
+						'cover' => $cover,
+						'visibility' => $config['defaultvisibility'],
+						'files' => $photos
+					);
+					if ($simulate) warning ('Simulated');
+					else {
+						$json = fopen($file, 'w+');
+						if ($json
+							&& fwrite($json, json_encode($settings))
+							&& fclose($json))
+							success ();
+						else
+							error ();
+					}
+				} elseif ($task['operation'] == 'delete') {
+					ongoing ('deleting '.$file);
+					if ($simulate) warning ('Simulated');
+					elseif (unlink ($file)) success ();
+					else error ();
+				}
+				break;
+
+			case 'thumbdir':
+				if ($task['operation'] == 'create') {
+					ongoing ('creating '.$file);
+					if ($simulate) warning ('Simulated');
+					elseif (mkdir ($file)) success ();
+					else error ();
+				} elseif ($task['operation'] == 'delete') {
+					ongoing ('deleting '.$file);
+					if ($simulate) warning ('Simulated');
+					elseif (delTree ($file)) success ();
+					else error ();
+				}
+				break;
+
+			case 'thumb':
+				if ($task['operation'] == 'create')
+					$thumbfile = dirname ($file).'/'.$config['thumbsdir'].basename ($file);
+					ongoing ('generating '.$thumbfile);
+					if ($simulate)
+						warning ('Simulated');
+					else {
+						$original = WideImage::loadFromFile($file);
+						$thumb = $original->resize(200, 200, 'outside');
+						$thumb->saveToFile($thumbfile);
+						success ();
+					}
+				break;
+
+			default:
+				error ('unknown task type: '.$task['type']);
+		}
+		debug ("Still $nb to do");
+	}
+}
 
 // Helper functions
+function summary () {
+	global $output, $simulate;
+	if ($output > 1) {
+		echo '<h1>Summary</h1>'.
+			 'There are '.@count($_SESSION['tasks']). ' tasks to be executed.'.
+			'<form method="GET" action="#">'.
+	    		'<input type="hidden" name="action" value="execute" />'.
+	    		'<input type="hidden" name="output" value="'.$output.'" />'.
+	    		'<input type="hidden" name="simulate" value="'.$simulate.'" />'.
+	    		'<input type="submit" value="Execute" />'.
+    		'</form>';
+	}
+}
+
+function addTask ($type, $operation, $file) {
+	$_SESSION['tasks'][] = array (
+		'type' => $type,
+		'operation' => $operation,
+		'file' => $file
+	);
+}
 function ongoing ($task) { 
     global $output;
 	if ($output > 2) {
@@ -164,7 +259,7 @@ function ongoing ($task) {
 function debug ($message) {
 	global $output;
 	if ($output > 3)
-    	echo '<pre>'.$message.'</pre>';
+    	echo '<font color="gray">'.$message.'</font><br />';
 }
 function info ($message) {
 	global $output;
@@ -183,16 +278,7 @@ function warning ($message = 'KO') {
 }
 function error ($message = 'KO') { 
     echo '<font color="red">'.$message.'</font><br />';
-    exit ();
-}
-function attempt ($function, $simulate = false) {
-	if ($simulate)
-		warning ('Simulated');
-	else
-		if ($function())
-			success ();
-		else
-			error ();
+    //exit ();
 }
 function human_filesize($bytes, $decimals = 2) {
   $sz = 'BKMGTP';
@@ -205,7 +291,26 @@ function delTree($dir) {
       (is_dir("$dir/$file")) ? delTree("$dir/$file") : unlink("$dir/$file"); 
     } 
     return rmdir($dir); 
-  }
+}
+function progressbar($done = 0, $total = 100, $length = 50, $theme = '[=>.]')
+{
+	$start = $theme[0];
+	$fg    = $theme[1];
+	$head  = $theme[2];
+	$bg    = $theme[3];
+	$end   = $theme[4];
 
+	// Percentage of progress
+	$perc = sprintf('% 3.0f%% ', ($done / $total) * 100);
+
+	// Determine position of progress bar
+	$pos = floor(($done / $total) * $length);
+
+	// Remove 'head' character if progress is >= 100%
+	$head = (($done / $total) >= 1) ? $fg : $head;
+
+	// Create progress bar
+	return '<pre>'.$perc.$start.str_repeat($fg, $pos).$head.str_repeat($bg, $length - $pos).$end.'</pre>';
+}
 ob_end_flush(); // end output buffering and flush
 ?>

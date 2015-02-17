@@ -106,9 +106,6 @@
 							</div>
 						</div>
 					</div>
-					<li class="{{#if !user || view !== 'home'}}hide{{/if}}">
-						<a class="addtooltip" title="Generate Thumbnails" href="cron.php" target="_blank"><span class="glyphicon glyphicon-retweet"></span></a>
-					</li>
 					<li title="Sign-in with Google" class="addtooltip g-signin {{#if user}}hide{{/if}}">
 						<span class="g-signin"
 							data-width="iconOnly"
@@ -124,10 +121,11 @@
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{displayName}} <span class="caret"></span></a>
 						<ul class="dropdown-menu" role="menu">
 							{{#isadmin}}
+							<li><a target="_blank" href="cron.php"><span class="glyphicon glyphicon-retweet"></span> Generate Thumbnails</a></li>
 							<li><a data-toggle="modal" href="#groupsModal"><span class="glyphicon glyphicon-user"></span> Groups & people</a></li>
 							{{/if}}
+							<li><a target="_blank" href="https://github.com/alexylem/myphotos/issues/new"><span class="glyphicon glyphicon-fire"></span> Report Issue</a></li>
 							<li><a on-click="logout" href="#"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
-							<li><a on-click="revoke" href="#"><span class="glyphicon glyphicon-remove"></span> Revoke</a></li>
 						</ul>
 					</li>
 					{{/if}}

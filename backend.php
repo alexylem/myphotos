@@ -25,7 +25,7 @@ switch($_REQUEST['action']) {
 		break;
 
 	case 'list':
-		$json = file_get_contents($config['photopath'].$dir.'.myphotos');
+		$json = @file_get_contents($config['photopath'].$dir.'.myphotos');
 		$settings = json_decode($json);
 		$visibility = @$settings->visibility?$settings->visibility:$config['defaultvisibility'];
 
@@ -47,27 +47,29 @@ switch($_REQUEST['action']) {
 			if ($file->getType() == "dir") {
 				// get json
 				$filepath = $dir.$file->getFilename().'/';
-				$json = file_get_contents($config['photopath'].$filepath.'.myphotos');
+				$json = @file_get_contents($config['photopath'].$filepath.'.myphotos');
 				$settings = json_decode($json);
 				$visibility = @$settings->visibility?$settings->visibility:$config['defaultvisibility'];
 				if (hasaccess ($visibility))
 					$folders[] = array (
 						'filepath'		=> $filepath,
-						'coverurl'		=> 'img.php?f='.$filepath.$config['thumbsdir'].$settings->cover,
+						'coverurl'		=> 'img.php?f='.$filepath.$config['thumbsdir'].@$settings->cover,
 						'visibility'	=> @$settings->visibility,
 						'filename'		=> $file->getFilename(),
 						'updated'		=> $file->getMTime()
 					);
 			} else {
-				$files[] = array (
-					'filepath'	=> $dir.$file->getFilename(),
-					'fileurl'	=> 'img.php?f='.$dir.$file->getFilename(),
-					'thumburl'	=> 'img.php?f='.$dir.$config['thumbsdir'].$file->getFilename(),
-					'filename'	=> $file->getFilename(),
-					'size'		=> $file->getSize(),
-					'type'		=> mime_content_type($file->getRealPath()),
-					'updated'	=> $file->getMTime()
-				);
+				$type = mime_content_type($file->getRealPath());
+				if (explode ('/', $type)[0] == 'image')
+					$files[] = array (
+						'filepath'	=> $dir.$file->getFilename(),
+						'fileurl'	=> 'img.php?f='.$dir.$file->getFilename(),
+						'thumburl'	=> 'img.php?f='.$dir.$config['thumbsdir'].$file->getFilename(),
+						'filename'	=> $file->getFilename(),
+						'size'		=> $file->getSize(),
+						'type'		=> $type,
+						'updated'	=> $file->getMTime()
+					);
 			}
 		}
 		respond (json_encode(array (
