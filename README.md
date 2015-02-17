@@ -1,11 +1,11 @@
 # MyPhotos
 Easily share photo albums without database
 
-* [Synopsis & Features)(#synopsis--features)
-* [Installation)(#installation)
-* [Report an issue](#report-an-issue)
+* [Synopsis & Features](https://github.com/alexylem/myphotos/blob/master/README.md#synopsis--features)
+* [Installation](https://github.com/alexylem/myphotos/blob/master/README.md#installation)
+* [Report an issue](https://github.com/alexylem/myphotos/blob/master/README.md#report-an-issue)
 
-## Synopsis & Freatures
+## Synopsis & Features
 
 **TODO**
 
