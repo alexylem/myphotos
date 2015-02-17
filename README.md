@@ -1,6 +1,10 @@
 # MyPhotos
 Easily share photo albums without database
 
+* [Synopsis & Features)(#synopsis--features)
+* [Installation)(#installation)
+* [Report an issue](#report-an-issue)
+
 ## Synopsis & Freatures
 
 **TODO**
