@@ -11,7 +11,10 @@ Easily share photo albums without database
 
 ## Installation
 
-Clone the repo `git clone https://github.com/alexylem/myphotos.git`
+1. Clone the repo `git clone https://github.com/alexylem/myphotos.git`
+2. Create `config.php` from a copy of `config.default.php`
+3. Fill-in `config.php` with your settings & Google API Key
+4. Visit `cron.php` to generate thumbnails
 
 ## Report an issue
 
