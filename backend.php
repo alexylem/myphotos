@@ -25,7 +25,8 @@ switch($_REQUEST['action']) {
 		break;
 
 	case 'list':
-		$json = @file_get_contents($config['photopath'].$dir.'.myphotos');
+		$absolute = $config['photopath'].$dir;
+		$json = @file_get_contents($absolute.'.myphotos');
 		$settings = json_decode($json);
 		$visibility = @$settings->visibility?$settings->visibility:$config['defaultvisibility'];
 
@@ -41,43 +42,47 @@ switch($_REQUEST['action']) {
 		);
 		$folders = array ();
 		$files = array ();
-		foreach (new DirectoryIterator($config['photopath'].$dir) as $file) {
-			if (substr($file->getFilename(),0,1) == '.')
-				continue; // ignore . .. & hidden files
-			if ($file->getType() == "dir") {
-				// get json
-				$filepath = $dir.$file->getFilename().'/';
-				$json = @file_get_contents($config['photopath'].$filepath.'.myphotos');
-				$settings = json_decode($json);
-				$visibility = @$settings->visibility?$settings->visibility:$config['defaultvisibility'];
-				if (hasaccess ($visibility))
-					$folders[] = array (
-						'filepath'		=> $filepath,
-						'coverurl'		=> 'img.php?f='.$filepath.$config['thumbsdir'].@$settings->cover,
-						'visibility'	=> @$settings->visibility,
-						'filename'		=> $file->getFilename(),
-						'updated'		=> $file->getMTime()
-					);
-			} else {
-				$type = mime_content_type($file->getRealPath());
-				if (explode ('/', $type)[0] == 'image')
-					$files[] = array (
-						'filepath'	=> $dir.$file->getFilename(),
-						'fileurl'	=> 'img.php?f='.$dir.$file->getFilename(),
-						'thumburl'	=> 'img.php?f='.$dir.$config['thumbsdir'].$file->getFilename(),
-						'filename'	=> $file->getFilename(),
-						'size'		=> $file->getSize(),
-						'type'		=> $type,
-						'updated'	=> $file->getMTime()
-					);
-			}
-		}
+
+        if ($handle = opendir($absolute)) {
+            while (false !== ($file = readdir($handle))) { 
+                if ($file[0] != ".") { // skip '.', '..' & hidden files
+                	$filepath = $dir.$file;
+                    if (is_dir($absolute.$file)) { 
+                        $json = file_get_contents($config['photopath'].$filepath.'/.myphotos');
+						$settings = @json_decode($json);
+						$visibility = @$settings->visibility?$settings->visibility:$config['defaultvisibility'];
+						if (hasaccess ($visibility))
+							$folders[] = array (
+								'filepath'		=> $filepath.'/',
+								'coverurl'		=> 'img.php?f='.$filepath.'/'.$config['thumbsdir'].@$settings->cover,
+								'visibility'	=> $visibility,
+								'filename'		=> @$settings->name?$settings->name:$file,
+								'updated'		=> filemtime($absolute.$file)
+							);
+                    } else {
+                        $ext = strtolower(substr(strrchr($file, "."), 1)); // mime_content_type has perf issues
+                        $files[] = array (
+							'filepath'	=> $filepath,
+							'fileurl'	=> 'img.php?f='.$filepath,
+							'thumburl'	=> 'img.php?f='.$dir.$config['thumbsdir'].$file,
+							'filename'	=> $file,
+							'size'		=> filesize ($absolute.$file),
+							//'type'		=> $type,
+							'updated'	=> filemtime ($absolute.$file)
+						);
+                    }
+                }
+            }
+            closedir($handle);
+        }
+
 		respond (json_encode(array (
 			'folder'	=> $folder,
 			'folders'	=> $folders,
 			'files'		=> $files
 		)));
 		break;
+
 	case 'changeVisibility':
 		if (!isadmin ())
 			respond ('Operation not authorized', true);
@@ -97,7 +102,7 @@ switch($_REQUEST['action']) {
 	case 'getGroups':
 		if (!isadmin ())
 			respond ('Operation not authorized', true);
-		$json = json_decode(file_get_contents($config['photopath'].'.groups'));
+		$json = @json_decode(file_get_contents($config['photopath'].'.groups'));
 		respond (json_encode(array (
 			'groups' => @$json->groups?$json->groups:[],
 			'users'  => @$json->users?$json->users:[]

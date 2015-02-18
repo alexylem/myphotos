@@ -5,8 +5,6 @@ header('Access-Control-Allow-Origin: *');
 // Settings
 include_once ('config.php');
 
-if (!isset ($_GET['f']))
-	exit ('Missing f parameter');
 $file = $config['photopath'].$_GET['f'];
 
 // Set content type
@@ -20,6 +18,4 @@ header('Content-Type: '.$types[exif_imagetype($file)]);
 
 // Output file content
 readfile($file);
-
-exit; // needed?
 ?>

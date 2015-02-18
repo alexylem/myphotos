@@ -28,18 +28,18 @@ $simulate = isset($_REQUEST['simulate'])?$_REQUEST['simulate']:false;
 
 switch ($action) {
 	case 'reset':
-		session_unset ();
-		genThumbs ($config['photopath'], $config['thumbsdir'], true, $output, $simulate);
-		summary ();
-		break;
-    case 'genthumbs':
+	case 'genthumbs':
     	session_unset ();
-		prepare ($config['photopath'], $config['thumbsdir'], false, $output, $simulate);
+    	$_SESSION['tasks'] = array ();
+    	$_SESSION['tasks_done'] = 0;
+
+		prepare ($config['photopath'], $config['thumbsdir'], ($action == 'reset'), $output, $simulate);
 		$_SESSION['tasks'] = array_reverse($_SESSION['tasks']); // reverse for using pop (faster than shift)
 		$_SESSION['tasks_total'] = count($_SESSION['tasks']);
-		$_SESSION['tasks_done'] = 0;
+		
 		summary ();
     	break;
+
     case 'execute':
     	if (count ($_SESSION['tasks']))
     		header("refresh:0;url=cron.php?action=execute&output=$output&simulate=$simulate");
@@ -226,16 +226,17 @@ function execute ($nb) {
 
 // Helper functions
 function summary () {
-	global $output, $simulate;
-	if ($output > 1) {
-		echo '<h1>Summary</h1>'.
-			 'There are '.@count($_SESSION['tasks']). ' tasks to be executed.'.
-			'<form method="GET" action="#">'.
+	echo '<h1>Summary</h1>'.
+		 'There are '.$_SESSION['tasks_total']. ' tasks to be executed.';
+		 
+	if ($_SESSION['tasks_total']) {
+		global $output, $simulate;
+		echo '<form method="GET" action="#">'.
 	    		'<input type="hidden" name="action" value="execute" />'.
 	    		'<input type="hidden" name="output" value="'.$output.'" />'.
 	    		'<input type="hidden" name="simulate" value="'.$simulate.'" />'.
 	    		'<input type="submit" value="Execute" />'.
-    		'</form>';
+			'</form>';
 	}
 }
 
