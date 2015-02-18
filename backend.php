@@ -74,6 +74,8 @@ switch($_REQUEST['action']) {
                 }
             }
             closedir($handle);
+        } else {
+        	respond ('not possible to access directory: '.$absolute, true);
         }
 
 		respond (json_encode(array (
