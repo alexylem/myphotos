@@ -259,6 +259,14 @@
 {{/each}}
 <div class="clearfix"></div>
 <hr />
+{{else}}
+	{{#if view == 'home'}}
+		<div class="jumbotron">
+		  <h1><span class="glyphicon glyphicon-eye-close"></span> Oops</h1>
+		  <p>There is <strong>no public album</strong> available or made visible to you.</p>
+		  <p>Sign-in with an authorized email account.</p>
+		</div>
+	{{/if}}
 {{/if}}
 
 {{#if photos}}
