@@ -7,7 +7,6 @@
 */
 
 ini_set('display_errors', 1);
-header('Access-Control-Allow-Origin: *');
 
 // Settings
 include_once ('config.php');
