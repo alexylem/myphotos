@@ -47,7 +47,7 @@ switch($_REQUEST['action']) {
                 if ($file[0] != ".") { // skip '.', '..' & hidden files
                 	$filepath = $dir.$file;
                     if (is_dir($absolute.$file)) { 
-                        $json = file_get_contents($config['photopath'].$filepath.'/.myphotos');
+                        $json = @file_get_contents($config['photopath'].$filepath.'/.myphotos'); // in case no .myphotos yet
 						$settings = @json_decode($json);
 						$visibility = @$settings->visibility?$settings->visibility:$config['defaultvisibility'];
 						if (hasaccess ($visibility))
@@ -91,6 +91,7 @@ switch($_REQUEST['action']) {
 		$json = file_get_contents($jsonpath);
 		$settings = json_decode($json);
 		$settings->visibility = $_REQUEST['visibility'];
+		$settings->groups = $_REQUEST['groups'];
 		$json = fopen($jsonpath, 'w');
 		if ($json
 			&& fwrite($json, json_encode($settings))

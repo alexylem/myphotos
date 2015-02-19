@@ -15,7 +15,8 @@ var gallery = new Ractive({
 			name: false,
 			visibility: '',
 			filepath: '',
-			parentpath: false
+			parentpath: false,
+			groups: []
 		},
 		folders: [],
 		photos: [],
@@ -38,11 +39,6 @@ var gallery = new Ractive({
 // Start
 $(document).ready (function () {
 	$('.addtooltip').tooltip(tooltipopts);
-	$('#multiselect').multiselect({
-		onChange: function (option, checked, select) { // fix ractive not seing multiselect updates
-			gallery.set('newgroups', $('#multiselect').val ());
-		}
-	});
 
 	my.get({
 		url: 'plus.php',
@@ -50,6 +46,19 @@ $(document).ready (function () {
 		success: function (user) {
 			if (user) { // logged in
 				gallery.set ('user', user);
+				if (user.isadmin) {
+					my.get ({
+					url: 'backend.php',
+					data: { action: 'getGroups' },
+					success: function (sdata) {
+						var data = JSON.parse (sdata);
+						gallery.set ({
+							groups: data.groups,
+							users: data.users
+						});
+					}
+				});
+				}
 			}
 			else {
 				gallery.set ('user', false);
@@ -91,14 +100,6 @@ $("#addgroupform").validate({
 	gallery.set ('newgroup', '');
   }
 });
-/*
-gallery.on ('addgroup', function (event) {
-	event.original.preventDefault();
-	this.push ('groups', gallery.get ('newgroup'));
-	$('#multiselect').multiselect('rebuild');
-	this.set ('newgroup', '');
-});
-*/
 gallery.on ('removegroup', function (event, index) {
 	if (confirm ('Are you sure?')) {
     	gallery.splice('groups', index, 1);
@@ -133,18 +134,6 @@ gallery.on ('logout', function () {
 		}
 	});
 });
-/*
-gallery.on ('revoke', function () {
-	my.get({
-		url: 'plus.php',
-		data: { action: 'revoke' },
-		success: function() {
-			gallery.set ('user', false);
-			cwd ('./');
-		}
-	});
-});
-*/
 
 // Keyboard shortcuts
 $(document).keydown(function(e) {
@@ -167,22 +156,10 @@ $(document).keydown(function(e) {
 });
 
 // Observers
-$('#myModal').on('hide.bs.modal', function (e) {
-	changeVisibility (gallery.get ('folder.filepath'), gallery.get ('folder.visibility'));
-});
 $('#groupsModal').on('show.bs.modal', function () {
-	my.get ({
-		url: 'backend.php',
-		data: {
-			action: 'getGroups',
-		},
-		success: function (sdata) {
-			var data = JSON.parse (sdata);
-			gallery.set ({
-				groups: data.groups,
-				users: data.users
-			});
-			$('#multiselect').multiselect('rebuild');
+	$('#multiselect').multiselect({
+		onChange: function (option, checked, select) { // fix ractive not seing multiselect updates
+			gallery.set('newgroups', $('#multiselect').val ());
 		}
 	});
 });
@@ -196,6 +173,27 @@ $('#groupsModal').on('hide.bs.modal', function () {
 		},
 		success: function () {
 			my.info ('Groups & People saved successfuly');
+		}
+	});
+});
+$('#folderModal').on('show.bs.modal', function () {
+	$('#foldergroups').multiselect({
+		onChange: function (option, checked, select) { // fix ractive not seing multiselect updates
+			gallery.set('folder.groups', $('#multiselect').val ());
+		}
+	});
+});
+$('#folderModal').on('hide.bs.modal', function (e) {
+	my.get ({
+		url: 'backend.php',
+		data: {
+			action: 'changeVisibility',
+			dir: gallery.get ('folder.filepath'),
+			visibility: gallery.get ('folder.visibility'),
+			groups: gallery.get ('folder.groups')
+		},
+		success: function () {
+			my.info ('Album settings saved successfuly.');
 		}
 	});
 });
@@ -228,21 +226,6 @@ function cwd (dir) {
 	});
 }
 
-function changeVisibility (dir, visibility) {
-	my.log ('changing visibility of', dir, 'to', visibility);
-	my.get ({
-		url: 'backend.php',
-		data: {
-			action: 'changeVisibility',
-			dir: dir,
-			visibility: visibility
-		},
-		success: function () {
-			my.info ('Album settings saved successfuly.');
-		}
-	});
-}
-
 function signInCallback(authResult) {
 	if (authResult.code) {
 		$.post('plus.php',
@@ -252,7 +235,21 @@ function signInCallback(authResult) {
 				state: 'TODO'
 			},
 			function( data ) {
-				gallery.set ('user', JSON.parse(data).message);
+				var user = JSON.parse(data).message;
+				gallery.set ('user', user);
+				if (user.isadmin) {
+					my.get ({
+						url: 'backend.php',
+						data: { action: 'getGroups' },
+						success: function (sdata) {
+							var data = JSON.parse (sdata);
+							gallery.set ({
+								groups: data.groups,
+								users: data.users
+							});
+						}
+					});
+				}
 				cwd ('./');
       		}
 		);

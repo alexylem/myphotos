@@ -42,10 +42,10 @@ switch ($action) {
 
     case 'execute':
     	if (count ($_SESSION['tasks']))
-    		header("refresh:0;url=cron.php?action=execute&output=$output&simulate=$simulate");
+    		header("refresh:0.1;url=cron.php?action=execute&output=$output&simulate=$simulate");
     	echo '<h1>Execution</h1>';
     	echo progressbar ($_SESSION['tasks_done'], $_SESSION['tasks_total']);
-    	execute (2);
+    	execute (5);
     	break;
     case 'form':
     default:
@@ -105,9 +105,6 @@ function prepare ($dir, $thumbsdir, $reset = false, $output = 'verbose', $simula
 		}
 	}
 
-	// to list supported files in album for .myphotos
-	$files = array ();
-
 	// Scan directory
 	foreach (scandir($dir) as $f) {
 		if (strpos($f, '.') !== 0) {
@@ -130,7 +127,6 @@ function prepare ($dir, $thumbsdir, $reset = false, $output = 'verbose', $simula
 							debug ("$thumbfile does not exist, will create it");
 							addTask ('thumb', 'create', "$dir/$f");
 						}
-						$files[] = $f; // add filename to list for album .myphoto
 						break;
 
 					// TODO Add other supported types here
@@ -159,6 +155,7 @@ function execute ($nb) {
 					debug ("searching for album default cover in $dir");
 					chdir($dir);
 					$photos = glob('*.{jpeg,JPEG,jpg,JPG,png,PNG,gif,GIF,bmp,BMP}', GLOB_BRACE|GLOB_NOSORT);
+					
 					$cover = '';
 					if (count($photos)) {
 						$cover = $photos[0];
@@ -167,9 +164,9 @@ function execute ($nb) {
 						warning ('no cover found');
 					
 					$settings = array (
+						//'files' => $photos,
 						'cover' => $cover,
-						'visibility' => $config['defaultvisibility'],
-						'files' => $photos
+						'visibility' => $config['defaultvisibility']
 					);
 					if ($simulate) warning ('Simulated');
 					else {
@@ -310,8 +307,11 @@ function progressbar($done = 0, $total = 100, $length = 50, $theme = '[=>.]')
 	// Remove 'head' character if progress is >= 100%
 	$head = (($done / $total) >= 1) ? $fg : $head;
 
+	// Summary
+	$sum = $done.'/'.$total;
+
 	// Create progress bar
-	return '<pre>'.$perc.$start.str_repeat($fg, $pos).$head.str_repeat($bg, $length - $pos).$end.'</pre>';
+	return '<pre>'.$perc.$start.str_repeat($fg, $pos).$head.str_repeat($bg, $length-$pos).$end.' '.$sum.'</pre>';
 }
 ob_end_flush(); // end output buffering and flush
 ?>

@@ -17,7 +17,7 @@
 		<nav class="navbar navbar-default" role="navigation">
 			<div class="container-fluid">
 				<div class="navbar-header">
-					<a class="{{#if view !== 'album'}}hide{{/if}} navbar-brand addtooltip" title="Album Settings" data-toggle="modal" href="#myModal">
+					<a class="{{#if view !== 'album'}}hide{{/if}} navbar-brand addtooltip" title="Album Settings" data-toggle="modal" href="#folderModal">
 						<span class="glyphicon glyphicon-{{folder.visibility == 'public' ? 'globe' : (folder.visibility == 'restricted' ? 'user' : 'lock')}}"></span> {{folder.name}}
 					</a>
 					{{#if view == 'home'}}
@@ -53,7 +53,7 @@
 					<li class="{{#if view !== 'album'}}hide{{/if}}">
 						<a class="addtooltip" title="Download Album" href="#"><span class="glyphicon glyphicon-download-alt"></span></a>
 					</li>
-					<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+					<div class="modal fade" id="folderModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 						<div class="modal-dialog">
 							<div class="modal-content">
 								<div class="modal-header">
@@ -83,16 +83,13 @@
 											<p class="help-block">Visible by a selection of groups</p>
 										</label>
 									</div>
-									{{#if folder.visibility == 'restricted'}}
-									<div class="col-md-offset-1">
-										<select value='{{folder.groups}}' multiple>
-											{{#each groups}}
-											<option>{{this}}</option>
-											{{/each}}
+									<div class="col-md-offset-1 {{#if folder.visibility !== 'restricted'}}hide{{/if}}">
+										<select id="foldergroups" value='{{folder.groups}}' multiple="multiple">
+											  {{#each groups}}
+											  	<option>{{this}}</option>
+											  {{/each}}
 										</select>
-										<p class="help-block">Use <kbd>Ctrl</kbd> or <kbd>Cmd</kbd> to select multiple groups:</p>
 									</div>
-									{{/if}}
 									<div class="checkbox">
 										<label>
 											<input type="checkbox" value="">
