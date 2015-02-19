@@ -86,9 +86,9 @@ $("#addgroupform").validate({
   errorClass: 'alert-danger',
   errorPlacement: function() {},
   submitHandler: function(form) {
-    this.push ('groups', gallery.get ('newgroup'));
+    gallery.push ('groups', gallery.get ('newgroup'));
 	$('#multiselect').multiselect('rebuild');
-	this.set ('newgroup', '');
+	gallery.set ('newgroup', '');
   }
 });
 /*
