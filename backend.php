@@ -37,7 +37,8 @@ switch($_REQUEST['action']) {
 			'name'			=> $name,
 			'filepath'		=> $dir,
 			'visibility'	=> $visibility,
-			'parentpath'	=> dirname($dir).'/'
+			'parentpath'	=> dirname($dir).'/',
+			'groups'		=> isadmin ()?@$settings->groups:[]
 		);
 		$folders = array ();
 		$files = array ();

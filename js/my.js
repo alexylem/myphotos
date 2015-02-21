@@ -190,7 +190,7 @@ $('#folderModal').on('hide.bs.modal', function (e) {
 			action: 'changeVisibility',
 			dir: gallery.get ('folder.filepath'),
 			visibility: gallery.get ('folder.visibility'),
-			groups: gallery.get ('folder.groups')
+			groups: gallery.get ('folder.groups') || false // else undefined index groups even with []
 		},
 		success: function () {
 			my.info ('Album settings saved successfuly.');
@@ -218,8 +218,6 @@ function cwd (dir) {
 				gallery.set ('view', 'album');
 			} else { // root
 				gallery.set ('parentpath', false);
-				gallery.set ('folder.name', false); // needed?
-				gallery.set ('folder.visibility', false); // needed?
 				gallery.set ('view', 'home');
 			}			
 		}
