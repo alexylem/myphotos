@@ -32,7 +32,7 @@
 							<span class="glyphicon glyphicon-remove"></span> Fermer
 						</button>
 						{{else}}
-						{{#if folder.name}}
+						{{#if view == 'album'}}
 						<button on-click="cwd:{{folder.parentpath}}" type="button" class="btn btn-default navbar-btn">
 							<span class="glyphicon glyphicon-chevron-left"></span> Retour
 						</button>
@@ -243,19 +243,19 @@
 {{else}}
 
 {{#if folders}}
-<h5>Albums</h5>
-{{#each folders}}
-<div class="thumb">
-	<a href="#" on-click="cwd:{{filepath}}">
-		<img title="{{filename}}" src="{{coverurl}}">
-		<div class="cover">
-			<span class="glyphicon glyphicon-{{visibility == 'public' ? 'globe' : (visibility == 'restricted' ? 'user' : 'lock')}}"></span> {{filename}}
-		</div>
-	</a>
-</div>
-{{/each}}
-<div class="clearfix"></div>
-<hr />
+	<h5>Albums</h5>
+	{{#each folders}}
+	<div class="thumb">
+		<a href="#" on-click="cwd:{{filepath}}">
+			<img title="{{filename}}" src="{{coverurl}}">
+			<div class="cover">
+				<span class="glyphicon glyphicon-{{visibility == 'public' ? 'globe' : (visibility == 'restricted' ? 'user' : 'lock')}}"></span> {{filename}}
+			</div>
+		</a>
+	</div>
+	{{/each}}
+	<div class="clearfix"></div>
+	<hr />
 {{else}}
 	{{#if view == 'home'}}
 		<div class="jumbotron">

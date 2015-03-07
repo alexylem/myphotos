@@ -43,7 +43,7 @@ switch($_REQUEST['action']) {
 		$folders = array ();
 		$files = array ();
 
-        if ($handle = opendir($absolute)) {
+        if ($handle = @opendir($absolute)) {
             while (false !== ($file = readdir($handle))) { 
                 if ($file[0] != ".") { // skip '.', '..' & hidden files
                 	$filepath = $dir.$file;
@@ -75,7 +75,7 @@ switch($_REQUEST['action']) {
             }
             closedir($handle);
         } else {
-        	respond ('not possible to access directory: '.$absolute, true);
+        	respond ("Impossible to access photo library ($absolute) Verify your config.php", true);
         }
 
 		respond (json_encode(array (
