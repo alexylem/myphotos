@@ -7,14 +7,16 @@ ob_start(); // start output buffering
 
 session_start();
 
-// Settings
+// User Settings
 include ('config.php');
+
+// Libraries
 include ('lib/wideimage/WideImage.php');
 
 // Values
 $actions = array (
-	'genthumbs'	=> 'Generate Thumbs',
-	'reset'		=> 'Delete Thumbs' );
+	'genthumbs'	=> 'Update Library (generate settings, thumbs, cache photos)',
+	'reset'		=> 'Reset (will remove all myPhotos files)' );
 $outputs = array (
 	4 => 'Debug',
 	3 => 'Verbose',
@@ -24,7 +26,6 @@ $outputs = array (
 // URL Parameters
 $action = isset($_REQUEST['action'])?$_REQUEST['action']:'form';
 $output = isset($_REQUEST['output'])?$_REQUEST['output']:3;
-$simulate = isset($_REQUEST['simulate'])?$_REQUEST['simulate']:false;
 
 switch ($action) {
 	case 'reset':
@@ -33,7 +34,7 @@ switch ($action) {
     	$_SESSION['tasks'] = array ();
     	$_SESSION['tasks_done'] = 0;
 
-		prepare ($config['photopath'], $config['thumbsdir'], ($action == 'reset'), $output, $simulate);
+		prepare ($config['photopath'], ($action == 'reset'), $output);
 		$_SESSION['tasks'] = array_reverse($_SESSION['tasks']); // reverse for using pop (faster than shift)
 		$_SESSION['tasks_total'] = count($_SESSION['tasks']);
 		
@@ -42,7 +43,7 @@ switch ($action) {
 
     case 'execute':
     	if (count ($_SESSION['tasks']))
-    		header("refresh:0.1;url=cron.php?action=execute&output=$output&simulate=$simulate");
+    		header('refresh:'.BATCH_WAIT.";url=cron.php?action=execute&output=$output");
     	echo '<h1>Execution</h1>';
     	echo progressbar ($_SESSION['tasks_done'], $_SESSION['tasks_total']);
     	execute (5);
@@ -59,48 +60,67 @@ switch ($action) {
     		 echo '<input id="'.$value.'" type="radio" name="output" value="'.$value.'" />'.
     		 '<label for="'.$value.'">'.$label.'</label><br />';
     	echo  '<strong>Options</strong><br />'.
-    		  '<label><input type="checkbox" name="simulate" checked="checked">Simulate</label><br />'.
     		  '<input type="submit" value="Next" />'.
     		  '</form>';
     	break;
 }
 
 // Main functions
-function prepare ($dir, $thumbsdir, $reset = false, $output = 'verbose', $simulate = false) {
+function prepare ($dir, $reset = false, $output = 'verbose') {
 	global $config, $summary;
 
 	debug ("entering in $dir");
 	$dir = rtrim($dir, '\\/');
 	debug ("trimmed dir is $dir");
 
-	debug ("checking .thumbs/ exists...");
-	$thumbspath = $dir.'/'.$thumbsdir;
-	if (is_dir($thumbspath)) {
+	debug ('checking '.MYPHOTOS_DIR.' exists...');
+	$myphotospath = $dir.'/'.MYPHOTOS_DIR;
+	if (is_dir($myphotospath)) {
 		debug ('ok it exists');
 		if ($reset) {
-			debug ("will delete $thumbspath");
-			addTask ('thumbdir', 'delete', $thumbspath);
+			info ("will delete $myphotospath");
+			addTask ('directory', 'delete', $myphotospath);
 		}
 	} else {
 		debug ("does not exist");
 		if (!$reset) {
-			ongoing ("will create $thumbspath");
-			addTask ('thumbdir', 'create', $thumbspath);
+			info ("will create $myphotospath");
+			addTask ('directory', 'create', $myphotospath);
+		}
+	}
+
+	debug ('checking '.THUMB_DIR.' exists...');
+	$thumbspath = $dir.'/'.MYPHOTOS_DIR.THUMB_DIR;
+	if (is_dir($thumbspath)) {
+		debug ('ok it exists');
+	} else {
+		debug ("does not exist");
+		if (!$reset) {
+			info ("will create $thumbspath");
+			addTask ('directory', 'create', $thumbspath);
+		}
+	}
+
+	debug ('checking '.PREVIEW_DIR.' exists...');
+	$previewspath = $dir.'/'.MYPHOTOS_DIR.PREVIEW_DIR;
+	if (is_dir($previewspath)) {
+		debug ('ok it exists');
+	} else {
+		debug ("does not exist");
+		if (!$reset) {
+			info ("will create $previewspath");
+			addTask ('directory', 'create', $previewspath);
 		}
 	}
 	
-	debug ("checking .myphotos exists...");
-	$jsonpath = $dir.'/.myphotos';
+	debug ('checking '.SETTINGS_FILE.' exists...');
+	$jsonpath = $dir.'/'.MYPHOTOS_DIR.SETTINGS_FILE;
 	if (file_exists ($jsonpath)) {
 		debug ('ok it exists');
-		if ($reset) {
-			debug ("will delete $jsonpath");
-			addTask ('setting', 'delete', "$jsonpath");
-		}
 	} else {
 		debug ("does not exist");
 		if (!$reset) {
-			debug ("will create $jsonpath");
+			info ("will create $jsonpath");
 			addTask ('setting', 'create', "$jsonpath");
 		}
 	}
@@ -109,7 +129,7 @@ function prepare ($dir, $thumbsdir, $reset = false, $output = 'verbose', $simula
 	foreach (scandir($dir) as $f) {
 		if (strpos($f, '.') !== 0) {
 			if (is_dir("$dir/$f")) {
-				prepare("$dir/$f", $thumbsdir, $reset, $output, $simulate);
+				prepare("$dir/$f", $reset, $output);
 			} elseif (!$reset) {
 				// Read extension instead of mime type for perf
 				$ext = strtolower(substr(strrchr($f, "."), 1));
@@ -120,12 +140,21 @@ function prepare ($dir, $thumbsdir, $reset = false, $output = 'verbose', $simula
 					case 'png':
 					case 'bmp':
 						debug ("checking if thumb exists for $dir/$f");
-						$thumbfile = $dir.'/'.$thumbsdir.$f;
+						$thumbfile = $dir.'/'.MYPHOTOS_DIR.THUMB_DIR.$f;
 						if (file_exists($thumbfile)) {
 							debug ("$thumbfile already exists");
 						} else {
-							debug ("$thumbfile does not exist, will create it");
+							info ("$thumbfile does not exist, will create it");
 							addTask ('thumb', 'create', "$dir/$f");
+						}
+
+						debug ("checking if preview exists for $dir/$f");
+						$previewfile = $dir.'/'.MYPHOTOS_DIR.PREVIEW_DIR.$f;
+						if (file_exists($previewfile)) {
+							debug ("$previewfile already exists");
+						} else {
+							info ("$previewfile does not exist, will create it");
+							addTask ('preview', 'create', "$dir/$f");
 						}
 						break;
 
@@ -151,7 +180,7 @@ function execute ($nb) {
 
 			case 'setting':
 				if ($task['operation'] == 'create') {
-					$dir = dirname($file);
+					$dir = dirname(dirname($file));
 					debug ("searching for album default cover in $dir");
 					chdir($dir);
 					$photos = glob('*.{jpeg,JPEG,jpg,JPG,png,PNG,gif,GIF,bmp,BMP}', GLOB_BRACE|GLOB_NOSORT);
@@ -178,15 +207,10 @@ function execute ($nb) {
 						else
 							error ();
 					}
-				} elseif ($task['operation'] == 'delete') {
-					ongoing ('deleting '.$file);
-					if ($simulate) warning ('Simulated');
-					elseif (unlink ($file)) success ();
-					else error ();
 				}
 				break;
 
-			case 'thumbdir':
+			case 'directory':
 				if ($task['operation'] == 'create') {
 					ongoing ('creating '.$file);
 					if ($simulate) warning ('Simulated');
@@ -202,15 +226,33 @@ function execute ($nb) {
 
 			case 'thumb':
 				if ($task['operation'] == 'create')
-					$thumbfile = dirname ($file).'/'.$config['thumbsdir'].basename ($file);
+					$thumbfile = dirname ($file).'/'.MYPHOTOS_DIR.THUMB_DIR.basename ($file);
 					ongoing ('generating '.$thumbfile);
 					if ($simulate)
 						warning ('Simulated');
 					else {
 						$original = WideImage::loadFromFile($file);
-						$thumb = $original->resize(200, 200, 'outside');
-						$thumb->saveToFile($thumbfile);
+						$thumb = $original->exifOrient(exif_read_data($file)['Orientation'])
+										  ->resize(THUMB_SIZE, THUMB_SIZE, 'outside');
+						$thumb->saveToFile($thumbfile, IMG_QUALITY);
 						success ();
+					}
+				break;
+
+			case 'preview':
+				if ($task['operation'] == 'create')
+					$previewfile = dirname ($file).'/'.MYPHOTOS_DIR.PREVIEW_DIR.basename ($file);
+					ongoing ('generating '.$previewfile);
+					if ($simulate)
+						warning ('Simulated');
+					else {
+						if ($original = @WideImage::loadFromFile($file)) {
+							$preview = $original->exifOrient(exif_read_data($file)['Orientation'])
+											    ->resize(null, PREVIEW_HEIGHT, 'inside', 'down');
+							$preview->saveToFile($previewfile, IMG_QUALITY);
+							success ();
+						} else
+							error ("Unable to load $file");
 					}
 				break;
 
@@ -231,7 +273,6 @@ function summary () {
 		echo '<form method="GET" action="#">'.
 	    		'<input type="hidden" name="action" value="execute" />'.
 	    		'<input type="hidden" name="output" value="'.$output.'" />'.
-	    		'<input type="hidden" name="simulate" value="'.$simulate.'" />'.
 	    		'<input type="submit" value="Execute" />'.
 			'</form>';
 	}
@@ -313,5 +354,51 @@ function progressbar($done = 0, $total = 100, $length = 50, $theme = '[=>.]')
 	// Create progress bar
 	return '<pre>'.$perc.$start.str_repeat($fg, $pos).$head.str_repeat($bg, $length-$pos).$end.' '.$sum.'</pre>';
 }
+
+class WideImage_Operation_ExifOrient
+{
+  /**
+   * Rotates and mirrors and image properly based on current orientation value
+   *
+   * @param WideImage_Image $img
+   * @param int $orientation
+   * @return WideImage_Image
+   */
+  function execute($img, $orientation)
+  {
+    switch ($orientation) {
+      case 2:
+        return $img->mirror();
+        break;
+
+      case 3:
+        return $img->rotate(180);
+        break;
+
+      case 4:
+        return $img->rotate(180)->mirror();
+        break;
+
+      case 5:
+        return $img->rotate(90)->mirror();
+        break;
+
+      case 6:
+        return $img->rotate(90);
+        break;
+
+      case 7:
+        return $img->rotate(-90)->mirror();
+        break;
+
+      case 8:
+        return $img->rotate(-90);
+        break;
+
+      default: return $img->copy();
+    }
+  }
+}
+
 ob_end_flush(); // end output buffering and flush
 ?>
