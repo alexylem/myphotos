@@ -215,7 +215,7 @@ function execute ($nb) {
 				if ($task['operation'] == 'create') {
 					ongoing ('creating '.$file);
 					if ($simulate) warning ('Simulated');
-					elseif (mkdir ($file)) success ();
+					elseif (mkdir ($file, 0777)) success ();
 					else error ();
 				} elseif ($task['operation'] == 'delete') {
 					ongoing ('deleting '.$file);
