@@ -60,9 +60,9 @@ switch ($action) {
     	foreach ($outputs as $value => $label)
     		 echo '<input id="'.$value.'" type="radio" name="output" value="'.$value.'" />'.
     		 '<label for="'.$value.'">'.$label.'</label><br />';
-    	echo  '<strong>Options</strong><br />'.
-    		  '<input type="submit" value="Next" />'.
+    	echo  '<input type="submit" value="Next" />'.
     		  '</form>';
+    	echo 'Process will run as '.get_current_user ();
     	break;
 }
 
