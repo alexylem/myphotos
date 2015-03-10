@@ -9,6 +9,7 @@
 ini_set('display_errors', 1);
 
 // Settings
+include_once ('defines.php');
 include_once ('config.php');
 include_once ('utils.php');
 

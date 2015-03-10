@@ -7,7 +7,8 @@ ob_start(); // start output buffering
 
 session_start();
 
-// User Settings
+// Settings
+include ('defines.php');
 include ('config.php');
 
 // Libraries
@@ -232,9 +233,9 @@ function execute ($nb) {
 						warning ('Simulated');
 					else {
 						$original = WideImage::loadFromFile($file);
-						$thumb = $original->exifOrient(exif_read_data($file)['Orientation'])
-										  ->resize(THUMB_SIZE, THUMB_SIZE, 'outside');
-						$thumb->saveToFile($thumbfile, IMG_QUALITY);
+						$original->resize(THUMB_SIZE, THUMB_SIZE, 'outside')
+								 ->exifOrient(exif_read_data($file)['Orientation'])
+								 ->saveToFile($thumbfile, IMG_QUALITY);
 						success ();
 					}
 				break;
@@ -247,9 +248,9 @@ function execute ($nb) {
 						warning ('Simulated');
 					else {
 						if ($original = @WideImage::loadFromFile($file)) {
-							$preview = $original->exifOrient(exif_read_data($file)['Orientation'])
-											    ->resize(null, PREVIEW_HEIGHT, 'inside', 'down');
-							$preview->saveToFile($previewfile, IMG_QUALITY);
+							$original->resize(null, PREVIEW_HEIGHT, 'inside', 'down')
+									 ->exifOrient(exif_read_data($file)['Orientation'])
+									 ->saveToFile($previewfile, IMG_QUALITY);
 							success ();
 						} else
 							error ("Unable to load $file");
