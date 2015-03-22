@@ -62,7 +62,7 @@ switch ($action) {
     		 '<label for="'.$value.'">'.$label.'</label><br />';
     	echo  '<input type="submit" value="Next" />'.
     		  '</form>';
-    	echo 'Process will run as '.get_current_user ();
+    	//echo 'Process will run as '.get_current_user ();
     	break;
 }
 
@@ -215,7 +215,7 @@ function execute ($nb) {
 				if ($task['operation'] == 'create') {
 					ongoing ('creating '.$file);
 					if ($simulate) warning ('Simulated');
-					elseif (mkdir ($file, 0777)) success ();
+					elseif (mkdir ($file) && chmod ($file, 0777)) success ();
 					else error ();
 				} elseif ($task['operation'] == 'delete') {
 					ongoing ('deleting '.$file);
