@@ -62,7 +62,7 @@ switch ($action) {
     		 '<label for="'.$value.'">'.$label.'</label><br />';
     	echo  '<input type="submit" value="Next" />'.
     		  '</form>';
-    	//echo 'Process will run as '.get_current_user ();
+    	echo 'Process will run as '.exec('whoami');
     	break;
 }
 
@@ -214,9 +214,15 @@ function execute ($nb) {
 			case 'directory':
 				if ($task['operation'] == 'create') {
 					ongoing ('creating '.$file);
-					if ($simulate) warning ('Simulated');
-					elseif (mkdir ($file) && chmod ($file, 0777)) success ();
-					else error ();
+					if ($simulate)
+						warning ('Simulated');
+					elseif (mkdir ($file))
+						if (chmod ($file, 0777))
+							success ();
+						else
+							error ("Couldn't change directory permissions");
+					else
+						error ("Couldn't create directory");
 				} elseif ($task['operation'] == 'delete') {
 					ongoing ('deleting '.$file);
 					if ($simulate) warning ('Simulated');
