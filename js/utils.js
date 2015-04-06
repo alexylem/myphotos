@@ -141,10 +141,10 @@ var my = new function () {
 					message = tmp.textContent||tmp.innerText; // strip html tags
 				}
 				if (error) {
-					my.error (/*'Error '+error+' from '+url+': '+*/message);
-					if (typeof(ferror) == 'function') {
-						ferror();
-					}
+					if (typeof(ferror) == 'function')
+						ferror(message);
+					else
+						my.error (/*'Error '+error+' from '+url+': '+*/message);
 					return false;
 				}
 				my.log ('	response from '+url+':', message);
@@ -153,9 +153,11 @@ var my = new function () {
 			},
 			error: function(XMLHttpRequest, textStatus, errorThrown) { 
 				// $.mobile.loading('hide');
-				console.warn ('Warning '+XMLHttpRequest.status+' from '+url+': ', textStatus+';'+XMLHttpRequest.responseText+';'+errorThrown);
 				if (typeof(ferror) == 'function')
-					ferror();
+					ferror(XMLHttpRequest.responseText);
+				else
+					console.warn ('Warning '+XMLHttpRequest.status+' from '+url+': ', textStatus+';'+XMLHttpRequest.responseText+';'+errorThrown);
+
 			}
 		});
 	};

@@ -31,7 +31,13 @@ var gallery = new Ractive({
 			return !userfilter ||
 				   $.inArray (userfilter, user.groups) > -1;
 		},
-		messages: []
+		messages: [],
+		cron: {
+			striped: true,
+			progress: 0,
+			status: '',
+			class: 'primary'
+		}
 	},
 	//lazy: true
 });
@@ -123,6 +129,33 @@ gallery.on ('removeuser', function (event, index) {
 gallery.on ('filterpeople', function (event, group) {
 	my.log ('filtering poeple on', group);
 	this.set ('userfilter', group);
+});
+$('#cronModal').on('shown.bs.modal', function (e) {
+  gallery.set ({
+		'cron.striped': true,
+		'cron.progress': 100,
+		'cron.status': 'Checking what to do...',
+		'cron.class': 'primary'
+	});
+  my.get({
+  	url: 'cron.php',
+  	data: {action: 'genthumbs', output: 0}, // 0: Webservice
+  	success: function (nbtask) {
+  		gallery.set ({
+  			'cron.striped': false,
+			'cron.progress': 0,
+			'cron.status': 'Execution of '+nbtask+' tasks...'
+  		});
+  		continueCron ();
+  	}
+  });
+});
+gallery.on ('ignore', function (event, group) {
+	this.set ({
+		'cron.status': '',
+		'cron.class': 'primary'
+	});
+	continueCron ();
 });
 gallery.on ('logout', function () {
 	my.get({
@@ -252,4 +285,32 @@ function signInCallback(authResult) {
       		}
 		);
 	}
+}
+
+function continueCron () {
+	if (!$('#cronModal').data('bs.modal').isShown)
+		return; // modal has been closed
+	my.get ({
+		url: 'cron.php',
+		data: {action: 'execute', output: 0},
+		success: function (status) {
+			gallery.set ({
+				'cron.progress': Math.round ((status.total?status.done/status.total:1)*100),
+				'cron.status': status.done+'/'+status.total+' completed - '+status.remaining
+	  		});
+	  		if (status.todo)
+				continueCron ();
+			else
+				gallery.set ({
+					'cron.class': 'success',
+					'cron.status': 'Your photo library is up to date!'
+				});
+		},
+		error: function (error) {
+			gallery.set ({
+				'cron.class': 'danger',
+				'cron.status': error
+			});
+		}
+	});
 }

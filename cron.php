@@ -1,18 +1,24 @@
 <?php
 ini_set('display_errors', 1);
+ini_set('memory_limit', '-1'); // http://stackoverflow.com/questions/415801/allowed-memory-size-of-33554432-bytes-exhausted-tried-to-allocate-43148176-byte
 header('Access-Control-Allow-Origin: *');
 set_time_limit(0); // unlimited script time limit
-header( 'Content-Encoding: none; ' ); // disable compression for stepped display
-ob_start(); // start output buffering
 
 session_start();
+$_SESSION['error'] = false;
 
 // Settings
 include ('defines.php');
 include ('config.php');
 
+if (STEPPED_DISPLAY) {
+	header( 'Content-Encoding: none; ' ); // disable compression for stepped display
+	ob_start(); // start output buffering
+}
+
 // Libraries
 include ('lib/wideimage/WideImage.php');
+include ('utils.php');
 
 // Values
 $actions = array (
@@ -22,7 +28,8 @@ $outputs = array (
 	4 => 'Debug',
 	3 => 'Verbose',
 	2 => 'Summary',
-	1 => 'Errors only' );
+	1 => 'Errors only',
+	0 => 'Webservice');
 
 // URL Parameters
 $action = isset($_REQUEST['action'])?$_REQUEST['action']:'form';
@@ -39,15 +46,40 @@ switch ($action) {
 		$_SESSION['tasks'] = array_reverse($_SESSION['tasks']); // reverse for using pop (faster than shift)
 		$_SESSION['tasks_total'] = count($_SESSION['tasks']);
 		
-		summary ();
+		if ($output == 0)
+			respond ($_SESSION['tasks_total']);
+		else
+			summary ();
     	break;
 
     case 'execute':
+    	/*
     	if (count ($_SESSION['tasks']))
-    		header('refresh:'.BATCH_WAIT.";url=cron.php?action=execute&output=$output");
-    	echo '<h1>Execution</h1>';
-    	echo progressbar ($_SESSION['tasks_done'], $_SESSION['tasks_total']);
-    	execute (5);
+    		header('refresh:0;url=cron.php?action=execute&output=$output');
+    	*/
+    	$remaining = remainingtime ($_SESSION['tasks_done'], $_SESSION['tasks_total']);
+    	if ($output > 0) {
+    		echo '<html><head><title>'.round($_SESSION['tasks_done']/$_SESSION['tasks_total']*100).'%</title></head><body><h1>Execution</h1>';
+	    	echo '<pre>'.progressbar ($_SESSION['tasks_done'], $_SESSION['tasks_total']).' '.$remaining.'</pre>';
+	    	myflush ();
+    	}
+
+    	execute (TASK_NB);
+
+    	if ($_SESSION['error'])
+    		error ('Process interrupted due to error');
+    	if ($output == 0)
+			respond (array (
+				'todo' => count ($_SESSION['tasks']),
+				'done' => $_SESSION['tasks_done'],
+				'total' => $_SESSION['tasks_total'],
+				'remaining' => $remaining
+			));
+    	if (count ($_SESSION['tasks'])) {
+    		echo '<script>parent.window.location.reload(true);</script>';
+    	}
+    	echo '</body></html>';
+    	myflush();
     	break;
     case 'form':
     default:
@@ -174,6 +206,7 @@ function execute ($nb) {
 
 	debug ("Will process maximum of $nb tasks");
 	while ($nb-- > 0 && $task = array_pop ($_SESSION['tasks'])) {
+		//debug (count ($_SESSION['tasks']).' tasks remaining after this one');
 		$_SESSION['tasks_done']++;
 
 		$file = $task['file'];
@@ -238,10 +271,19 @@ function execute ($nb) {
 					if ($simulate)
 						warning ('Simulated');
 					else {
-						$original = WideImage::loadFromFile($file);
-						$original->resize(THUMB_SIZE, THUMB_SIZE, 'outside')
-								 ->exifOrient(exif_read_data($file)['Orientation'])
-								 ->saveToFile($thumbfile, IMG_QUALITY);
+						debug ('loading image...');
+						try {
+							$original = WideImage::loadFromFile($file);
+						}
+						catch (Exception $e) {
+							error ('Exception: '.$e->getMessage());
+						}
+						debug ('resizing image...');
+						$resized = $original->resize(THUMB_SIZE, THUMB_SIZE, 'outside');
+						debug ('rotating image...');
+						$rotated = $resized->exifOrient(exif_read_data($file)['Orientation']);
+						debug ('saving image...');
+						$rotated->saveToFile($thumbfile, IMG_QUALITY);
 						success ();
 					}
 				break;
@@ -274,7 +316,7 @@ function execute ($nb) {
 function summary () {
 	echo '<h1>Summary</h1>'.
 		 'There are '.$_SESSION['tasks_total']. ' tasks to be executed.';
-		 
+
 	if ($_SESSION['tasks_total']) {
 		global $output, $simulate;
 		echo '<form method="GET" action="#">'.
@@ -292,14 +334,19 @@ function addTask ($type, $operation, $file) {
 		'file' => $file
 	);
 }
+function myflush ($text = '') {
+	echo $text.str_repeat(' ',1024*64); // minimum buffer size to flush data
+    if (STEPPED_DISPLAY) {
+    	ob_flush();
+	    flush ();
+	    // sleep (1); // to test stepped display
+    }
+}
 function ongoing ($task) { 
     global $output;
 	if ($output > 2) {
 		echo $task.'... ';
-	    echo str_repeat(' ',1024*64); // minimum buffer size to flush data
-	    ob_flush();
-	    flush ();
-	    // sleep (1); // to test stepped display
+	    myflush ();
 	}
 }
 function debug ($message) {
@@ -315,15 +362,20 @@ function info ($message) {
 function success ($message = 'OK') { 
 	global $output;
 	if ($output > 2)
-    echo '<font color="green">'.$message.'</font><br />'; 
+    	echo '<font color="green">'.$message.'</font><br />'; 
 }
 function warning ($message = 'KO') {
 	global $output;
 	if ($output > 2)
-    echo '<font color="orange">'.$message.'</font><br />'; 
+    	echo '<font color="orange">'.$message.'</font><br />'; 
 }
-function error ($message = 'KO') { 
-    echo '<font color="red">'.$message.'</font><br />';
+function error ($message = 'KO') {
+	global $output;
+	if ($output == 0)
+		respond ($message, true);
+	else
+    	echo '<font color="red">'.$message.'</font><br />';
+    $_SESSION['error'] = true;
     //exit ();
 }
 function human_filesize($bytes, $decimals = 2) {
@@ -338,6 +390,12 @@ function delTree($dir) {
     } 
     return rmdir($dir); 
 }
+function remainingtime ($done, $total) {
+	if ($done > 0)
+		return time_elapsed (round($total*(microtime(true)-$_SESSION['pb_started_at'])/$done)).' left';
+	$_SESSION['pb_started_at'] = microtime(true);
+	return false;
+}
 function progressbar($done = 0, $total = 100, $length = 50, $theme = '[=>.]')
 {
 	$start = $theme[0];
@@ -347,7 +405,7 @@ function progressbar($done = 0, $total = 100, $length = 50, $theme = '[=>.]')
 	$end   = $theme[4];
 
 	// Percentage of progress
-	$perc = sprintf('% 3.0f%% ', ($done / $total) * 100);
+	$perc = sprintf('% 3.0f%%', ($done / $total) * 100);
 
 	// Determine position of progress bar
 	$pos = floor(($done / $total) * $length);
@@ -359,7 +417,7 @@ function progressbar($done = 0, $total = 100, $length = 50, $theme = '[=>.]')
 	$sum = $done.'/'.$total;
 
 	// Create progress bar
-	return '<pre>'.$perc.$start.str_repeat($fg, $pos).$head.str_repeat($bg, $length-$pos).$end.' '.$sum.'</pre>';
+	return $perc.' '.$start.str_repeat($fg, $pos).$head.str_repeat($bg, $length-$pos).$end.' '.$sum;
 }
 
 class WideImage_Operation_ExifOrient
@@ -407,5 +465,6 @@ class WideImage_Operation_ExifOrient
   }
 }
 
-ob_end_flush(); // end output buffering and flush
+if (STEPPED_DISPLAY)
+	ob_end_flush(); // end output buffering and flush
 ?>

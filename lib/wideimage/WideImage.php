@@ -193,7 +193,7 @@
 		static function loadFromFile($uri)
 		{
 			$data = file_get_contents($uri);
-			$handle = @imagecreatefromstring($data);
+			$handle = imagecreatefromstring($data);
 			if (!self::isValidImageHandle($handle))
 			{
 				try
@@ -221,10 +221,8 @@
 					}
 				}
 			}
-			
 			if (!self::isValidImageHandle($handle))
 				throw new WideImage_InvalidImageSourceException("File '{$uri}' appears to be an invalid image source.");
-			
 			return self::loadFromHandle($handle);
 		}
 		

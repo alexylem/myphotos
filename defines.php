@@ -7,5 +7,6 @@ define ('THUMB_DIR', 'thumbs/'); // trailing /, doesn't have to be hidden
 define ('PREVIEW_DIR', 'previews/'); // trailing / doesn't have to be hidden
 define ('PREVIEW_HEIGHT', 1080); //px, WIDTH is determined automatically
 define ('IMG_QUALITY', 40); // 0 to 100
-define ('BATCH_WAIT', 0.1); // secs, delay between two batch job sets
+define ('STEPPED_DISPLAY', false); // display page progressively
+define ('TASK_NB', 1); // nb of task to execute per page load
 ?>
