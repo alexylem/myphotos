@@ -115,7 +115,7 @@ var my = new function () {
 		}
 	};
 
-		this.get = function (args) {
+	this.get = function (args) {
 		var url = args.url,
 			data = args.data,
 			success = args.success,
@@ -125,7 +125,7 @@ var my = new function () {
 		$.ajax({
 			url: url,
 			data: data,
-			timeout: 5000,
+			timeout: timeout,
 			success: function(sresponse) {
 				// $.mobile.loading('hide');
 				var response, error, message;
@@ -153,10 +153,11 @@ var my = new function () {
 			},
 			error: function(XMLHttpRequest, textStatus, errorThrown) { 
 				// $.mobile.loading('hide');
+				message = textStatus+';'+XMLHttpRequest.responseText+';'+errorThrown;
 				if (typeof(ferror) == 'function')
-					ferror(XMLHttpRequest.responseText);
+					ferror(message);
 				else
-					console.warn ('Warning '+XMLHttpRequest.status+' from '+url+': ', textStatus+';'+XMLHttpRequest.responseText+';'+errorThrown);
+					console.warn ('Warning '+XMLHttpRequest.status+' from '+url+': ', message);
 
 			}
 		});

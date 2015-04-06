@@ -293,6 +293,7 @@ function continueCron () {
 	my.get ({
 		url: 'cron.php',
 		data: {action: 'execute', output: 0},
+		timeout: 60*1000, // 1m
 		success: function (status) {
 			gallery.set ({
 				'cron.progress': Math.round ((status.total?status.done/status.total:1)*100),
