@@ -1,10 +1,10 @@
 <?php
+session_start();
 ini_set('display_errors', 1);
 ini_set('memory_limit', '-1'); // http://stackoverflow.com/questions/415801/allowed-memory-size-of-33554432-bytes-exhausted-tried-to-allocate-43148176-byte
-header('Access-Control-Allow-Origin: *');
+//header('Access-Control-Allow-Origin: *');
 set_time_limit(0); // unlimited script time limit
 
-session_start();
 $_SESSION['error'] = false;
 
 // Settings
@@ -19,6 +19,11 @@ if (STEPPED_DISPLAY) {
 // Libraries
 include ('lib/wideimage/WideImage.php');
 include ('utils.php');
+
+// Security check
+if (!isadmin ())
+	//error ('Operation not authorized');
+	error ($_SESSION['me']);
 
 // Values
 $actions = array (
@@ -467,4 +472,10 @@ class WideImage_Operation_ExifOrient
 
 if (STEPPED_DISPLAY)
 	ob_end_flush(); // end output buffering and flush
+
+// Specific for myPhotos
+function isadmin () {
+	global $admins, $admin_mode;
+	return $admin_mode || isset ($_SESSION['me']) && in_array($_SESSION['me']['email'], $admins);
+}
 ?>

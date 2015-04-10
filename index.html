@@ -51,7 +51,22 @@
 						<a class="addtooltip" title="Add to Smart Album" href="#"><span class="glyphicon glyphicon-tags"></span></a>
 					</li>
 					<li class="{{#if view !== 'album'}}hide{{/if}}">
-						<a class="addtooltip" title="Download Album" href="#"><span class="glyphicon glyphicon-download-alt"></span></a>
+						<a class="addtooltip" title="(Soon available!)" href="#"><span class="glyphicon glyphicon-download-alt"></span></a>
+					</li>
+					<li class="dropdown {{#if view !== 'photo'}}hide{{/if}}">
+						<a href="#" class="dropdown-toggle addtooltip" title="Download Photo" data-toggle="dropdown" role="button">
+							<span class="glyphicon glyphicon-download-alt"></span>
+						</a>
+						<ul class="dropdown-menu" role="menu">
+							{{#photos[photoid]}}
+							<li><a href="{{photos[photoid].previewurl}}&d=1">
+								<span class="glyphicon glyphicon-file"></span> Big ({{human_size(previewsize)}})</a>
+							</li>
+							<li><a href="{{photos[photoid].fileurl}}&d=1">
+								<span class="glyphicon glyphicon-file"></span> Original ({{human_size(size)}})</a>
+							</li>
+							{{/if}}
+						</ul>
 					</li>
 					<div class="modal fade" id="folderModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 						<div class="modal-dialog">
@@ -316,6 +331,8 @@
 <script src='lib/ractive/ractive.min.js'></script>
 
 <script src="lib/multiselect/js/bootstrap-multiselect.js"></script>
+
+<script src="lib/filesize/filesize.min.js"></script>
 
 <script src="js/utils.js"></script>
 <script src="js/my.js"></script>

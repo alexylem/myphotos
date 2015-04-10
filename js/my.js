@@ -1,6 +1,7 @@
 var tooltipopts = {
 	container: 'body',
-	placement: 'bottom'
+	placement: 'bottom',
+	hmtl: true
 };
 
 var gallery = new Ractive({
@@ -31,6 +32,9 @@ var gallery = new Ractive({
 			return !userfilter ||
 				   $.inArray (userfilter, user.groups) > -1;
 		},
+		human_size: function (size) {
+			return filesize(size);
+		},
 		messages: [],
 		cron: {
 			striped: true,
@@ -44,7 +48,10 @@ var gallery = new Ractive({
 
 // Start
 $(document).ready (function () {
+	// Enable tooptips
 	$('.addtooltip').tooltip(tooltipopts);
+	// Enable popovers
+	$('.addpopover').popover(tooltipopts);
 
 	my.get({
 		url: 'plus.php',
@@ -78,7 +85,7 @@ $(document).ready (function () {
 	});
 });
 
-// Buttons
+// Actions
 gallery.on ('cwd', function (event, dir) {
 	cwd (dir);
 });
@@ -96,6 +103,19 @@ gallery.on ('next', function (event) {
 gallery.on ('close', function (event) {
 	this.set ('photoid', false);
 	this.set ('view', 'album');
+});
+gallery.on ('cover', function (event) {
+	my.get ({
+		url: 'backend.php',
+		data: {
+			action: 'updateFolder',
+			dir: gallery.get ('folder.filepath'),
+			cover: gallery.get('photos')[gallery.get('photoid')].filename
+		},
+		success: function () {
+			my.info ('Album cover changed successfuly.');
+		}
+	});
 });
 $("#addgroupform").validate({
   errorClass: 'alert-danger',
@@ -129,26 +149,6 @@ gallery.on ('removeuser', function (event, index) {
 gallery.on ('filterpeople', function (event, group) {
 	my.log ('filtering poeple on', group);
 	this.set ('userfilter', group);
-});
-$('#cronModal').on('shown.bs.modal', function (e) {
-  gallery.set ({
-		'cron.striped': true,
-		'cron.progress': 100,
-		'cron.status': 'Checking what to do...',
-		'cron.class': 'primary'
-	});
-  my.get({
-  	url: 'cron.php',
-  	data: {action: 'genthumbs', output: 0}, // 0: Webservice
-  	success: function (nbtask) {
-  		gallery.set ({
-  			'cron.striped': false,
-			'cron.progress': 0,
-			'cron.status': 'Execution of '+nbtask+' tasks...'
-  		});
-  		continueCron ();
-  	}
-  });
 });
 gallery.on ('ignore', function (event, group) {
 	this.set ({
@@ -220,7 +220,7 @@ $('#folderModal').on('hide.bs.modal', function (e) {
 	my.get ({
 		url: 'backend.php',
 		data: {
-			action: 'changeVisibility',
+			action: 'updateFolder',
 			dir: gallery.get ('folder.filepath'),
 			visibility: gallery.get ('folder.visibility'),
 			groups: gallery.get ('folder.groups') || false // else undefined index groups even with []
@@ -229,6 +229,26 @@ $('#folderModal').on('hide.bs.modal', function (e) {
 			my.info ('Album settings saved successfuly.');
 		}
 	});
+});
+$('#cronModal').on('shown.bs.modal', function (e) {
+  gallery.set ({
+		'cron.class': 'primary',
+		'cron.striped': true,
+		'cron.progress': 100,
+		'cron.status': 'Checking what to do...'
+	});
+  my.get({
+  	url: 'cron.php',
+  	data: {action: 'genthumbs', output: 0}, // 0: Webservice
+  	success: function (nbtask) {
+  		gallery.set ({
+  			'cron.striped': false,
+			'cron.progress': 0,
+			'cron.status': 'Execution of '+nbtask+' tasks...'
+  		});
+  		continueCron ();
+  	}
+  });
 });
 
 // Main functions

@@ -1,9 +1,9 @@
 <?php
 // CONFIG file for MyPhotos
 // 1) Create a copy / rename to config.php
-// 2) Specify config variable as per requested
+// 2) Specify below variables as per requested
 
-$admins = array ( // comma seperated email adresses of admin users
+$admins = array ( // comma seperated gmail adresses of admin users
 	'email.address.1@gmail.com',
 	'email.address.2@gmail.com'
 );
@@ -18,4 +18,6 @@ $config = array (
 	// Default visibility for photo albums (private, restricted, public)
 	'defaultvisibility'	=> 'private'
 );
+
+$admin_mode = false; // true will make everyone an admin! Useful for testing/working offline
 ?>

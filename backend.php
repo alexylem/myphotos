@@ -5,6 +5,7 @@
 	En cas de demande particulière, veuillez me contacter
 	Alexandre Mély - alexandre.mely@gmail.com
 */
+session_start();
 
 ini_set('display_errors', 1);
 
@@ -12,8 +13,6 @@ ini_set('display_errors', 1);
 include_once ('defines.php');
 include_once ('config.php');
 include_once ('utils.php');
-
-session_start();
 
 if (!isset($_REQUEST['action']))
 	respond ('missing action parameter', true);
@@ -66,9 +65,10 @@ switch($_REQUEST['action']) {
 							'filepath'		=> $filepath,
 							'fileurl'		=> 'img.php?f='.$filepath,
 							'previewurl'	=> 'img.php?f='.$dir.MYPHOTOS_DIR.PREVIEW_DIR.$file,
+							'previewsize'	=> @filesize ($absolute.MYPHOTOS_DIR.PREVIEW_DIR.$file),
 							'thumburl'		=> 'img.php?f='.$dir.MYPHOTOS_DIR.THUMB_DIR.$file,
 							'filename'		=> $file,
-							'size'			=> filesize ($absolute.$file),
+							'size'			=> @filesize ($absolute.$file),
 							//'type'		=> $type,
 							'updated'	=> filemtime ($absolute.$file)
 						);
@@ -87,14 +87,18 @@ switch($_REQUEST['action']) {
 		)));
 		break;
 
-	case 'changeVisibility':
+	case 'updateFolder':
 		if (!isadmin ())
 			respond ('Operation not authorized', true);
 		$jsonpath = $config['photopath'].$dir.MYPHOTOS_DIR.SETTINGS_FILE;
 		$json = file_get_contents($jsonpath);
 		$settings = json_decode($json);
-		$settings->visibility = $_REQUEST['visibility'];
-		$settings->groups = $_REQUEST['groups'];
+		if (isset ($_REQUEST['cover']))
+			$settings->cover = $_REQUEST['cover'];
+		if (isset ($_REQUEST['visibility']))
+			$settings->visibility = $_REQUEST['visibility'];
+		if (isset ($_REQUEST['groups']))
+			$settings->groups = $_REQUEST['groups'];
 		$json = fopen($jsonpath, 'w');
 		if ($json
 			&& fwrite($json, json_encode($settings))
@@ -141,8 +145,9 @@ function hasaccess ($visibility) {
 	return isadmin ();
 }
 
+// Specific for myPhotos
 function isadmin () {
-	global $admins;
-	return isset ($_SESSION['me']) && in_array($_SESSION['me']['email'], $admins);
+	global $admins, $admin_mode;
+	return $admin_mode || isset ($_SESSION['me']) && in_array($_SESSION['me']['email'], $admins);
 }
 ?>

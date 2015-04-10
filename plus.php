@@ -1,4 +1,5 @@
 <?php
+session_start();
 ini_set('display_errors', 1);
 header('Access-Control-Allow-Origin: *');
 
@@ -12,7 +13,6 @@ require_once 'Google/Client.php';
 require_once 'Google/Service.php';
 require_once 'Google/Service/Plus.php';
 
-session_start();
 /************************************************
  Check CSRF attack
 *************************************************/
@@ -43,7 +43,14 @@ switch($_REQUEST['action']) {
   case 'init':
     if (isset ($_SESSION['me']))
         respond ($_SESSION['me']);
-      else
+    elseif ($admin_mode)
+        respond (array (
+            'displayName' => 'Admin Mode',
+            'email'       => '',
+            'picture'     => '',
+            'isadmin'     => true
+        ));
+    else
         respond ();
     break;
 
