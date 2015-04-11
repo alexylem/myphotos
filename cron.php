@@ -22,8 +22,7 @@ include ('utils.php');
 
 // Security check
 if (!isadmin ())
-	//error ('Operation not authorized');
-	error ($_SESSION['me']);
+	error ('Operation not authorized');
 
 // Values
 $actions = array (
@@ -43,7 +42,6 @@ $output = isset($_REQUEST['output'])?$_REQUEST['output']:3;
 switch ($action) {
 	case 'reset':
 	case 'genthumbs':
-    	session_unset ();
     	$_SESSION['tasks'] = array ();
     	$_SESSION['tasks_done'] = 0;
 

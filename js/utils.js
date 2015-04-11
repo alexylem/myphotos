@@ -141,6 +141,7 @@ var my = new function () {
 					message = tmp.textContent||tmp.innerText; // strip html tags
 				}
 				if (error) {
+					console.error ('Error '+error+' from '+url+': ',message);
 					if (typeof(ferror) == 'function')
 						ferror(message);
 					else
