@@ -1,0 +1,3 @@
+[submodule "lib/bootstrap-notify"]
+	path = lib/bootstrap-notify
+	url = https://github.com/mouse0270/bootstrap-notify.git
