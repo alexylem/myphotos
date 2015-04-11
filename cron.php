@@ -278,7 +278,7 @@ function execute ($nb) {
 						if ($exif = exif_read_data($file)
 						 && isset ($exif['Orientation']))
 							$original = $original->exifOrient($exif['Orientation']);
-						$original->saveToFile($previewfile, IMG_QUALITY);
+						$original->saveToFile($thumbfile, IMG_QUALITY);
 						success ();
 					} else
 						error ("Unable to load $file");
