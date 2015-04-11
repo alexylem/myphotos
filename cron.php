@@ -273,22 +273,15 @@ function execute ($nb) {
 					ongoing ('generating '.$thumbfile);
 					if ($simulate)
 						warning ('Simulated');
-					else {
-						debug ('loading image...');
-						try {
-							$original = WideImage::loadFromFile($file);
-						}
-						catch (Exception $e) {
-							error ('Exception: '.$e->getMessage());
-						}
-						debug ('resizing image...');
-						$resized = $original->resize(THUMB_SIZE, THUMB_SIZE, 'outside');
-						debug ('rotating image...');
-						$rotated = $resized->exifOrient(exif_read_data($file)['Orientation']);
-						debug ('saving image...');
-						$rotated->saveToFile($thumbfile, IMG_QUALITY);
+					elseif ($original = WideImage::loadFromFile($file)) {
+						$original = $original->resize(THUMB_SIZE, THUMB_SIZE, 'outside');
+						if ($exif = exif_read_data($file)
+						 && isset ($exif['Orientation']))
+							$original = $original->exifOrient($exif['Orientation']);
+						$original->saveToFile($previewfile, IMG_QUALITY);
 						success ();
-					}
+					} else
+						error ("Unable to load $file");
 				break;
 
 			case 'preview':
@@ -297,15 +290,15 @@ function execute ($nb) {
 					ongoing ('generating '.$previewfile);
 					if ($simulate)
 						warning ('Simulated');
-					else {
-						if ($original = @WideImage::loadFromFile($file)) {
-							$original->resize(null, PREVIEW_HEIGHT, 'inside', 'down')
-									 ->exifOrient(exif_read_data($file)['Orientation'])
-									 ->saveToFile($previewfile, IMG_QUALITY);
-							success ();
-						} else
-							error ("Unable to load $file");
-					}
+					elseif ($original = WideImage::loadFromFile($file)) {
+						$original->resize(null, PREVIEW_HEIGHT, 'inside', 'down');
+						if ($exif = exif_read_data($file)
+						 && isset ($exif['Orientation']))
+							$original->exifOrient($exif['Orientation']);
+						$original->saveToFile($previewfile, IMG_QUALITY);
+						success ();
+					} else
+						error ("Unable to load $file");
 				break;
 
 			default:
