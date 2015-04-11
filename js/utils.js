@@ -73,33 +73,43 @@ var my = new function () {
 	
 	this.loglevel = 4;
 
+	this.notify = function (type, message, url) {
+		$.notify ({
+			message: message
+		},{
+			type: type,
+			offset: {x: 20, y: 70},
+			delay: 2000,
+			mouse_over: 'pause',
+			z_index: 900 // bs dropdown at 1000
+		});
+	};
+
 	this.error = function (message, url) {
 		if (this.loglevel >= _ERROR_) {
-			var args = Array.prototype.slice.call(arguments);
 			console.error (message);
-			gallery.push ('messages', {
-				type: 'danger',
-				message: message
-			});
+			this.notify ('danger', message);
 		}
 	};
 
 	this.warn = function (message, url) {
 		if (this.loglevel >= _WARNING_) {
-			var args = Array.prototype.slice.call(arguments);
 			console.warn (message);
-			//notify (message, 'Attention', null, url);
+			this.notify ('warning', message);
 		}
 	};
 
 	this.info = function (message, url) {
 		if (this.loglevel >= _NOTICE_) {
-			var args = Array.prototype.slice.call(arguments);
 			console.info (message);
-			gallery.push ('messages', {
-				type: 'success',
-				message: message
-			});
+			this.notify ('info', message);
+		}
+	};
+
+	this.success = function (message, url) {
+		if (this.loglevel >= _NOTICE_) {
+			console.info (message);
+			this.notify ('success', message);
 		}
 	};
 

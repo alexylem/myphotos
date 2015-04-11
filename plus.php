@@ -55,8 +55,7 @@ switch($_REQUEST['action']) {
     break;
 
   case 'logout':
-    unset ($_SESSION['me']);
-    unset($_SESSION['access_token']);
+    session_unset ();
     respond ('Logged out');
     break;
 

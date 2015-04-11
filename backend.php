@@ -29,7 +29,7 @@ switch($_REQUEST['action']) {
 		$settings = json_decode($json);
 		$visibility = @$settings->visibility?$settings->visibility:$config['defaultvisibility'];
 
-		if (!($dir == './' || hasaccess ($visibility)))
+		if (!($dir == './' || hasaccess ($visibility, @$settings->groups)))
 			respond ("You don't have access to this $visibility album", true);
 
 		$name = @$settings->name?$settings->name:basename($dir);
@@ -47,11 +47,11 @@ switch($_REQUEST['action']) {
             while (false !== ($file = readdir($handle))) { 
                 if ($file[0] != ".") { // skip '.', '..' & hidden files
                 	$filepath = $dir.$file;
-                    if (is_dir($absolute.$file)) { 
+                    if (is_dir($absolute.$file)) {
                         $json = @file_get_contents($config['photopath'].$filepath.'/'.MYPHOTOS_DIR.SETTINGS_FILE); // in case no .myphotos yet
 						$settings = @json_decode($json);
 						$visibility = @$settings->visibility?$settings->visibility:$config['defaultvisibility'];
-						if (hasaccess ($visibility))
+						if (hasaccess ($visibility, @$settings->groups))
 							$folders[] = array (
 								'filepath'		=> $filepath.'/',
 								'coverurl'		=> 'img.php?f='.$filepath.'/'.MYPHOTOS_DIR.THUMB_DIR.@$settings->cover,
@@ -136,13 +136,26 @@ switch($_REQUEST['action']) {
 	default: respond ("unknown action ".$_REQUEST['action'], true);
 }
 
-function hasaccess ($visibility) {
-	if ($visibility == 'public')
+function hasaccess ($visibility, $groups) {
+	if ($visibility == 'public' || isadmin ())
 		return true;
 	if ($visibility == 'restricted') {
-		// todo
+		if (!isset ($_SESSION['me']))
+			return false;
+		if (!isset ($_SESSION['groups'])) {
+			global $config;
+			$_SESSION['groups'] = array ();
+			$json = @file_get_contents($config['photopath'].MYPHOTOS_DIR.'.groups');
+		    $settings = json_decode($json);
+		    if ($settings->users)
+			    foreach ($settings->users as $user)
+					if ($user->email == $_SESSION['me']['email']) {
+			        	$_SESSION['groups'] = $user->groups;
+						break;
+			    	}
+		}
+		return count (array_intersect($groups, $_SESSION['groups']));
 	}
-	return isadmin ();
 }
 
 // Specific for myPhotos

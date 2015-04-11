@@ -35,7 +35,6 @@ var gallery = new Ractive({
 		human_size: function (size) {
 			return filesize(size);
 		},
-		messages: [],
 		cron: {
 			striped: true,
 			progress: 0,
@@ -113,7 +112,7 @@ gallery.on ('cover', function (event) {
 			cover: gallery.get('photos')[gallery.get('photoid')].filename
 		},
 		success: function () {
-			my.info ('Album cover changed successfuly.');
+			my.success ('Album cover changed successfuly.');
 		}
 	});
 });
@@ -205,14 +204,14 @@ $('#groupsModal').on('hide.bs.modal', function () {
 			users: gallery.get('users')
 		},
 		success: function () {
-			my.info ('Groups & People saved successfuly');
+			my.success ('Groups & People saved successfuly');
 		}
 	});
 });
 $('#folderModal').on('show.bs.modal', function () {
 	$('#foldergroups').multiselect({
 		onChange: function (option, checked, select) { // fix ractive not seing multiselect updates
-			gallery.set('folder.groups', $('#multiselect').val ());
+			gallery.set('folder.groups', $('#foldergroups').val ());
 		}
 	});
 });
@@ -226,7 +225,7 @@ $('#folderModal').on('hide.bs.modal', function (e) {
 			groups: gallery.get ('folder.groups') || false // else undefined index groups even with []
 		},
 		success: function () {
-			my.info ('Album settings saved successfuly.');
+			my.success ('Album settings saved successfuly.');
 		}
 	});
 });

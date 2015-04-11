@@ -17,13 +17,17 @@
 		<nav class="navbar navbar-default" role="navigation">
 			<div class="container-fluid">
 				<div class="navbar-header">
-					<a class="{{#if view !== 'album'}}hide{{/if}} navbar-brand addtooltip" title="Album Settings" data-toggle="modal" href="#folderModal">
-						<span class="glyphicon glyphicon-{{folder.visibility == 'public' ? 'globe' : (folder.visibility == 'restricted' ? 'user' : 'lock')}}"></span> {{folder.name}}
-					</a>
+					<div class="{{#if view !== 'album'}}hide{{/if}}">
+						
+						<a class="{{#if !user.isadmin}}hide{{/if}} navbar-brand addtooltip" title="Visibility Settings" 
+						   data-toggle="modal" href="#folderModal">
+							{{folder.name}}
+						</a>
+						<span class="{{#if user.isadmin}}hide{{/if}} navbar-brand">{{folder.name}}</span>
+					</div>
 					{{#if view == 'home'}}
 					<span class="navbar-brand">MyPhotos</span>
 					{{/if}}
-
 				</div>
 				<ul class="nav navbar-nav">
 					<li>
@@ -42,13 +46,13 @@
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
 					<li class="{{#if view !== 'photo'}}hide{{/if}}">
-						<a class="addtooltip" title="Favorite" href="#"><span class="glyphicon glyphicon-star-empty"></span></a>
+						<a class="addtooltip" title="(Soon available!)" href="#"><span class="glyphicon glyphicon-star-empty"></span></a>
 					</li>
-					<li class="{{#if view !== 'photo'}}hide{{/if}}">
+					<li class="{{#if !user.isadmin || view !== 'photo'}}hide{{/if}}">
 						<a class="addtooltip" title="Set as cover" href="#" on-click="cover"><span class="glyphicon glyphicon-picture"></span></a>
 					</li>
-					<li class="{{#if view !== 'photo'}}hide{{/if}}">
-						<a class="addtooltip" title="Add to Smart Album" href="#"><span class="glyphicon glyphicon-tags"></span></a>
+					<li class="{{#if !user.isadmin || view !== 'photo'}}hide{{/if}}">
+						<a class="addtooltip" title="(Soon available!)" href="#"><span class="glyphicon glyphicon-tags"></span></a>
 					</li>
 					<li class="{{#if view !== 'album'}}hide{{/if}}">
 						<a class="addtooltip" title="(Soon available!)" href="#"><span class="glyphicon glyphicon-download-alt"></span></a>
@@ -330,8 +334,11 @@
 
 <script src='lib/ractive/ractive.min.js'></script>
 
+<!-- Plugins Bootstrap -->
 <script src="lib/multiselect/js/bootstrap-multiselect.js"></script>
+<script src="lib/notify/bootstrap-notify.min.js"></script>
 
+<!-- Other Plugins -->
 <script src="lib/filesize/filesize.min.js"></script>
 
 <script src="js/utils.js"></script>
