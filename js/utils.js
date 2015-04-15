@@ -64,7 +64,7 @@ moment.lang('fr', {
 	    }
 	});
 */
-var my = new function () {
+var my = new function () { // new is needed!
 	var _ERROR_   = 0,
 		_WARNING_ = 1,
 		_NOTICE_  = 2,

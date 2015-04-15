@@ -32,44 +32,39 @@
 					<li>
 						{{#if photoid !== false}}
 						<button on-click="close" type="button" class="btn btn-default navbar-btn">
-							<span class="glyphicon glyphicon-remove"></span> Fermer
+							<span class="glyphicon glyphicon-remove"></span> {{t('close')}}
 						</button>
 						{{else}}
 						{{#if view == 'album'}}
 						<button on-click="cwd:{{folder.parentpath}}" type="button" class="btn btn-default navbar-btn">
-							<span class="glyphicon glyphicon-chevron-left"></span> Retour
+							<span class="glyphicon glyphicon-chevron-left"></span> {{t('back')}}
 						</button>
 						{{/if}}
 						{{/if}}
 					</li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
-					<li class="{{#if view !== 'photo'}}hide{{/if}}">
-						<a class="addtooltip" title="(Soon available!)" href="#"><span class="glyphicon glyphicon-star-empty"></span></a>
+					<li class="{{#if !user.isadmin || view !== 'photo'}}hide{{/if}}">
+						<a class="addtooltip {{#if photos[photoid].hidden}}btn-info{{/if}}" data-i18n="[title]hide" href="#" on-click="hide">
+							<span class="glyphicon glyphicon-eye-close"></span>
+						</a>
 					</li>
 					<li class="{{#if !user.isadmin || view !== 'photo'}}hide{{/if}}">
-						<a class="addtooltip {{#if photos[photoid].hidden}}btn-info{{/if}}" title="Hide" href="#" on-click="hide"><span class="glyphicon glyphicon-eye-close"></span></a>
-					</li>
-					<li class="{{#if !user.isadmin || view !== 'photo'}}hide{{/if}}">
-						<a class="addtooltip" title="Set as cover" href="#" on-click="cover"><span class="glyphicon glyphicon-picture"></span></a>
-					</li>
-					<li class="{{#if !user.isadmin || view !== 'photo'}}hide{{/if}}">
-						<a class="addtooltip" title="(Soon available!)" href="#"><span class="glyphicon glyphicon-tags"></span></a>
-					</li>
-					<li class="{{#if view !== 'album'}}hide{{/if}}">
-						<a class="addtooltip" title="(Soon available!)" href="#"><span class="glyphicon glyphicon-download-alt"></span></a>
+						<a class="addtooltip" data-i18n="[title]set_cover" href="#" on-click="cover">
+							<span class="glyphicon glyphicon-picture"></span>
+						</a>
 					</li>
 					<li class="dropdown {{#if view !== 'photo'}}hide{{/if}}">
-						<a href="#" class="dropdown-toggle addtooltip" title="Download Photo" data-toggle="dropdown" role="button">
+						<a href="#" class="dropdown-toggle addtooltip" data-i18n="[title]dl_photo" data-toggle="dropdown" role="button">
 							<span class="glyphicon glyphicon-download-alt"></span>
 						</a>
 						<ul class="dropdown-menu" role="menu">
 							{{#photos[photoid]}}
 							<li><a href="{{photos[photoid].previewurl}}&d=1">
-								<span class="glyphicon glyphicon-file"></span> Big ({{human_size(previewsize)}})</a>
+								<span class="glyphicon glyphicon-file"></span> {{t('big')}} ({{human_size(previewsize)}})</a>
 							</li>
 							<li><a href="{{photos[photoid].fileurl}}&d=1">
-								<span class="glyphicon glyphicon-file"></span> Original ({{human_size(size)}})</a>
+								<span class="glyphicon glyphicon-file"></span> {{t('original')}} ({{human_size(size)}})</a>
 							</li>
 							{{/if}}
 						</ul>
@@ -79,7 +74,7 @@
 							<div class="modal-content">
 								<div class="modal-header">
 									<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-									<h4 class="modal-title" id="myModalLabel">Sharing Options</h4>
+									<h4 class="modal-title" id="myModalLabel">{{t('sharing_opt')}}</h4>
 								</div>
 								<div class="modal-body">
 									<p>Define the visiblity for album <strong>{{folder.name}}</strong></p>
@@ -124,7 +119,7 @@
 							</div>
 						</div>
 					</div>
-					<li title="Sign-in with Google" class="addtooltip g-signin {{#if user}}hide{{/if}}">
+					<li data-i18n="[title]sign-in" class="addtooltip g-signin {{#if user}}hide{{/if}}">
 						<span class="g-signin"
 							data-width="iconOnly"
 							data-scope="https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/userinfo.email"
@@ -142,8 +137,8 @@
 							<li><a data-toggle="modal" href="#cronModal"><span class="glyphicon glyphicon-retweet"></span> Update Library</a></li>
 							<li><a data-toggle="modal" href="#groupsModal"><span class="glyphicon glyphicon-user"></span> Groups & people</a></li>
 							{{/if}}
-							<li><a target="_blank" href="https://github.com/alexylem/myphotos/issues/new"><span class="glyphicon glyphicon-fire"></span> Report Issue</a></li>
-							<li><a on-click="logout" href="#"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+							<li><a target="_blank" href="https://github.com/alexylem/myphotos/issues/new"><span class="glyphicon glyphicon-fire"></span> {{t('report-issue')}}</a></li>
+							<li><a on-click="logout" href="#"><span class="glyphicon glyphicon-log-out"></span> {{t('sign-off')}}</a></li>
 						</ul>
 					</li>
 					{{/if}}
@@ -281,7 +276,7 @@
 {{else}}
 
 {{#if folders}}
-	<h5>Albums</h5>
+	<h5>{{t('albums')}}</h5>
 	{{#each folders}}
 	<div class="thumb" style="background-image: url('{{coverurl}}');">
 		<a href="#" on-click="cwd:{{filepath}}">
@@ -293,18 +288,20 @@
 	{{/each}}
 	<div class="clearfix"></div>
 	<hr />
-{{else}}
-	{{#if view == 'home'}}
-		<div class="jumbotron">
-		  <h1><span class="glyphicon glyphicon-eye-close"></span> Oops</h1>
-		  <p>There is <strong>no public album</strong> available or made visible to you.</p>
-		  <p>Sign-in with an authorized email account.</p>
-		</div>
-	{{/if}}
+{{elseif view == 'home'}}
+	<div class="jumbotron">
+	  <h1><span class="glyphicon glyphicon-eye-close"></span> {{t('oops')}}</h1>
+	  <p>{{t('no_album_visible')}}</p>
+	  <p>{{t('plz_sign_in')}}</p>
+	</div>
+{{elseif view == 'loading'}}
+	<p class="text-center">
+		<span class="glyphicon glyphicon-refresh rotate"></span> loading...
+	</p>
 {{/if}}
 
 {{#if photos}}
-<h5>Photos</h5>
+<h5>{{t('photos')}}</h5>
 {{#each photos}}
 <div class="thumb" style="background-image: url('{{thumburl}}');">
 	<a href="#" on-click="view:{{@index}}"></a>
@@ -321,7 +318,9 @@
 <script src="lib/bootstrap/js/bootstrap.min.js"></script>
 <script src="lib/validation/dist/jquery.validate.min.js"></script>
 
-<script src='lib/ractive/ractive.min.js'></script>
+<script src='lib/i18next/i18next.min.js'></script>
+
+<script src='http://cdn.ractivejs.org/latest/ractive.js'></script>
 
 <!-- Plugins Bootstrap -->
 <script src="lib/multiselect/js/bootstrap-multiselect.js"></script>

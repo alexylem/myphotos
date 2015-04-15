@@ -1,16 +1,16 @@
 var tooltipopts = {
 	container: 'body',
 	placement: 'bottom',
-	hmtl: true
+	html: true
 };
 
-var gallery = new Ractive({
-	el: 'container',
-	template: '#template',
-
-	data: {
+var Data = {
+		// testing
+		hide: "Cacher",
+		// i18next
+		t: i18n.t,
 		// For display
-		view: 'home',
+		view: 'loading',
 		// data
 		folder: {
 			name: false,
@@ -41,16 +41,32 @@ var gallery = new Ractive({
 			status: '',
 			class: 'primary'
 		}
-	},
+};
+
+// Enable internationalization
+i18n.init({
+	fallbackLng: 'en',
+	useLocalStorage: false, // true for Production
+	getAsync: false,
+	debug: true,
+	sendMissing: true,
+	missingKeyHandler: function(lng, ns, key, defaultValue, lngs) { // NOT WORKING!
+		console.error ("Translation missing for key", key, "in language",lng);
+	}
+}, function (t) { // translations loaded
+	// Enable tooptips
+	$('.addtooltip').i18n().tooltip(tooltipopts); // need to translate title before
+});
+
+var gallery = new Ractive({
+	el: 'container',
+	template: '#template',
+	data: Data
 	//lazy: true
 });
 
 // Start
 $(document).ready (function () {
-	// Enable tooptips
-	$('.addtooltip').tooltip(tooltipopts);
-	// Enable popovers
-	$('.addpopover').popover(tooltipopts);
 
 	my.get({
 		url: 'plus.php',
@@ -120,15 +136,6 @@ gallery.on ('cover', function (event) {
 		}
 	});
 });
-$("#addgroupform").validate({
-  errorClass: 'alert-danger',
-  errorPlacement: function() {},
-  submitHandler: function(form) {
-    gallery.push ('groups', gallery.get ('newgroup'));
-	$('#multiselect').multiselect('rebuild');
-	gallery.set ('newgroup', '');
-  }
-});
 gallery.on ('removegroup', function (event, index) {
 	if (confirm ('Are you sure?')) {
     	gallery.splice('groups', index, 1);
@@ -192,6 +199,15 @@ $(document).keydown(function(e) {
 });
 
 // Observers
+$("#addgroupform").validate({
+  errorClass: 'alert-danger',
+  errorPlacement: function() {},
+  submitHandler: function(form) {
+    gallery.push ('groups', gallery.get ('newgroup'));
+	$('#multiselect').multiselect('rebuild');
+	gallery.set ('newgroup', '');
+  }
+});
 $('#groupsModal').on('show.bs.modal', function () {
 	$('#multiselect').multiselect({
 		onChange: function (option, checked, select) { // fix ractive not seing multiselect updates
@@ -256,7 +272,7 @@ $('#cronModal').on('shown.bs.modal', function (e) {
 
 // Main functions
 function cwd (dir) {
-	my.log ('opening', dir);
+	gallery.set ('view', 'loading');
 	my.get ({
 		url: 'backend.php',
 		data: {
@@ -275,7 +291,7 @@ function cwd (dir) {
 			} else { // root
 				gallery.set ('parentpath', false);
 				gallery.set ('view', 'home');
-			}			
+			}
 		}
 	});
 }

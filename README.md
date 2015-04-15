@@ -28,7 +28,8 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 
 ### Additional user features
 
-* (soon) Download photos or entire Album structures
+* Multilanguage support (English, French) - easy to add yours
+* Download photos or (soon) entire Album structures
 * Use keyboard arrows to swipe photos
 
 ## Installation
