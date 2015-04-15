@@ -18,7 +18,6 @@
 			<div class="container-fluid">
 				<div class="navbar-header">
 					<div class="{{#if view !== 'album'}}hide{{/if}}">
-						
 						<a class="{{#if !user.isadmin}}hide{{/if}} navbar-brand addtooltip" title="Visibility Settings" 
 						   data-toggle="modal" href="#folderModal">
 							{{folder.name}}
@@ -47,6 +46,9 @@
 				<ul class="nav navbar-nav navbar-right">
 					<li class="{{#if view !== 'photo'}}hide{{/if}}">
 						<a class="addtooltip" title="(Soon available!)" href="#"><span class="glyphicon glyphicon-star-empty"></span></a>
+					</li>
+					<li class="{{#if !user.isadmin || view !== 'photo'}}hide{{/if}}">
+						<a class="addtooltip {{#if photos[photoid].hidden}}btn-info{{/if}}" title="Hide" href="#" on-click="hide"><span class="glyphicon glyphicon-eye-close"></span></a>
 					</li>
 					<li class="{{#if !user.isadmin || view !== 'photo'}}hide{{/if}}">
 						<a class="addtooltip" title="Set as cover" href="#" on-click="cover"><span class="glyphicon glyphicon-picture"></span></a>
@@ -241,7 +243,7 @@
 									    <input type="text" class="form-control input-sm" value="{{newname}}" placeholder="ex: Mum">
 									  </div>
 									  <div class="form-group">
-									    <input type="email" class="form-control input-sm" value="{{newemail}}" placeholder="ex: email@address.com">
+									    <input type="email" class="form-control input-sm" value="{{newemail}}" placeholder="ex: email@gmail.com">
 									  </div>
 									  <div class="form-group">
 									    <select id="multiselect" class="form-control input-sm" value='{{newgroups}}' multiple="multiple">
@@ -264,36 +266,25 @@
 		</nav>
 	<div class="container">
 
-		{{#each messages}}
-		<div class="alert alert-{{type}} alert-dismissible" role="alert">
-			<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			{{message}}
-		</div>
-		{{/each}}
-
 		{{#if view == 'photo'}}
-		<div class="view">
+		<div class="view" style="background-image: url('{{photos[photoid].previewurl}}');">
 			<button on-click="previous" type="button" class="btn btn-default btn-lg previous"
-			{{#unless photoid}} disabled="disabled" {{/unless}}
-			>
-			<span class="glyphicon glyphicon-chevron-left"></span>
-		</button>
-		<img title="{{photos[photoid].filename}}" src="{{photos[photoid].previewurl}}">
-		<button on-click="next" type="button" class="btn btn-default btn-lg next"
-		{{#if photoid == photos.length-1}} disabled="disabled" {{/if}}
-		>
-		<span class="glyphicon glyphicon-chevron-right"></span>
-	</button>
-</div>
+			{{#unless photoid}} disabled="disabled" {{/unless}}>
+				<span class="glyphicon glyphicon-chevron-left"></span>
+			</button>
+			<button on-click="next" type="button" class="btn btn-default btn-lg next"
+			{{#if photoid == photos.length-1}} disabled="disabled" {{/if}}>
+				<span class="glyphicon glyphicon-chevron-right"></span>
+			</button>
+		</div>
 
 {{else}}
 
 {{#if folders}}
 	<h5>Albums</h5>
 	{{#each folders}}
-	<div class="thumb">
+	<div class="thumb" style="background-image: url('{{coverurl}}');">
 		<a href="#" on-click="cwd:{{filepath}}">
-			<img title="{{filename}}" src="{{coverurl}}">
 			<div class="cover">
 				<span class="glyphicon glyphicon-{{visibility == 'public' ? 'globe' : (visibility == 'restricted' ? 'user' : 'lock')}}"></span> {{filename}}
 			</div>
@@ -315,10 +306,8 @@
 {{#if photos}}
 <h5>Photos</h5>
 {{#each photos}}
-<div class="thumb">
-	<a href="#" on-click="view:{{@index}}">
-		<img title="{{filename}}" src="{{thumburl}}">
-	</a>
+<div class="thumb" style="background-image: url('{{thumburl}}');">
+	<a href="#" on-click="view:{{@index}}"></a>
 </div>
 {{/each}}
 {{/if}}

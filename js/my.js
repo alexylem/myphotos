@@ -103,6 +103,10 @@ gallery.on ('close', function (event) {
 	this.set ('photoid', false);
 	this.set ('view', 'album');
 });
+gallery.on ('hide', function (event) {
+	this.set ('photos['+this.get('photodid')+'].hidden', true);
+	this.set ('view', 'album');
+});
 gallery.on ('cover', function (event) {
 	my.get ({
 		url: 'backend.php',
