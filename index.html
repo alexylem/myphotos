@@ -261,7 +261,7 @@
 		</nav>
 	<div class="container">
 
-		{{#if view == 'photo'}}
+	{{#if view == 'photo'}}
 		<div class="view" style="background-image: url('{{photos[photoid].previewurl}}');">
 			<button on-click="previous" type="button" class="btn btn-default btn-lg previous"
 			{{#unless photoid}} disabled="disabled" {{/unless}}>
@@ -273,9 +273,7 @@
 			</button>
 		</div>
 
-{{else}}
-
-{{#if folders}}
+{{elseif folders}}
 	<h5>{{t('albums')}}</h5>
 	{{#each folders}}
 	<div class="thumb" style="background-image: url('{{coverurl}}');">
@@ -301,13 +299,12 @@
 {{/if}}
 
 {{#if photos}}
-<h5>{{t('photos')}}</h5>
-{{#each photos}}
-<div class="thumb" style="background-image: url('{{thumburl}}');">
-	<a href="#" on-click="view:{{@index}}"></a>
-</div>
-{{/each}}
-{{/if}}
+	<h5>{{t('photos')}}</h5>
+	{{#each photos}}
+	<div class="thumb {{#if hidden}}hidden{{/if}}" style="background-image: url('{{thumburl}}');">
+		<a href="#" on-click="view:{{@index}}"></a>
+	</div>
+	{{/each}}
 {{/if}}
 
 </div>

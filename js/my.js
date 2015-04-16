@@ -4,9 +4,25 @@ var tooltipopts = {
 	html: true
 };
 
-var Data = {
-		// testing
-		hide: "Cacher",
+// Enable internationalization
+i18n.init({
+	fallbackLng: 'en',
+	useLocalStorage: false, // true for Production
+	getAsync: false,
+	debug: true,
+	sendMissing: true,
+	missingKeyHandler: function(lng, ns, key, defaultValue, lngs) { // NOT WORKING!
+		console.error ("Translation missing for key", key, "in language",lng);
+	}
+}, function (t) { // translations loaded
+	// Enable tooptips
+	$('.addtooltip').i18n().tooltip(tooltipopts); // need to translate title before
+});
+
+var gallery = new Ractive({
+	el: 'container',
+	template: '#template',
+	data: {
 		// i18next
 		t: i18n.t,
 		// For display
@@ -41,33 +57,12 @@ var Data = {
 			status: '',
 			class: 'primary'
 		}
-};
-
-// Enable internationalization
-i18n.init({
-	fallbackLng: 'en',
-	useLocalStorage: false, // true for Production
-	getAsync: false,
-	debug: true,
-	sendMissing: true,
-	missingKeyHandler: function(lng, ns, key, defaultValue, lngs) { // NOT WORKING!
-		console.error ("Translation missing for key", key, "in language",lng);
 	}
-}, function (t) { // translations loaded
-	// Enable tooptips
-	$('.addtooltip').i18n().tooltip(tooltipopts); // need to translate title before
-});
-
-var gallery = new Ractive({
-	el: 'container',
-	template: '#template',
-	data: Data
 	//lazy: true
 });
 
 // Start
 $(document).ready (function () {
-
 	my.get({
 		url: 'plus.php',
 		data: { action: 'init' },
@@ -121,6 +116,7 @@ gallery.on ('close', function (event) {
 });
 gallery.on ('hide', function (event) {
 	this.set ('photos['+this.get('photodid')+'].hidden', true);
+	this.set ('photoid', false);
 	this.set ('view', 'album');
 });
 gallery.on ('cover', function (event) {
@@ -273,6 +269,7 @@ $('#cronModal').on('shown.bs.modal', function (e) {
 // Main functions
 function cwd (dir) {
 	gallery.set ('view', 'loading');
+	my.log ('loading...');
 	my.get ({
 		url: 'backend.php',
 		data: {
