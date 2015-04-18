@@ -261,7 +261,12 @@
 		</nav>
 	<div class="container">
 
-	{{#if view == 'photo'}}
+	{{#if view == 'loading'}}
+		<p class="text-center">
+			<span class="glyphicon glyphicon-refresh rotate"></span> loading...
+		</p>
+
+	{{elseif view == 'photo'}}
 		<div class="view" style="background-image: url('{{photos[photoid].previewurl}}');">
 			<button on-click="previous" type="button" class="btn btn-default btn-lg previous"
 			{{#unless photoid}} disabled="disabled" {{/unless}}>
@@ -272,7 +277,6 @@
 				<span class="glyphicon glyphicon-chevron-right"></span>
 			</button>
 		</div>
-
 	{{else}}
 		{{#if folders}}
 			<h5>{{t('albums')}}</h5>
@@ -293,10 +297,6 @@
 			  <p>{{t('no_album_visible')}}</p>
 			  <p>{{t('plz_sign_in')}}</p>
 			</div>
-		{{elseif view == 'loading'}}
-			<p class="text-center">
-				<span class="glyphicon glyphicon-refresh rotate"></span> loading...
-			</p>
 		{{/if}}
 
 	{{#if photos}}
