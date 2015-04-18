@@ -286,6 +286,7 @@ $('#cronModal').on('shown.bs.modal', function (e) {
 
 // Main functions
 function cwd (dir) {
+	my.info ('loading...');
 	gallery.set ('view', 'loading');
 	my.log ('loading...');
 	my.get ({

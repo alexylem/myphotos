@@ -33,7 +33,7 @@ switch($_REQUEST['action']) {
 		$visibility = isset ($settings->visibility)?$settings->visibility:$config['defaultvisibility'];
 		
 		if (!($dir == './' || hasaccess ($visibility, @$settings->groups)))
-			respond ("You don't have access to this $visibility album", true);
+			respond ("You don't have access to this $visibility album. Please log back in.", true);
 
 		$name = @$settings->name?$settings->name:basename($dir);
 		$folder = array (
@@ -45,6 +45,7 @@ switch($_REQUEST['action']) {
 		);
 		
 		$files = array ();
+		if (count ($settings->files))
 		foreach ($settings->files as $filename => $fileinfo) {
 			if (!isadmin() && $fileinfo->hidden)
 				continue;
