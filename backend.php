@@ -25,10 +25,13 @@ switch($_REQUEST['action']) {
 
 	case 'list':
 		$absolute = $config['photopath'].$dir;
-		$json = @file_get_contents($absolute.MYPHOTOS_DIR.SETTINGS_FILE);
+		if (!file_exists($absolute.MYPHOTOS_DIR.SETTINGS_FILE))
+			respond ('Missing folder settings. Please update your Library.', true);
+	
+		$json = file_get_contents($absolute.MYPHOTOS_DIR.SETTINGS_FILE);
 		$settings = json_decode($json);
-		$visibility = @$settings->visibility?$settings->visibility:$config['defaultvisibility'];
-
+		$visibility = isset ($settings->visibility)?$settings->visibility:$config['defaultvisibility'];
+		
 		if (!($dir == './' || hasaccess ($visibility, @$settings->groups)))
 			respond ("You don't have access to this $visibility album", true);
 
@@ -40,12 +43,28 @@ switch($_REQUEST['action']) {
 			'parentpath'	=> dirname($dir).'/',
 			'groups'		=> isadmin ()?@$settings->groups:[]
 		);
-		$folders = array ();
+		
 		$files = array ();
+		foreach ($settings->files as $filename => $fileinfo) {
+			if (!isadmin() && $fileinfo->hidden)
+				continue;
+			$files[] = array (
+				'filepath'		=> $dir.$filename,
+				'fileurl'		=> 'img.php?f='.$dir.$filename,
+				'previewurl'	=> 'img.php?f='.$dir.MYPHOTOS_DIR.PREVIEW_DIR.$filename,
+				'previewsize'	=> @filesize ($absolute.MYPHOTOS_DIR.PREVIEW_DIR.$filename),
+				'thumburl'		=> 'img.php?f='.$dir.MYPHOTOS_DIR.THUMB_DIR.$filename,
+				'filename'		=> $filename,
+				'size'			=> $fileinfo->size,
+				'hidden'		=> $fileinfo->hidden,
+				'updated'	=> filemtime ($absolute.$filename)
+			);
+		}
 
+		$folders = array ();
         if ($handle = @opendir($absolute)) {
             while (false !== ($file = readdir($handle))) { 
-                if ($file[0] != ".") { // skip '.', '..' & hidden files
+            	if ($file[0] != ".") { // skip '.', '..' & hidden files
                 	$filepath = $dir.$file;
                     if (is_dir($absolute.$file)) {
                         $json = @file_get_contents($config['photopath'].$filepath.'/'.MYPHOTOS_DIR.SETTINGS_FILE); // in case no .myphotos yet
@@ -59,19 +78,6 @@ switch($_REQUEST['action']) {
 								'filename'		=> @$settings->name?$settings->name:$file,
 								'updated'		=> filemtime($absolute.$file)
 							);
-                    } else {
-                        $ext = strtolower(substr(strrchr($file, "."), 1)); // mime_content_type has perf issues
-                        $files[] = array (
-							'filepath'		=> $filepath,
-							'fileurl'		=> 'img.php?f='.$filepath,
-							'previewurl'	=> 'img.php?f='.$dir.MYPHOTOS_DIR.PREVIEW_DIR.$file,
-							'previewsize'	=> @filesize ($absolute.MYPHOTOS_DIR.PREVIEW_DIR.$file),
-							'thumburl'		=> 'img.php?f='.$dir.MYPHOTOS_DIR.THUMB_DIR.$file,
-							'filename'		=> $file,
-							'size'			=> @filesize ($absolute.$file),
-							//'type'		=> $type,
-							'updated'	=> filemtime ($absolute.$file)
-						);
                     }
                 }
             }
@@ -92,13 +98,17 @@ switch($_REQUEST['action']) {
 			respond ('Operation not authorized', true);
 		$jsonpath = $config['photopath'].$dir.MYPHOTOS_DIR.SETTINGS_FILE;
 		$json = file_get_contents($jsonpath);
-		$settings = json_decode($json);
+		$settings = json_decode($json, true);
 		if (isset ($_REQUEST['cover']))
-			$settings->cover = $_REQUEST['cover'];
+			$settings['cover'] = $_REQUEST['cover'];
 		if (isset ($_REQUEST['visibility']))
-			$settings->visibility = $_REQUEST['visibility'];
+			$settings['visibility'] = $_REQUEST['visibility'];
 		if (isset ($_REQUEST['groups']))
-			$settings->groups = $_REQUEST['groups'];
+			$settings['groups'] = $_REQUEST['groups'];
+		if (isset ($_REQUEST['filename'])) {
+			if (isset ($_REQUEST['hidden']))
+				$settings['files'][$_REQUEST['filename']]['hidden'] = ($_REQUEST['hidden'] == 'true');
+		}
 		$json = fopen($jsonpath, 'w');
 		if ($json
 			&& fwrite($json, json_encode($settings))

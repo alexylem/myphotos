@@ -151,14 +151,9 @@ function prepare ($dir, $reset = false, $output = 'verbose') {
 	
 	debug ('checking '.SETTINGS_FILE.' exists...');
 	$jsonpath = $dir.'/'.MYPHOTOS_DIR.SETTINGS_FILE;
-	if (file_exists ($jsonpath)) {
-		debug ('ok it exists');
-	} else {
-		debug ("does not exist");
-		if (!$reset) {
-			info ("will create $jsonpath");
-			addTask ('setting', 'create', "$jsonpath");
-		}
+	if (!$reset) {
+		info ("will create $jsonpath");
+		addTask ('setting', 'upsert', "$jsonpath");
 	}
 
 	// Scan directory
@@ -216,25 +211,46 @@ function execute ($nb) {
 		switch ($task['type']) {
 
 			case 'setting':
-				if ($task['operation'] == 'create') {
+				if ($task['operation'] == 'upsert') {
+
 					$dir = dirname(dirname($file));
-					debug ("searching for album default cover in $dir");
 					chdir($dir);
 					$photos = glob('*.{jpeg,JPEG,jpg,JPG,png,PNG,gif,GIF,bmp,BMP}', GLOB_BRACE|GLOB_NOSORT);
-					
-					$cover = '';
-					if (count($photos)) {
-						$cover = $photos[0];
-						debug ("found $cover");
-					} else
-						warning ('no cover found');
-					
+
+					if (file_exists($file)) {
+						$json = file_get_contents($file);
+						$old_settings = json_decode($json);
+						$old_files = isset ($old_settings->files)?:[];
+						$new_cover = $old_settings->cover;
+						$new_visibility = $old_settings->visibility;
+					}
+					else {
+						$old_files = array ();
+						$new_cover = count($photos)?$photos[0]:false;
+						$new_visibility = $config['defaultvisibility'];	
+					}
+					$new_files = array ();
+					foreach ($photos as $photo) {
+						if (isset ($old_files[$photo])) {
+							$old_photo = $old_files[$photo];
+							$new_files[$photo] = array (
+								'hidden' => isset($old_photo->hidden)?:false,
+								'size' => isset($old_photo->hidden)?:filesize ($photo)
+							);
+						}
+						else
+							$new_files[$photo] = array (
+								'hidden' => false,
+								'size' => filesize ($photo)
+							);
+					}
 					$settings = array (
-						//'files' => $photos,
-						'cover' => $cover,
-						'visibility' => $config['defaultvisibility']
+						'files' => $new_files,
+						'cover' => $new_cover,
+						'visibility' => $new_visibility
 					);
-					if ($simulate) warning ('Simulated');
+					if ($simulate)
+						warning ('Simulated');
 					else {
 						$json = fopen($file, 'w+');
 						if ($json

@@ -69,6 +69,11 @@ input.error {
 	background-position: center;
 }
 
+.thumb.private {
+	opacity: 0.4;
+	filter: alpha(opacity=40); /* For IE8 and earlier */
+}
+
 .thumb a {
 	position: relative;
 	display: block;

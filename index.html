@@ -44,8 +44,8 @@
 					</li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
-					<li class="{{#if !user.isadmin || view !== 'photo'}}hide{{/if}}">
-						<a class="addtooltip {{#if photos[photoid].hidden}}btn-info{{/if}}" data-i18n="[title]hide" href="#" on-click="hide">
+					<li class="{{#if !user.isadmin || view !== 'photo'}}hide{{/if}} {{#if photos[photoid].hidden}}active{{/if}}">
+						<a class="addtooltip" data-i18n="[title]hide" href="#" on-click="hide">
 							<span class="glyphicon glyphicon-eye-close"></span>
 						</a>
 					</li>
@@ -61,10 +61,10 @@
 						<ul class="dropdown-menu" role="menu">
 							{{#photos[photoid]}}
 							<li><a href="{{photos[photoid].previewurl}}&d=1">
-								<span class="glyphicon glyphicon-file"></span> {{t('big')}} ({{human_size(previewsize)}})</a>
+								<span class="glyphicon glyphicon-file"></span> {{t('big')}} ({{previewsize}})</a>
 							</li>
 							<li><a href="{{photos[photoid].fileurl}}&d=1">
-								<span class="glyphicon glyphicon-file"></span> {{t('original')}} ({{human_size(size)}})</a>
+								<span class="glyphicon glyphicon-file"></span> {{t('original')}} ({{size}})</a>
 							</li>
 							{{/if}}
 						</ul>
@@ -273,39 +273,42 @@
 			</button>
 		</div>
 
-{{elseif folders}}
-	<h5>{{t('albums')}}</h5>
-	{{#each folders}}
-	<div class="thumb" style="background-image: url('{{coverurl}}');">
-		<a href="#" on-click="cwd:{{filepath}}">
-			<div class="cover">
-				<span class="glyphicon glyphicon-{{visibility == 'public' ? 'globe' : (visibility == 'restricted' ? 'user' : 'lock')}}"></span> {{filename}}
+	{{else}}
+		{{#if folders}}
+			<h5>{{t('albums')}}</h5>
+			{{#each folders}}
+			<div class="thumb" style="background-image: url('{{coverurl}}');">
+				<a href="#" on-click="cwd:{{filepath}}">
+					<div class="cover">
+						<span class="glyphicon glyphicon-{{visibility == 'public' ? 'globe' : (visibility == 'restricted' ? 'user' : 'lock')}}"></span> {{filename}}
+					</div>
+				</a>
 			</div>
-		</a>
-	</div>
-	{{/each}}
-	<div class="clearfix"></div>
-	<hr />
-{{elseif view == 'home'}}
-	<div class="jumbotron">
-	  <h1><span class="glyphicon glyphicon-eye-close"></span> {{t('oops')}}</h1>
-	  <p>{{t('no_album_visible')}}</p>
-	  <p>{{t('plz_sign_in')}}</p>
-	</div>
-{{elseif view == 'loading'}}
-	<p class="text-center">
-		<span class="glyphicon glyphicon-refresh rotate"></span> loading...
-	</p>
+			{{/each}}
+			<div class="clearfix"></div>
+			<hr />
+		{{elseif view == 'home'}}
+			<div class="jumbotron">
+			  <h1><span class="glyphicon glyphicon-eye-close"></span> {{t('oops')}}</h1>
+			  <p>{{t('no_album_visible')}}</p>
+			  <p>{{t('plz_sign_in')}}</p>
+			</div>
+		{{elseif view == 'loading'}}
+			<p class="text-center">
+				<span class="glyphicon glyphicon-refresh rotate"></span> loading...
+			</p>
+		{{/if}}
+
+	{{#if photos}}
+		<h5>{{t('photos')}}</h5>
+		{{#each photos}}
+		<div class="thumb {{#if hidden}}private{{/if}}" style="background-image: url('{{thumburl}}');">
+			<a href="#" on-click="view:{{@index}}"></a>
+		</div>
+		{{/each}}
+	{{/if}}
 {{/if}}
 
-{{#if photos}}
-	<h5>{{t('photos')}}</h5>
-	{{#each photos}}
-	<div class="thumb {{#if hidden}}hidden{{/if}}" style="background-image: url('{{thumburl}}');">
-		<a href="#" on-click="view:{{@index}}"></a>
-	</div>
-	{{/each}}
-{{/if}}
 
 </div>
 </script>

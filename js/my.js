@@ -1,23 +1,11 @@
-var tooltipopts = {
-	container: 'body',
-	placement: 'bottom',
-	html: true
-};
+var gallery,
+	tooltipopts = {
+		container: 'body',
+		placement: 'bottom',
+		html: true
+	};
 
-// Enable internationalization
-i18n.init({
-	fallbackLng: 'en',
-	useLocalStorage: false, // true for Production
-	getAsync: false,
-	debug: true,
-	sendMissing: true,
-	missingKeyHandler: function(lng, ns, key, defaultValue, lngs) { // NOT WORKING!
-		console.error ("Translation missing for key", key, "in language",lng);
-	}
-}, function (t) { // translations loaded
-	// Enable tooptips
-	$('.addtooltip').i18n().tooltip(tooltipopts); // need to translate title before
-});
+
 
 var gallery = new Ractive({
 	el: 'container',
@@ -48,9 +36,6 @@ var gallery = new Ractive({
 			return !userfilter ||
 				   $.inArray (userfilter, user.groups) > -1;
 		},
-		human_size: function (size) {
-			return filesize(size);
-		},
 		cron: {
 			striped: true,
 			progress: 0,
@@ -63,6 +48,22 @@ var gallery = new Ractive({
 
 // Start
 $(document).ready (function () {
+
+	// Enable internationalization
+	i18n.init({
+		fallbackLng: 'en',
+		useLocalStorage: false, // true for Production
+		getAsync: false,
+		debug: true,
+		sendMissing: true,
+		missingKeyHandler: function(lng, ns, key, defaultValue, lngs) { // NOT WORKING!
+			console.error ("Translation missing for key", key, "in language",lng);
+		}
+	}, function (t) { // translations loaded
+		// Enable tooptips
+		$('.addtooltip').i18n().tooltip(tooltipopts); // need to translate title before
+	});
+
 	my.get({
 		url: 'plus.php',
 		data: { action: 'init' },
@@ -115,9 +116,26 @@ gallery.on ('close', function (event) {
 	this.set ('view', 'album');
 });
 gallery.on ('hide', function (event) {
-	this.set ('photos['+this.get('photodid')+'].hidden', true);
-	this.set ('photoid', false);
-	this.set ('view', 'album');
+	var photoid = this.get ('photoid'),
+		hide = !this.get ('photos['+photoid+'].hidden');
+	my.get ({
+		url: 'backend.php',
+		data: {
+			action: 'updateFolder',
+			dir: gallery.get ('folder.filepath'),
+			filename: this.get ('photos['+photoid+'].filename'),
+			hidden: hide
+		},
+		success: function () {
+			if (hide) {
+				gallery.set ('photos['+photoid+'].hidden', true);
+				my.warn (i18n.t ('pic_hidden'));
+			} else {
+				gallery.set ('photos['+photoid+'].hidden', false);
+				my.success (i18n.t ('pic_visible'));
+			}
+		}
+	});
 });
 gallery.on ('cover', function (event) {
 	my.get ({
@@ -281,6 +299,10 @@ function cwd (dir) {
 
 			gallery.set ('folder', message.folder);
 			gallery.set ('folders', message.folders);
+			$.each (message.files, function (i, file) {
+				message.files[i].size = filesize (file.size);
+				message.files[i].previewsize = filesize (file.previewsize);
+			});
 			gallery.set ('photos', message.files);
 
 			if (message.folder.filepath !== './') { // in a directory
