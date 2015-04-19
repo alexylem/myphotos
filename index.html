@@ -299,15 +299,21 @@
 			</div>
 		{{/if}}
 
-	{{#if photos}}
-		<h5>{{t('photos')}}</h5>
-		{{#each photos}}
-		<div class="thumb {{#if hidden}}private{{/if}}" style="background-image: url('{{thumburl}}');">
-			<a href="#" on-click="view:{{@index}}"></a>
-		</div>
-		{{/each}}
+		{{#if photos}}
+			<h5>{{t('photos')}}</h5>
+			{{#each photos}}
+			<div class="thumb {{#if hidden}}private{{/if}}" style="background-image: url('{{thumburl}}');">
+				<a href="#" on-click="view:{{@index}}"></a>
+			</div>
+			{{/each}}
+			<div class="clearfix"></div>
+			<hr />
+		{{/if}}
+		<p class="text-center text-muted">
+			Powered by <a href="https://github.com/alexylem/myphotos#myphotos" target="_blank">MyPhotos</a>.
+		</p>
 	{{/if}}
-{{/if}}
+
 
 
 </div>
