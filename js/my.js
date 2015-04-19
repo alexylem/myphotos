@@ -195,6 +195,7 @@ gallery.on ('logout', function () {
 // Keyboard shortcuts
 $(document).keydown(function(e) {
 	var photoid = gallery.get ('photoid');
+	my.log ('hotkey pressed', e.keyCode);
 	switch(e.keyCode) {
 		case 27: // esc
 			if (photoid !== false)
@@ -208,6 +209,10 @@ $(document).keydown(function(e) {
 		case 39 : // right
 			if (photoid !== false && photoid < gallery.get ('photos').length - 1)
 				gallery.add ('photoid', 1);
+			break;
+		case 72 : // H
+			if (photoid !== false)
+				gallery.fire ('hide');
 			break;
 	}
 });
