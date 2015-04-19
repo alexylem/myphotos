@@ -148,13 +148,6 @@ function prepare ($dir, $reset = false, $output = 'verbose') {
 			addTask ('directory', 'create', $previewspath);
 		}
 	}
-	
-	debug ('checking '.SETTINGS_FILE.' exists...');
-	$jsonpath = $dir.'/'.MYPHOTOS_DIR.SETTINGS_FILE;
-	if (!$reset) {
-		info ("will create $jsonpath");
-		addTask ('setting', 'upsert', "$jsonpath");
-	}
 
 	// Scan directory
 	foreach (scandir($dir) as $f) {
@@ -197,6 +190,13 @@ function prepare ($dir, $reset = false, $output = 'verbose') {
 			}
 		}
 	}
+	// At the end to make sure all thumbs/previews are generated for stats
+	debug ('checking '.SETTINGS_FILE.' exists...');
+	$jsonpath = $dir.'/'.MYPHOTOS_DIR.SETTINGS_FILE;
+	if (!$reset) {
+		info ("will create $jsonpath");
+		addTask ('setting', 'upsert', "$jsonpath");
+	}
 }
 
 function execute ($nb) {
@@ -229,20 +229,29 @@ function execute ($nb) {
 						$new_cover = count($photos)?$photos[0]:false;
 						$new_visibility = $config['defaultvisibility'];	
 					}
+/*
+$old_files
+'photo1' => [hidden => true],
+'photo2' => [hidden => false, size => 12],
+
+$photos (from glob)
+'photo1'
+'photo3' (added)
+(photo2 removed)
+
+$new_files
+'photo1' => [hidden => true, size => 11],
+'photo3' => [hidden => false, size => 13],
+*/
 					$new_files = array ();
 					foreach ($photos as $photo) {
-						if (isset ($old_files[$photo])) {
-							$old_photo = $old_files[$photo];
-							$new_files[$photo] = array (
-								'hidden' => isset($old_photo->hidden)?:false,
-								'size' => isset($old_photo->hidden)?:filesize ($photo)
-							);
-						}
-						else
-							$new_files[$photo] = array (
-								'hidden' => false,
-								'size' => filesize ($photo)
-							);
+						$old_photo = isset ($old_files[$photo])?$old_files[$photo]:new stdClass();
+						$new_files[$photo] = array (
+							'hidden' => isset($old_photo->hidden)?$old_photo->hidden:false,
+							'size' => isset($old_photo->size)?$old_photo->size:filesize ($photo),
+							'updated' => filemtime ($photo),
+							'previewsize' => filesize (MYPHOTOS_DIR.PREVIEW_DIR.$photo)
+						);
 					}
 					$settings = array (
 						'files' => $new_files,

@@ -304,10 +304,20 @@ function cwd (dir) {
 
 			gallery.set ('folder', message.folder);
 			gallery.set ('folders', message.folders);
+
+			my.log ('Unsorted', message.files);
+
+			// Sort by updated
+			message.files.sort(function compare(a,b) { return a.updated - b.updated; });
+
+			my.log ('Sorted', message.files);
+
+			// Humanize values
 			$.each (message.files, function (i, file) {
 				message.files[i].size = filesize (file.size);
 				message.files[i].previewsize = filesize (file.previewsize);
 			});
+
 			gallery.set ('photos', message.files);
 
 			if (message.folder.filepath !== './') { // in a directory

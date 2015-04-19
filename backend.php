@@ -53,12 +53,12 @@ switch($_REQUEST['action']) {
 				'filepath'		=> $dir.$filename,
 				'fileurl'		=> 'img.php?f='.$dir.$filename,
 				'previewurl'	=> 'img.php?f='.$dir.MYPHOTOS_DIR.PREVIEW_DIR.$filename,
-				'previewsize'	=> @filesize ($absolute.MYPHOTOS_DIR.PREVIEW_DIR.$filename),
+				'previewsize'	=> $fileinfo->previewsize,
 				'thumburl'		=> 'img.php?f='.$dir.MYPHOTOS_DIR.THUMB_DIR.$filename,
 				'filename'		=> $filename,
 				'size'			=> $fileinfo->size,
 				'hidden'		=> $fileinfo->hidden,
-				'updated'	=> filemtime ($absolute.$filename)
+				'updated'		=> $fileinfo->updated
 			);
 		}
 
