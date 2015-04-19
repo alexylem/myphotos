@@ -299,6 +299,7 @@ function cwd (dir) {
 			action: 'list',
 			dir: dir
 		},
+		timeout: 10*1000, // 10s in case HDD is on sleep
 		success: function (smessage) {
 			var message = JSON.parse (smessage);
 

@@ -62,11 +62,54 @@ input.error {
 	height: 100%;
 }
 
+.stack {
+	position: relative;
+	margin: 25px !important;
+	background-image: url('../img/album.png');
+}
+
+.stack:before, .stack:after {
+	content: "";
+	border-radius: 2px;
+	height: 204px; /* 200px + 2 * border */
+	width: 204px;
+	position: absolute;
+	top: -2px; /* border */
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	border: 2px solid #ddd;
+    
+    /*
+    -webkit-transition: 0.3s all ease-out;
+    -moz-transition: 0.3s all ease-out;
+    transition: 0.3s all ease-out;
+    */
+    
+}
+
+.stack::before { 
+	background: darkslategray;
+    -webkit-transform: rotate(6deg);
+    -moz-transform: rotate(6deg);
+    transform: rotate(6deg);
+    z-index: -10;
+}
+.stack::after {
+	background: #768590;
+    -webkit-transform: rotate(-3deg);
+    -moz-transform: rotate(-3deg);
+    transform: rotate(-3deg);
+    z-index: -20;
+}
+
 .thumb {
 	float: left;
 	margin: 10px;
-	background-size: cover;
-	background-position: center;
+	border: 2px solid #ddd;
+	border-radius: 2px;
+	height: 204px; /* 200px + 2 * border */
+	width: 204px;
 }
 
 .thumb.private {
@@ -75,12 +118,13 @@ input.error {
 }
 
 .thumb a {
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: center;
 	position: relative;
 	display: block;
-	height: 200px;
-	width: 200px;
-	border: 2px solid #ccc;
-	border-radius: 2px;
+	height: 100%;
+	width: 100%;
 }
 
 .thumb .cover {

@@ -281,8 +281,8 @@
 		{{#if folders}}
 			<h5>{{t('albums')}}</h5>
 			{{#each folders}}
-			<div class="thumb" style="background-image: url('{{coverurl}}');">
-				<a href="#" on-click="cwd:{{filepath}}">
+			<div class="thumb stack">
+				<a href="#" on-click="cwd:{{filepath}}" style="background-image: url('{{coverurl}}');">
 					<div class="cover">
 						<span class="glyphicon glyphicon-{{visibility == 'public' ? 'globe' : (visibility == 'restricted' ? 'user' : 'lock')}}"></span> {{filename}}
 					</div>
