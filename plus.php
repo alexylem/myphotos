@@ -60,10 +60,9 @@ switch($_REQUEST['action']) {
     break;
 
   case 'revoke':
-    unset ($_SESSION['me']);
     $token = json_decode($_SESSION['access_token'])->access_token;
     $discon = $client->revokeToken($token); 
-    unset($_SESSION['access_token']);
+    session_unset();
     respond ('Revoked');
     break;
 

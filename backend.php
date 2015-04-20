@@ -158,7 +158,7 @@ function hasaccess ($visibility, $groups) {
 			$_SESSION['groups'] = array ();
 			$json = @file_get_contents($config['photopath'].MYPHOTOS_DIR.'.groups');
 		    $settings = json_decode($json);
-		    if ($settings->users)
+			if ($settings->users)
 			    foreach ($settings->users as $user)
 					if ($user->email == $_SESSION['me']['email']) {
 			        	$_SESSION['groups'] = $user->groups;
