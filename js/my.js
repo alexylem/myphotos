@@ -184,7 +184,7 @@ gallery.on ('ignore', function (event, group) {
 gallery.on ('logout', function () {
 	my.get({
 		url: 'plus.php',
-		data: { action: 'logout' },
+		data: { action: 'revoke' },
 		success: function() {
 			gallery.set ('user', false);
 			cwd ('./');

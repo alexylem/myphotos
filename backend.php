@@ -151,7 +151,7 @@ function hasaccess ($visibility, $groups) {
 	if ($visibility == 'public' || isadmin ())
 		return true;
 	if ($visibility == 'restricted') {
-		if (!isset ($_SESSION['me']))
+		if (!isset ($_SESSION['me']) || !is_array($groups))
 			return false;
 		if (!isset ($_SESSION['groups'])) {
 			global $config;
@@ -167,6 +167,7 @@ function hasaccess ($visibility, $groups) {
 		}
 		return count (array_intersect($groups, $_SESSION['groups']));
 	}
+	return false;
 }
 
 // Specific for myPhotos
