@@ -255,11 +255,13 @@ $('#folderModal').on('show.bs.modal', function () {
 	});
 });
 $('#folderModal').on('hide.bs.modal', function (e) {
+	gallery.set ('folder.name',gallery.get ('folder.name') || i18n.t('untitled'));
 	my.get ({
 		url: 'backend.php',
 		data: {
 			action: 'updateFolder',
 			dir: gallery.get ('folder.filepath'),
+			name: gallery.get('folder.name'),
 			visibility: gallery.get ('folder.visibility'),
 			groups: gallery.get ('folder.groups') || false // else undefined index groups even with []
 		},

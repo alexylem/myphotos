@@ -35,9 +35,8 @@ switch($_REQUEST['action']) {
 		if (!($dir == './' || hasaccess ($visibility, @$settings->groups)))
 			respond ("You don't have access to this $visibility album. Please log back in.", true);
 
-		$name = @$settings->name?$settings->name:basename($dir);
 		$folder = array (
-			'name'			=> $name,
+			'name'			=> isset($settings->name)?$settings->name:basename($dir),
 			'filepath'		=> $dir,
 			'visibility'	=> $visibility,
 			'parentpath'	=> dirname($dir).'/',
@@ -100,6 +99,8 @@ switch($_REQUEST['action']) {
 		$jsonpath = $config['photopath'].$dir.MYPHOTOS_DIR.SETTINGS_FILE;
 		$json = file_get_contents($jsonpath);
 		$settings = json_decode($json, true);
+		if (isset ($_REQUEST['name']))
+			$settings['name'] = $_REQUEST['name'];
 		if (isset ($_REQUEST['cover']))
 			$settings['cover'] = $_REQUEST['cover'];
 		if (isset ($_REQUEST['visibility']))

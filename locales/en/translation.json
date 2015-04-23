@@ -1,10 +1,13 @@
 {
+	"album_name": "Album name",
 	"albums": "Albums",
 	"back": "Back",
 	"big": "Large",
 	"close": "Close",
 	"dl_photo": "Download...",
+	"folder_opt": "Album settings",
 	"hide": "Hide (H)",
+	"loading": "Loading...",
 	"no_album_visible": "There is no public album available or made visible to you.",
 	"original": "Original",
 	"oops": "Oops",
@@ -14,7 +17,7 @@
 	"plz_sign_in": "Please Sign-in with an authorized email account.",
 	"report-issue": "Report an issue",
 	"set_cover": "Set as album cover",
-	"sharing_opt": "Sharing Options",
 	"sign-in": "Sign-in with Google",
-	"sign-off": "Logout"
+	"sign-off": "Logout",
+	"untitled": "Untitled"
 }
