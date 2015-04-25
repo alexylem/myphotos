@@ -1,11 +1,11 @@
+my.loglevel = 4;
+
 var gallery,
 	tooltipopts = {
 		container: 'body',
 		placement: 'bottom',
 		html: true
 	};
-
-
 
 var gallery = new Ractive({
 	el: 'container',
@@ -101,15 +101,25 @@ gallery.on ('cwd', function (event, dir) {
 	cwd (dir);
 });
 gallery.on ('view', function (event, photoid) {
-	my.log ('setting photoid to', photoid);
+	my.debug ('setting photoid to', photoid);
 	this.set ('photoid', photoid);
 	this.set ('view', 'photo');
+	// cache next image
+	var src = this.get ('photos['+(photoid+1)+'].previewurl');
+	my.debug ('caching image', src);
+	(new Image()).src = src;
 });
 gallery.on ('previous', function (event) {
 	this.add ('photoid', -1);
+	// cache previous image
+	//(new Image()).src = this.get ('photos['+(this.get('photoid')-1)+'].previewurl');
 });
 gallery.on ('next', function (event) {
 	this.add ('photoid', 1);
+	// cache next image
+	var src = this.get ('photos['+(this.get('photoid')+1)+'].previewurl');
+	my.debug ('caching image', src);
+	(new Image()).src = src;
 });
 gallery.on ('close', function (event) {
 	this.set ('photoid', false);
@@ -207,20 +217,19 @@ gallery.on ('logout', function () {
 // Keyboard shortcuts
 $(document).keydown(function(e) {
 	var photoid = gallery.get ('photoid');
-	my.log ('hotkey pressed', e.keyCode);
+	my.debug ('hotkey pressed', e.keyCode);
 	switch(e.keyCode) {
 		case 27: // esc
 			if (photoid !== false)
-				gallery.set ('photoid', false);
-				gallery.set ('view', 'album');
+				gallery.fire ('close');
 			break;
 		case 37 : // left
 			if (photoid)
-				gallery.add ('photoid', -1);
+				gallery.fire ('previous');
 			break;
 		case 39 : // right
 			if (photoid !== false && photoid < gallery.get ('photos').length - 1)
-				gallery.add ('photoid', 1);
+				gallery.fire ('next');
 			break;
 		case 72 : // H
 			if (photoid !== false)
