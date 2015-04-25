@@ -67,7 +67,7 @@ switch ($action) {
 	    	myflush ();
     	}
 
-    	execute (TASK_NB);
+    	manage (TASK_NB);
 
     	if ($_SESSION['error'])
     		error ('Process interrupted due to error');
@@ -199,7 +199,7 @@ function prepare ($dir, $reset = false, $output = 'verbose') {
 	}
 }
 
-function execute ($nb) {
+function manage ($nb) {
 	global $simulate, $config;
 
 	debug ("Will process maximum of $nb tasks");

@@ -9,4 +9,6 @@ define ('PREVIEW_HEIGHT', 1080); //px, WIDTH is determined automatically
 define ('IMG_QUALITY', 40); // 0 to 100
 define ('STEPPED_DISPLAY', false); // display page progressively
 define ('TASK_NB', 1); // nb of task to execute per page load
+define ('GIT_CHECK', 'git fetch 2>&1 && git log HEAD..origin/master --oneline --format="%an: %s (%ar)"'); // command to show pending updates
+define ('GIT_PULL', 'git pull --recurse-submodules 2>&1'); // command to update local repository
 ?>

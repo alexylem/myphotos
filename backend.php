@@ -145,6 +145,13 @@ switch($_REQUEST['action']) {
 			respond ('Error while trying to write the groups file', true);
 		break;
 
+	case 'checkupdates':
+		if (!isadmin ())
+			respond ('Operation not authorized', true);
+		$message = execute(GIT_CHECK, $iserror, '<br/>');
+		respond ($message, $iserror);
+		break;
+
 	default: respond ("unknown action ".$_REQUEST['action'], true);
 }
 

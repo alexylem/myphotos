@@ -4,6 +4,12 @@ function respond ($message = '', $iserror = false) {
 	exit (json_encode (array ('error' => $iserror, 'message' => $message)));
 }
 
+// Fonction exécuter
+function execute ($command, &$iserror = false, $sep = '') {
+    exec($command.' 2>&1', $output, $iserror);
+    return implode ($sep, $output);
+}
+
 function time_elapsed ($secs){
 	$ret = array ();
     $bit = array(

@@ -181,6 +181,18 @@ gallery.on ('ignore', function (event, group) {
 	});
 	continueCron ();
 });
+gallery.on ('checkupdates', function () {
+	my.get({
+		url: 'backend.php',
+		data: { action: 'checkupdates' },
+		success: function (message) {
+			if (message === '')
+				my.success ('Your version is up to date.');
+			else
+				my.warn ('A new version is avaialble! Please update.');
+		}
+	});
+});
 gallery.on ('logout', function () {
 	my.get({
 		url: 'plus.php',
@@ -280,6 +292,7 @@ $('#cronModal').on('shown.bs.modal', function (e) {
   my.get({
   	url: 'cron.php',
   	data: {action: 'genthumbs', output: 0}, // 0: Webservice
+  	timeout: 60*1000, // 1m
   	success: function (nbtask) {
   		gallery.set ({
   			'cron.striped': false,
