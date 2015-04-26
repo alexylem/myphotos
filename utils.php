@@ -5,9 +5,11 @@ function respond ($message = '', $iserror = false) {
 }
 
 // Fonction exécuter
-function execute ($command, &$iserror = false, $sep = '') {
+function execute ($command, &$iserror = false, $sep = PHP_EOL) {
     exec($command.' 2>&1', $output, $iserror);
-    return implode ($sep, $output);
+    if ($sep)
+        return implode ($sep, $output);
+    return $output;
 }
 
 function time_elapsed ($secs){

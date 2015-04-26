@@ -206,11 +206,25 @@ gallery.on ('checkupdates', function () {
 	my.get({
 		url: 'backend.php',
 		data: { action: 'checkupdates' },
-		success: function (message) {
-			if (message === '')
+		success: function (updates) {
+			if (updates.length === 0)
 				my.success ('Your version of MyPhotos is up to date.');
-			else
-				my.warn ('A new version of MyPhotos is avaialble! Please update.');
+			else {
+				var message = 'A new version of MyPhotos is avaialble:';
+				$.each (updates, function (id, update) {
+					message += '\n'+update;
+				});
+				message += 'Would you like to update?';
+				if (confirm (message)) {
+					my.get ({
+						url: 'backend.php',
+						data: { action: 'update' },
+						success: function () {
+							my.success ('Your version of MyPhotos has been updated successfuly.');
+						}
+					});
+				}
+			}
 		}
 	});
 });

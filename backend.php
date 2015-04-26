@@ -148,7 +148,14 @@ switch($_REQUEST['action']) {
 	case 'checkupdates':
 		if (!isadmin ())
 			respond ('Operation not authorized', true);
-		$message = execute(GIT_CHECK, $iserror, '<br/>');
+		$message = execute(GIT_CHECK, $iserror, false);
+		respond ($message, $iserror);
+		break;
+
+	case 'update':
+		if (!isadmin ())
+			respond ('Operation not authorized', true);
+		$message = execute(GIT_PULL, $iserror, '<br/>');
 		respond ($message, $iserror);
 		break;
 
