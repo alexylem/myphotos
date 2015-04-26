@@ -106,7 +106,7 @@ gallery.on ('view', function (event, photoid) {
 	this.set ('view', 'photo');
 	// cache next image
 	var src = this.get ('photos['+(photoid+1)+'].previewurl');
-	my.debug ('caching image', src);
+	my.debug ('preloading image', src);
 	(new Image()).src = src;
 });
 gallery.on ('previous', function (event) {
@@ -118,7 +118,7 @@ gallery.on ('next', function (event) {
 	this.add ('photoid', 1);
 	// cache next image
 	var src = this.get ('photos['+(this.get('photoid')+1)+'].previewurl');
-	my.debug ('caching image', src);
+	my.debug ('preloading image', src);
 	(new Image()).src = src;
 });
 gallery.on ('close', function (event) {
@@ -161,7 +161,7 @@ gallery.on ('cover', function (event) {
 	});
 });
 gallery.on ('removegroup', function (event, index) {
-	if (confirm ('Are you sure?')) {
+	if (confirm (i18n.t('are_you_sure'))) {
     	gallery.splice('groups', index, 1);
     	$('#multiselect').multiselect('rebuild');
 	}	
@@ -176,8 +176,18 @@ gallery.on ('adduser', function (event) {
 	this.set({ newname: '', newemail: '', newgroups: [] });
 	$('#multiselect').multiselect('rebuild');
 });
+gallery.on ('edituser', function (event, index) {
+	user = this.get ('users['+index+']');
+	this.splice ('users', index, 1);
+	this.set({
+		newname: user.name,
+		newemail: user.email,
+		newgroups: user.groups
+	});
+	$('#multiselect').multiselect('rebuild');
+});
 gallery.on ('removeuser', function (event, index) {
-	if (confirm ('Are you sure?'))
+	if (confirm (i18n.t('are_you_sure')))
     	gallery.splice('users', index, 1);
 });
 gallery.on ('filterpeople', function (event, group) {
@@ -197,9 +207,9 @@ gallery.on ('checkupdates', function () {
 		data: { action: 'checkupdates' },
 		success: function (message) {
 			if (message === '')
-				my.success ('Your version is up to date.');
+				my.success ('Your version of MyPhotos is up to date.');
 			else
-				my.warn ('A new version is avaialble! Please update.');
+				my.warn ('A new version of MyPhotos is avaialble! Please update.');
 		}
 	});
 });
@@ -348,9 +358,13 @@ function cwd (dir) {
 			if (message.folder.filepath !== './') { // in a directory
 				gallery.set ('view', 'album');
 			} else { // root
-				gallery.set ('parentpath', false);
+				gallery.set ('parentpath', false); // needed?
 				gallery.set ('view', 'home');
 			}
+		},
+		error: function (message) {
+			my.error (message);
+			gallery.set ('view', 'home');
 		}
 	});
 }

@@ -17,14 +17,13 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 
 * Easily share photo albums without database
 * MyPhotos reads files stored in a filesystem, works great with NAS
-* Generates thbumnails & optimized versions of your photos for faster display
-* Ability to change default Album covers
+* Ability to change default Album covers and title
 
 ### Sharing
 
 * Share albums as public, restricted, or keep them private
 * Restricted albums are shared to groups of people
-* People can be added from their email address (Gmail only)
+* People authenticate using their Google account
 * Hide bad/dupplicate photos instead of having to delete them
 
 ### Additional user features
@@ -33,11 +32,20 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 * Download photos or (soon) entire Album structures
 * Use keyboard arrows to swipe photos
 
+### Performance
+
+* Generates thumbnails & optimized versions of your photos for faster display
+* Leverage broswer cache on already viewed photos
+* Preload next photo in the background
+
 ## Installation
 
 ### Pre-requisites
 
-* WebServer with PHP (ex: [MAMP](http://www.mamp.info) for Mac) no need for mysql :)
+* WebServer with PHP - no need for mysql :)
+  * [MAMP](http://www.mamp.info) for Mac
+  * [NGINX](http://www.raspipress.com/2014/06/tutorial-install-nginx-and-php-on-raspbian/) for Raspberry Pi
+* git installed `sudo apt-get install git`
 * [Create Google API project](http://support.wpsocial.com/support/articles/144223-creating-a-google-project-with-the-google-api-console) for Public & Secret keys
 
 ### Installation steps
@@ -46,6 +54,10 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 2. Create `config.php` from a copy of `config.default.php`
 3. Fill-in `config.php` with your settings & Google API Key
 4. Login and click on Update Library
+
+### Update your version of MyPhotos
+
+1. Pull updates using `git pull --recurse-submodules`
 
 ## Report an issue
 

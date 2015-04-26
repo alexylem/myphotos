@@ -15,10 +15,12 @@
 	margin: 6px;
 }
 
-tr .glyphicon-remove {
+tr .glyphicon-remove,
+tr .glyphicon-pencil {
 	visibility: hidden;
 }
-tr:hover .glyphicon-remove {
+tr:hover .glyphicon-remove,
+tr:hover .glyphicon-pencil {
 	visibility: visible;
 }
 

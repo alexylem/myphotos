@@ -224,7 +224,14 @@
 											{{#each users:i}}
 											{{#if filter (this)}}
 											<tr>
-												<td>{{name}} <a href="#" on-click="removeuser:{{i}}"><span class="glyphicon glyphicon-remove"></span></a></td>
+												<td>{{name}} 
+													<a href="#" on-click="removeuser:{{i}}">
+														<span class="glyphicon glyphicon-remove"></span>
+													</a>
+													<a href="#" on-click="edituser:{{i}}">
+														<span class="glyphicon glyphicon-pencil"></span>
+													</a>
+												</td>
 												<td>{{email}}</td>
 												<td>{{this.groups}}</td>
 											</tr>
