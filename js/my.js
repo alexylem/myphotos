@@ -222,7 +222,7 @@ gallery.on ('checkupdates', function () {
 						success: function () {
 							my.success ('Your version of MyPhotos has been updated successfuly.');
 						}
-					});
+					}); 
 				}
 			}
 		}
