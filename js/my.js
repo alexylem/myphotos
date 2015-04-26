@@ -199,7 +199,7 @@ gallery.on ('ignore', function (event, group) {
 	this.set ({
 		'cron.status': '',
 		'cron.class': 'primary'
-	});
+	}); 
 	continueCron ();
 });
 gallery.on ('checkupdates', function () {
