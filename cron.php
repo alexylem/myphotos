@@ -221,14 +221,13 @@ function manage ($nb) {
 						$json = file_get_contents($file);
 						$old_settings = json_decode($json);
 						$new_name = isset ($old_settings->name)?$old_settings->name:basename($dir);
-						//$new_name = basename($dir);
 						$old_files = isset ($old_settings->files)?:[];
 						$new_cover = $old_settings->cover;
 						$new_visibility = $old_settings->visibility;
 					}
 					else {
 						$old_files = array ();
-						$new_name = $dir;
+						$new_name = basename($dir);
 						$new_cover = count($photos)?$photos[0]:false;
 						$new_visibility = $config['defaultvisibility'];	
 					}
