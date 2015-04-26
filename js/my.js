@@ -60,8 +60,9 @@ $(document).ready (function () {
 			console.error ("Translation missing for key", key, "in language",lng);
 		}
 	}, function (t) { // translations loaded
-		// Enable tooptips
-		$('.addtooltip').i18n().tooltip(tooltipopts); // need to translate title before
+		// Enable tooptips on non-touch devices
+		if (!Modernizr.touch)
+			$('.addtooltip').i18n().tooltip(tooltipopts); // need to translate title before
 	});
 
 	my.get({
