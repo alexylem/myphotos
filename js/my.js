@@ -198,7 +198,7 @@ gallery.on ('filterpeople', function (event, group) {
 gallery.on ('ignore', function (event, group) {
 	this.set ({
 		'cron.status': '',
-		'cron.class': 'primary'
+		'cron.class': 'primary' 
 	});
 	continueCron ();
 });
