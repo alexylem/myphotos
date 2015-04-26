@@ -206,19 +206,21 @@ gallery.on ('checkupdates', function () {
 	my.get({
 		url: 'backend.php',
 		data: { action: 'checkupdates' },
+		timeout: 60*1000, // 1m
 		success: function (updates) {
 			if (updates.length === 0)
 				my.success ('Your version of MyPhotos is up to date.');
 			else {
-				var message = 'A new version of MyPhotos is avaialble:';
+				var message = 'A new version of MyPhotos is available:';
 				$.each (updates, function (id, update) {
 					message += '\n'+update;
 				});
-				message += 'Would you like to update?';
+				message += '\nWould you like to update?';
 				if (confirm (message)) {
 					my.get ({
 						url: 'backend.php',
 						data: { action: 'update' },
+						timeout: 60*1000, // 1m
 						success: function () {
 							my.success ('Your version of MyPhotos has been updated successfuly.');
 						}
