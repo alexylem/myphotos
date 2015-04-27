@@ -209,20 +209,20 @@ gallery.on ('checkupdates', function () {
 		timeout: 60*1000, // 1m
 		success: function (updates) {
 			if (updates.length === 0)
-				my.success ('Your version of MyPhotos is up to date.');
+				my.success (i18n.t('up_to_date'));
 			else {
-				var message = 'A new version of MyPhotos is available:';
+				var message = 'A new version of MyPhotos is available:\n';
 				$.each (updates, function (id, update) {
-					message += '\n'+update;
+					message += '\n- '+update;
 				});
-				message += '\nWould you like to update?';
+				message += '\n\nWould you like to update?';
 				if (confirm (message)) {
 					my.get ({
 						url: 'backend.php',
 						data: { action: 'update' },
 						timeout: 60*1000, // 1m
 						success: function () {
-							my.success ('Your version of MyPhotos has been updated successfuly.');
+							my.success (i18n.t('updated'));
 						}
 					}); 
 				}

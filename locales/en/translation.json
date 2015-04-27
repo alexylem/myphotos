@@ -4,6 +4,7 @@
 	"are_you_sure": "Are you sure?",
 	"back": "Back",
 	"big": "Large",
+	"check_updates": "Check updates",
 	"close": "Close",
 	"dl_photo": "Download...",
 	"folder_opt": "Album settings",
@@ -20,5 +21,7 @@
 	"set_cover": "Set as album cover",
 	"sign-in": "Sign-in with Google",
 	"sign-off": "Logout",
-	"untitled": "Untitled"
+	"untitled": "Untitled",
+	"up_to_date": "Your version of MyPhotos is up to date.",
+	"updated": "Your version of MyPhotos has been updated successfuly."
 }

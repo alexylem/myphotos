@@ -4,6 +4,7 @@
 	"are_you_sure": "Êtes-vous sûr?",
 	"back": "Retour",
 	"big": "Grand",
+	"check_updates": "Vérifier mises à jour",
 	"close": "Fermer",
 	"dl_photo": "Télécharger...",
 	"folder_opt": "Paramètres de l'album",
@@ -20,5 +21,7 @@
 	"set_cover": "Choisir comme photo de couverture",
 	"sign-in": "S'identifier avec Google",
 	"sign-off": "Se déconnecter",
-	"untitled": "Sans nom"
+	"untitled": "Sans nom",
+	"up_to_date": "Votre version de MyPhotos est à jour.",
+	"updated": "Votre version de MyPhotos a été mise à jour avec succès."
 }
