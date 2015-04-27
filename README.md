@@ -31,6 +31,7 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 * Multilanguage support (English, French) - easy to add yours
 * Download photos or (soon) entire Album structures
 * Use keyboard arrows to swipe photos
+* Automatic updates
 
 ### Performance
 
