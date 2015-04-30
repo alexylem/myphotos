@@ -72,7 +72,7 @@ var my = new function () { // new is needed!
 		_DEBUG_   = 4;
 	
 	this.loglevel = 3;
-
+	
 	this.notify = function (type, message, url) {
 		$.notify ({
 			message: message

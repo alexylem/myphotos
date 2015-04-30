@@ -1,5 +1,6 @@
 <?php
 // System settings (CHANGE ONLY IF YOU KNOW WHAT YOU DO)
+define ('SESSION_DURATION', 3600); // secs
 define ('THUMB_SIZE', 200); //px (square)
 define ('MYPHOTOS_DIR', '.myphotos/'); // trailing /, has to be hidden
 define ('SETTINGS_FILE', 'myphotos'); // doesn't have to be hidden

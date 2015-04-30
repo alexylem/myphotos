@@ -5,7 +5,6 @@
 	En cas de demande particulière, veuillez me contacter
 	Alexandre Mély - alexandre.mely@gmail.com
 */
-session_start();
 
 ini_set('display_errors', 1);
 
@@ -13,6 +12,10 @@ ini_set('display_errors', 1);
 include_once ('defines.php');
 include_once ('config.php');
 include_once ('utils.php');
+
+ini_set('session.gc_maxlifetime', SESSION_DURATION); // server side min validity
+session_set_cookie_params(SESSION_DURATION); // client side duration
+session_start();
 
 if (!isset($_REQUEST['action']))
 	respond ('missing action parameter', true);
@@ -27,7 +30,7 @@ switch($_REQUEST['action']) {
 		$absolute = $config['photopath'].$dir;
 		if (!file_exists($absolute.MYPHOTOS_DIR.SETTINGS_FILE))
 			respond ('Missing folder settings. Please update your Library.', true);
-	
+		
 		$json = file_get_contents($absolute.MYPHOTOS_DIR.SETTINGS_FILE);
 		$settings = json_decode($json);
 		$visibility = isset ($settings->visibility)?$settings->visibility:$config['defaultvisibility'];
@@ -130,6 +133,13 @@ switch($_REQUEST['action']) {
 		)));
 		break;
 
+	case 'getPeople':
+		if (!isadmin ())
+			respond ('Operation not authorized', true);
+		$json = @json_decode(file_get_contents($config['photopath'].MYPHOTOS_DIR.'.groups'));
+		respond (@$json->users?$json->users:[]);
+		break;
+		
 	case 'saveGroups':
 		if (!isadmin ())
 			respond ('Operation not authorized', true);

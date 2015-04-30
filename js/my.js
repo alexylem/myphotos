@@ -169,7 +169,7 @@ gallery.on ('removegroup', function (event, index) {
 });
 gallery.on ('adduser', function (event) {
 	event.original.preventDefault();
-	this.push ('users', {
+	am.addRow ($('#users'), {
 		name:  gallery.get ('newname'),
 		email: gallery.get ('newemail'),
 		groups: gallery.get ('newgroups')
@@ -177,19 +177,9 @@ gallery.on ('adduser', function (event) {
 	this.set({ newname: '', newemail: '', newgroups: [] });
 	$('#multiselect').multiselect('rebuild');
 });
-gallery.on ('edituser', function (event, index) {
-	user = this.get ('users['+index+']');
-	this.splice ('users', index, 1);
-	this.set({
-		newname: user.name,
-		newemail: user.email,
-		newgroups: user.groups
-	});
-	$('#multiselect').multiselect('rebuild');
-});
-gallery.on ('removeuser', function (event, index) {
+gallery.on ('removeuser', function () {
 	if (confirm (i18n.t('are_you_sure')))
-    	gallery.splice('users', index, 1);
+		am.removeChecked ($('#users'));
 });
 gallery.on ('filterpeople', function (event, group) {
 	my.log ('filtering poeple on', group);
@@ -276,6 +266,7 @@ $("#addgroupform").validate({
   }
 });
 $('#groupsModal').on('show.bs.modal', function () {
+	am.drawDatatable($('#users'), 'people');
 	$('#multiselect').multiselect({
 		onChange: function (option, checked, select) { // fix ractive not seing multiselect updates
 			gallery.set('newgroups', $('#multiselect').val ());
@@ -288,7 +279,7 @@ $('#groupsModal').on('hide.bs.modal', function () {
 		data: {
 			action: 'saveGroups',
 			groups: gallery.get('groups'),
-			users: gallery.get('users')
+			users: am.getData ($('#users'))
 		},
 		success: function () {
 			my.success ('Groups & People saved successfuly');

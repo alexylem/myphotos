@@ -44,17 +44,17 @@ input.error {
     background-position: center;
 }
 
-.previous, .next {
+.prev, .nxt {
 	position: absolute;
 	top: 50%;
 	margin-top: -26px;
 }
 
-.previous {
+.prev {
 	left: 10px;
 }
 
-.next {
+.nxt {
 	right: 10px;
 }
 
@@ -132,9 +132,9 @@ input.error {
 .thumb .cover {
 	position: absolute;
 	top: 0px;
-	left: 0px;
+	left: 5px;
 	bottom: 0px;
-	right: 0px;
+	right: 5px;
 	text-align: center;
 	text-overflow: ellipsis;
 	overflow: hidden;
