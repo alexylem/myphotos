@@ -1,3 +1,2 @@
 # Ignore config file which contains private information (emails, Google API keys)
 config.php
-repository.js
