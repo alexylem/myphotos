@@ -322,7 +322,7 @@ $new_files
 						$original->resize(null, PREVIEW_HEIGHT, 'inside', 'down');
 						$exif = exif_read_data($file);
 						if (isset ($exif['Orientation']))
-							$original->exifOrient($exif['Orientation']);
+							$original = $original->exifOrient($exif['Orientation']);
 						$original->saveToFile($previewfile, IMG_QUALITY);
 						success ();
 					} else
