@@ -303,8 +303,8 @@ $new_files
 						warning ('Simulated');
 					elseif ($original = WideImage::loadFromFile($file)) {
 						$original = $original->resize(THUMB_SIZE, THUMB_SIZE, 'outside');
-						if ($exif = exif_read_data($file)
-						 && isset ($exif['Orientation']))
+						$exif = exif_read_data($file);
+						if (isset ($exif['Orientation']))
 							$original = $original->exifOrient($exif['Orientation']);
 						$original->saveToFile($thumbfile, IMG_QUALITY);
 						success ();
@@ -320,8 +320,8 @@ $new_files
 						warning ('Simulated');
 					elseif ($original = WideImage::loadFromFile($file)) {
 						$original->resize(null, PREVIEW_HEIGHT, 'inside', 'down');
-						if ($exif = exif_read_data($file)
-						 && isset ($exif['Orientation']))
+						$exif = exif_read_data($file);
+						if (isset ($exif['Orientation']))
 							$original->exifOrient($exif['Orientation']);
 						$original->saveToFile($previewfile, IMG_QUALITY);
 						success ();
