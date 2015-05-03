@@ -65,7 +65,7 @@ sudo apt-get install git
 
 ### Installation steps
 
-* Clone (or [download](https://github.com/alexylem/myphotos/archive/master.zip) the repo on a web directory:
+* Clone (or [download](https://github.com/alexylem/myphotos/archive/master.zip) & extract) the repo on a web directory:
 ```
 cd /var/www/myphotos
 git clone --recursive https://github.com/alexylem/myphotos.git
