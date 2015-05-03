@@ -18,6 +18,8 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 * Easily share photo albums without database
 * MyPhotos reads files stored in a filesystem, works great with NAS
 * Ability to change default Album covers and title
+* Now supports videos that contain in their name a youtubeid between `()`
+  * ex: `tom's first steps (1a2e3e4r5t6).avi`
 
 ### Sharing
 
@@ -29,7 +31,7 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 ### Additional user features
 
 * Multilanguage support (English, French) - easy to add yours
-* Download photos or (soon) entire Album structures
+* Download photos in optimized or original sizes
 * Use keyboard arrows to swipe photos
 * Automatic updates
 
@@ -38,6 +40,10 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 * Generates thumbnails & optimized versions of your photos for faster display
 * Leverage broswer cache on already viewed photos
 * Preload next photo in the background
+
+### Upcoming features
+
+[ ] (soon) Download entire albums
 
 ## Installation
 
