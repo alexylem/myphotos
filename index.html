@@ -21,7 +21,30 @@
 		<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
 			<div class="container-fluid">
 				<div class="navbar-header">
-					<div class="{{#if view !== 'album'}}hide{{/if}}">
+
+					<!-- Back/Close buttons -->
+					{{#if photoid !== false}}
+						<button on-click="close" type="button" class="btn btn-default navbar-btn pull-left">
+							<span class="glyphicon glyphicon-remove"></span> {{t('close')}}
+						</button>
+						{{else}}
+						{{#if view == 'album'}}
+						<button on-click="cwd:{{folder.parentpath}}" type="button" class="btn btn-default navbar-btn pull-left">
+							<span class="glyphicon glyphicon-chevron-left"></span> {{t('back')}}
+						</button>
+						{{/if}}
+					{{/if}}
+					
+					<!-- Collapsible button -->
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#collapsible">
+						<span class="sr-only">Toggle navigation</span>
+						 <span class="icon-bar"></span>
+						 <span class="icon-bar"></span>
+						 <span class="icon-bar"></span>
+					</button>
+					
+					<!-- App/Folder/File title -->
+					<div class="{{#if view !== 'album'}}hide{{/if}} pull-left">
 						<a class="{{#if !user.isadmin}}hide{{/if}} navbar-brand addtooltip" data-i18n="[title]folder_opt"
 						   data-toggle="modal" href="#folderModal">
 							{{folder.name}}
@@ -33,226 +56,218 @@
 					{{elseif view == 'photo'}}
 						<span class="navbar-brand">{{photos[photoid].filename}}</span>
 					{{/if}}
+					
+					
 				</div>
-				<ul class="nav navbar-nav">
-					<li>
-						{{#if photoid !== false}}
-						<button on-click="close" type="button" class="btn btn-default navbar-btn">
-							<span class="glyphicon glyphicon-remove"></span> {{t('close')}}
-						</button>
-						{{else}}
-						{{#if view == 'album'}}
-						<button on-click="cwd:{{folder.parentpath}}" type="button" class="btn btn-default navbar-btn">
-							<span class="glyphicon glyphicon-chevron-left"></span> {{t('back')}}
-						</button>
-						{{/if}}
-						{{/if}}
-					</li>
-				</ul>
-				<ul class="nav navbar-nav navbar-right">
-					<li class="{{#if !user.isadmin || view !== 'photo'}}hide{{/if}} {{#if photos[photoid].hidden}}active{{/if}}">
-						<a class="addtooltip" data-i18n="[title]hide" href="#" on-click="hide">
-							<span class="glyphicon glyphicon-eye-close"></span>
-						</a>
-					</li>
-					<li class="{{#if !user.isadmin || view !== 'photo'}}hide{{/if}}">
-						<a class="addtooltip" data-i18n="[title]set_cover" href="#" on-click="cover">
-							<span class="glyphicon glyphicon-picture"></span>
-						</a>
-					</li>
-					<li class="dropdown {{#if view !== 'photo'}}hide{{/if}}">
-						<a href="#" class="dropdown-toggle addtooltip" data-i18n="[title]dl_photo" data-toggle="dropdown" role="button">
-							<span class="glyphicon glyphicon-download-alt"></span>
-						</a>
-						<ul class="dropdown-menu" role="menu">
-							{{#photos[photoid]}}
-							<li><a href="{{photos[photoid].previewurl}}&d=1">
-								<span class="glyphicon glyphicon-file"></span> {{t('big')}} ({{previewsize}})</a>
-							</li>
-							<li><a href="{{photos[photoid].fileurl}}&d=1">
-								<span class="glyphicon glyphicon-file"></span> {{t('original')}} ({{size}})</a>
-							</li>
-							{{/if}}
-						</ul>
-					</li>
-					<div class="modal fade" id="folderModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-						<div class="modal-dialog">
-							<div class="modal-content">
-								<div class="modal-header">
-									<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-									<h4 class="modal-title" id="myModalLabel">{{t('folder_opt')}}</h4>
-								</div>
-								<div class="modal-body">
-									<div class="form-group">
-										<input type="text" class="form-control" value="{{folder.name}}" placeholder="{{t('album_name')}}">
-									</div>
-									<p>Define the visiblity for album <strong>{{folder.name}}</strong></p>
-									<div class="radio">
-										<label>
-											<input type="radio" name="{{folder.visibility}}" value="private" checked>
-											<span class="glyphicon glyphicon-lock" aria-hidden="true"></span> Private
-											<p class="help-block">Only visible by Admin accounts.</p>
-										</label>
-									</div>
-									<div class="radio">
-										<label>
-											<input type="radio" name="{{folder.visibility}}" value="public">
-											<span class="glyphicon glyphicon-globe" aria-hidden="true"></span> Public
-											<p class="help-block">Visible by everyone without authentication.</p>
-										</label>
-									</div>
-									<div class="radio">
-										<label>
-											<input type="radio" name="{{folder.visibility}}" value="restricted">
-											<span class="glyphicon glyphicon-user" aria-hidden="true"></span> Restricted
-											<p class="help-block">Visible by a selection of groups</p>
-										</label>
-									</div>
-									<div class="col-md-offset-1 {{#if folder.visibility !== 'restricted'}}hide{{/if}}">
-										<select id="foldergroups" value='{{folder.groups}}' multiple="multiple">
-											  {{#each groups}}
-											  	<option>{{this}}</option>
-											  {{/each}}
-										</select>
-									</div>
-									<div class="checkbox">
-										<label>
-											<input type="checkbox" value="">
-											Apply recursively to all sub-albums
-										</label>
-									</div>
-								</div>
-								<div class="modal-footer">
-									<small>Changes are saved automatically.</small>
-								</div>
-							</div>
-						</div>
-					</div>
-					<li data-i18n="[title]sign-in" class="addtooltip g-signin {{#if user}}hide{{/if}}">
-						<span class="g-signin"
-							data-width="iconOnly"
-							data-scope="https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/userinfo.email"
-							data-clientid="320030776284-01dr10ur7ni4opbjgum9g266vrn29u4f.apps.googleusercontent.com"
-							data-redirecturi="postmessage"
-							data-cookiepolicy="single_host_origin"
-							data-callback="signInCallback">
-						</span>
-					</li>
-					{{#user}}
-					<li class="dropdown">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{displayName}} <span class="caret"></span></a>
-						<ul class="dropdown-menu" role="menu">
-							{{#isadmin}}
-							<li><a data-toggle="modal" href="#cronModal"><span class="glyphicon glyphicon-retweet"></span> Update Library</a></li>
-							<li><a data-toggle="modal" href="#groupsModal"><span class="glyphicon glyphicon-user"></span> Groups & people</a></li>
-							<li><a on-click="checkupdates" href="#"><span class="glyphicon glyphicon-circle-arrow-up"></span> {{t('check_updates')}}</a></li>
-							{{/if}}
-							<li><a target="_blank" href="https://github.com/alexylem/myphotos/issues/new"><span class="glyphicon glyphicon-fire"></span> {{t('report-issue')}}</a></li>
-							<li><a on-click="logout" href="#"><span class="glyphicon glyphicon-log-out"></span> {{t('sign-off')}}</a></li>
-						</ul>
-					</li>
-					{{/if}}
-					<div class="modal fade" id="cronModal" tabindex="-1" role="dialog">
-						<div class="modal-dialog">
-							<div class="modal-content">
-								<div class="modal-header">
-									<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-									<h4 class="modal-title">Update Library</h4>
-								</div>
-								<div class="modal-body">
-									<div class="progress">
-									  {{#if cron.striped}}
-										  <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 100%">
-										  </div>
-									  {{else}}
-									  	<div class="progress-bar progress-bar-{{cron.class}} active" role="progressbar" style="width: {{cron.progress}}%">
-										</div>
-									  {{/if}}
-									</div>
-									<p class="text-{{cron.class}}">{{cron.status}}</p>
-								</div>
-								<div class="modal-footer">
-									{{#if cron.class == 'danger'}}
-										<button type="button" class="btn btn-default" on-click="ignore">Ignore</button>
-									{{/if}}
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="modal fade" id="groupsModal" tabindex="-1" role="dialog">
-						<div class="modal-dialog modal-lg">
-							<div class="modal-content">
-								<div class="modal-header">
-									<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-									<h4 class="modal-title" id="myModalLabel">Groups</h4>
-								</div>
-								<div class="modal-body">
-									{{#if groups}}
-									<div class="btn-toolbar">
-									{{#each groups:i}}
-										<div class="btn-group">
-											<button type="button" class="btn btn-warning btn-sm {{#if userfilter == this}}active{{/if}}" on-click="filterpeople:{{this}}">{{this}}</button>
-											<button type="button" class="btn btn-default btn-sm" on-click="removegroup:{{i}}"><span class="glyphicon glyphicon-remove"></span></button>
-										</div>
-									{{/each}}
-									</div>
-									<br />
-									{{else}}
-									
-									<div class="alert alert-info well-sm">
-											Start by adding some Groups below
-										</div>
 
-									{{/if}}
-									<form id="addgroupform" class="form-inline">
-										<div class="form-group">
-									      <input type="text" class="form-control input-sm" value="{{newgroup}}" placeholder="ex: Family" required>
-									       <button class="btn btn-info btn-sm" type="submit"><span class="glyphicon glyphicon-plus"></span></button>
-									    </div>
-									</form>
-									<hr />
-									<h4>People</h4>
-									{{#if userfilter}}
-										<div class="well well-sm pull-left">
-											Showing people in {{userfilter}} <a href="#" class="alert-link" on-click="filterpeople:false">See all</a>
-										</div>
-									{{/if}}
-									<div id="toolbar">
-										<button on-click="removeuser" type="button" class="btn btn-default">
-											<span class="glyphicon glyphicon-remove"></span> Delete
-										</button>
+				<div class="collapse navbar-collapse" id="collapsible">
+					<ul class="nav navbar-nav navbar-right">
+						
+						<!-- Action buttons -->
+						<li class="{{#if !user.isadmin || view !== 'photo'}}hide{{/if}} {{#if photos[photoid].hidden}}active{{/if}}">
+							<a class="addtooltip" data-i18n="[title]hide" href="#" on-click="hide">
+								<span class="glyphicon glyphicon-eye-close"></span>
+							</a>
+						</li>
+						<li class="{{#if !user.isadmin || view !== 'photo'}}hide{{/if}}">
+							<a class="addtooltip" data-i18n="[title]set_cover" href="#" on-click="cover">
+								<span class="glyphicon glyphicon-picture"></span>
+							</a>
+						</li>
+						<li class="dropdown {{#if view !== 'photo'}}hide{{/if}}">
+							<a href="#" class="dropdown-toggle addtooltip" data-i18n="[title]dl_photo" data-toggle="dropdown" role="button">
+								<span class="glyphicon glyphicon-download-alt"></span>
+							</a>
+							<ul class="dropdown-menu" role="menu">
+								{{#photos[photoid]}}
+								<li><a href="{{photos[photoid].previewurl}}&d=1">
+									<span class="glyphicon glyphicon-file"></span> {{t('big')}} ({{previewsize}})</a>
+								</li>
+								<li><a href="{{photos[photoid].fileurl}}&d=1">
+									<span class="glyphicon glyphicon-file"></span> {{t('original')}} ({{size}})</a>
+								</li>
+								{{/if}}
+							</ul>
+						</li>
+						<div class="modal fade" id="folderModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+										<h4 class="modal-title" id="myModalLabel">{{t('folder_opt')}}</h4>
 									</div>
-									<table
-										id="users"
-										data-classes="table table-hover table-no-bordered"
-										data-striped="true"
-										data-page-size="5"
-										data-toolbar="#toolbar">
-									</table>
-									<form class="form-inline" on-submit="adduser">
-									  <div class="form-group">
-									    <input type="text" class="form-control input-sm" value="{{newname}}" placeholder="ex: Mum">
-									  </div>
-									  <div class="form-group">
-									    <input type="email" class="form-control input-sm" value="{{newemail}}" placeholder="ex: email@gmail.com">
-									  </div>
-									  <div class="form-group">
-									    <select id="multiselect" class="form-control input-sm" value='{{newgroups}}' multiple="multiple">
-											  {{#each groups}}
-											  	<option>{{this}}</option>
-											  {{/each}}
-										</select>
-									  </div>
-									  <button type="submit" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-plus"></span></button>
-									</form>
-								</div>
-								<div class="modal-footer">
-									<small>Changes are saved automatically.</small>
+									<div class="modal-body">
+										<div class="form-group">
+											<input type="text" class="form-control" value="{{folder.name}}" placeholder="{{t('album_name')}}">
+										</div>
+										<p>Define the visiblity for album <strong>{{folder.name}}</strong></p>
+										<div class="radio">
+											<label>
+												<input type="radio" name="{{folder.visibility}}" value="private" checked>
+												<span class="glyphicon glyphicon-lock" aria-hidden="true"></span> Private
+												<p class="help-block">Only visible by Admin accounts.</p>
+											</label>
+										</div>
+										<div class="radio">
+											<label>
+												<input type="radio" name="{{folder.visibility}}" value="public">
+												<span class="glyphicon glyphicon-globe" aria-hidden="true"></span> Public
+												<p class="help-block">Visible by everyone without authentication.</p>
+											</label>
+										</div>
+										<div class="radio">
+											<label>
+												<input type="radio" name="{{folder.visibility}}" value="restricted">
+												<span class="glyphicon glyphicon-user" aria-hidden="true"></span> Restricted
+												<p class="help-block">Visible by a selection of groups</p>
+											</label>
+										</div>
+										<div class="col-md-offset-1 {{#if folder.visibility !== 'restricted'}}hide{{/if}}">
+											<select id="foldergroups" value='{{folder.groups}}' multiple="multiple">
+												  {{#each groups}}
+												  	<option>{{this}}</option>
+												  {{/each}}
+											</select>
+										</div>
+										<div class="checkbox">
+											<label>
+												<input type="checkbox" value="">
+												Apply recursively to all sub-albums
+											</label>
+										</div>
+									</div>
+									<div class="modal-footer">
+										<small>Changes are saved automatically.</small>
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-				</ul>
+						<li data-i18n="[title]sign-in" class="addtooltip g-signin {{#if user}}hide{{/if}}">
+							<span class="g-signin"
+								data-width="iconOnly"
+								data-scope="https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/userinfo.email"
+								data-clientid="320030776284-01dr10ur7ni4opbjgum9g266vrn29u4f.apps.googleusercontent.com"
+								data-redirecturi="postmessage"
+								data-cookiepolicy="single_host_origin"
+								data-callback="signInCallback">
+							</span>
+						</li>
+						{{#user}}
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{displayName}} <span class="caret"></span></a>
+							<ul class="dropdown-menu" role="menu">
+								{{#isadmin}}
+								<li><a data-toggle="modal" href="#cronModal"><span class="glyphicon glyphicon-retweet"></span> Update Library</a></li>
+								<li><a data-toggle="modal" href="#groupsModal"><span class="glyphicon glyphicon-user"></span> Groups & people</a></li>
+								<li><a on-click="checkupdates" href="#"><span class="glyphicon glyphicon-circle-arrow-up"></span> {{t('check_updates')}}</a></li>
+								{{/if}}
+								<li><a target="_blank" href="https://github.com/alexylem/myphotos/issues/new"><span class="glyphicon glyphicon-fire"></span> {{t('report-issue')}}</a></li>
+								<li><a on-click="logout" href="#"><span class="glyphicon glyphicon-log-out"></span> {{t('sign-off')}}</a></li>
+							</ul>
+						</li>
+						{{/if}}
+						<div class="modal fade" id="cronModal" tabindex="-1" role="dialog">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+										<h4 class="modal-title">Update Library</h4>
+									</div>
+									<div class="modal-body">
+										<div class="progress">
+										  {{#if cron.striped}}
+											  <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 100%">
+											  </div>
+										  {{else}}
+										  	<div class="progress-bar progress-bar-{{cron.class}} active" role="progressbar" style="width: {{cron.progress}}%">
+											</div>
+										  {{/if}}
+										</div>
+										<p class="text-{{cron.class}}">{{cron.status}}</p>
+									</div>
+									<div class="modal-footer">
+										{{#if cron.class == 'danger'}}
+											<button type="button" class="btn btn-default" on-click="ignore">Ignore</button>
+										{{/if}}
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="modal fade" id="groupsModal" tabindex="-1" role="dialog">
+							<div class="modal-dialog modal-lg">
+								<div class="modal-content">
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+										<h4 class="modal-title" id="myModalLabel">Groups</h4>
+									</div>
+									<div class="modal-body">
+										{{#if groups}}
+										<div class="btn-toolbar">
+										{{#each groups:i}}
+											<div class="btn-group">
+												<button type="button" class="btn btn-warning btn-sm {{#if userfilter == this}}active{{/if}}" on-click="filterpeople:{{this}}">{{this}}</button>
+												<button type="button" class="btn btn-default btn-sm" on-click="removegroup:{{i}}"><span class="glyphicon glyphicon-remove"></span></button>
+											</div>
+										{{/each}}
+										</div>
+										<br />
+										{{else}}
+										
+										<div class="alert alert-info well-sm">
+												Start by adding some Groups below
+											</div>
+
+										{{/if}}
+										<form id="addgroupform" class="form-inline">
+											<div class="form-group">
+										      <input type="text" class="form-control input-sm" value="{{newgroup}}" placeholder="ex: Family" required>
+										       <button class="btn btn-info btn-sm" type="submit"><span class="glyphicon glyphicon-plus"></span></button>
+										    </div>
+										</form>
+										<hr />
+										<h4>People</h4>
+										{{#if userfilter}}
+											<div class="well well-sm pull-left">
+												Showing people in {{userfilter}} <a href="#" class="alert-link" on-click="filterpeople:false">See all</a>
+											</div>
+										{{/if}}
+										<div id="toolbar">
+											<button on-click="removeuser" type="button" class="btn btn-default">
+												<span class="glyphicon glyphicon-remove"></span> Delete
+											</button>
+										</div>
+										<table
+											id="users"
+											data-classes="table table-hover table-no-bordered"
+											data-striped="true"
+											data-page-size="5"
+											data-toolbar="#toolbar">
+										</table>
+										<form class="form-inline" on-submit="adduser">
+										  <div class="form-group">
+										    <input type="text" class="form-control input-sm" value="{{newname}}" placeholder="ex: Mum">
+										  </div>
+										  <div class="form-group">
+										    <input type="email" class="form-control input-sm" value="{{newemail}}" placeholder="ex: email@gmail.com">
+										  </div>
+										  <div class="form-group">
+										    <select id="multiselect" class="form-control input-sm" value='{{newgroups}}' multiple="multiple">
+												  {{#each groups}}
+												  	<option>{{this}}</option>
+												  {{/each}}
+											</select>
+										  </div>
+										  <button type="submit" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-plus"></span></button>
+										</form>
+									</div>
+									<div class="modal-footer">
+										<small>Changes are saved automatically.</small>
+									</div>
+								</div>
+							</div>
+						</div>
+					</ul>
+				</div>
 			</div>
 		</nav>
 	<div class="container">

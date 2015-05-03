@@ -2,11 +2,15 @@ body { padding-top: 70px; }
 
 .navbar-brand
 {
+	margin-left: 0px !important;
+	/* TODO make it centered without breaking display on mobile
     position: absolute;
     width: 100%;
     left: 0;
     text-align: center;
-    margin: auto;    
+    margin: auto;
+    z-index: -1; 
+    */
 }
 
 .navbar-brand:focus {
