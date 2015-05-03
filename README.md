@@ -1,10 +1,15 @@
 # MyPhotos
 Easily share photo albums without database
 
+* [Screenshots](#screenshots)
 * [Synopsis & Features](https://github.com/alexylem/myphotos/blob/master/README.md#synopsis--features)
 * [Installation](https://github.com/alexylem/myphotos/blob/master/README.md#installation)
 * [Report an issue](https://github.com/alexylem/myphotos/blob/master/README.md#report-an-issue)
 * [Propose enhancement](https://github.com/alexylem/myphotos/blob/master/README.md#propose-enhancement)
+
+## Screenshots
+
+(soon)
 
 ## Synopsis & Features
 
@@ -40,10 +45,6 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 * Generates thumbnails & optimized versions of your photos for faster display
 * Leverage broswer cache on already viewed photos
 * Preload next photo in the background
-
-### Upcoming features
-
-[ ] (soon) Download entire albums
 
 ## Installation
 
