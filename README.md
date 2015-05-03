@@ -57,15 +57,32 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 * WebServer with PHP - no need for mysql :)
   * [MAMP](http://www.mamp.info) for Mac
   * [NGINX](http://www.raspipress.com/2014/06/tutorial-install-nginx-and-php-on-raspbian/) for Raspberry Pi
-* git installed `sudo apt-get install git`
+* git installed (for automatic updates)
+```
+sudo apt-get install git
+```
 * [Create Google API project](http://support.wpsocial.com/support/articles/144223-creating-a-google-project-with-the-google-api-console) for Public & Secret keys
 
 ### Installation steps
 
-1. Clone the repo `git clone --recursive https://github.com/alexylem/myphotos.git`
-2. Create `config.php` from a copy of `config.default.php`
-3. Fill-in `config.php` with your settings & Google API Key
-4. Login and click on *Update Library*
+* Clone the repo on a web directory
+```
+cd /var/www/myphotos
+git clone --recursive https://github.com/alexylem/myphotos.git
+```
+* Create `config.php` from a copy of `config.default.php`
+```
+cp config.default.php config.php
+```
+* Fill-in `config.php` with your settings & Google API Key
+```
+nano config.php
+```
+* Login and click on *Update Library*
+* (optional) Change owner of .git directories for automatic updates:
+```
+sudo chown -R www-data:www-data .*
+```
 
 ### Update your version of MyPhotos
 
