@@ -51,17 +51,27 @@ switch($_REQUEST['action']) {
 		foreach ($settings->files as $filename => $fileinfo) {
 			if (!isadmin() && $fileinfo->hidden)
 				continue;
-			$files[] = array (
+			$file = array (
 				'filepath'		=> $dir.$filename,
-				'fileurl'		=> 'img.php?f='.$dir.$filename,
-				'previewurl'	=> 'img.php?f='.$dir.MYPHOTOS_DIR.PREVIEW_DIR.$filename,
-				'previewsize'	=> $fileinfo->previewsize,
-				'thumburl'		=> 'img.php?f='.$dir.MYPHOTOS_DIR.THUMB_DIR.$filename,
 				'filename'		=> $filename,
-				'size'			=> $fileinfo->size,
+				'type'			=> $fileinfo->type,
 				'hidden'		=> $fileinfo->hidden,
-				'updated'		=> $fileinfo->updated
+				'updated'		=> $fileinfo->updated,
+				'fileurl'		=> 'img.php?f='.$dir.$filename,
+				'size'			=> $fileinfo->size,
+				'previewsize'	=> $fileinfo->previewsize
 			);
+			if ($fileinfo->type == 'video' &&
+				preg_match (YOUTUBEID_REGEX, $filename, $matches)) {
+					$youtubeid = $matches[1];
+					$file['thumburl'] = str_replace (YOUTUBEID, $youtubeid, YOUTUBE_THUMB);
+					$file['previewurl'] = str_replace (YOUTUBEID, $youtubeid, YOUTUBE_PLAYER);
+				}
+			else { // image
+				$file['thumburl'] = 'img.php?f='.$dir.MYPHOTOS_DIR.THUMB_DIR.$filename;
+				$file['previewurl'] = 'img.php?f='.$dir.MYPHOTOS_DIR.PREVIEW_DIR.$filename;
+			}
+			$files[] = $file;
 		}
 
 		$folders = array ();

@@ -29,7 +29,9 @@
 						<span class="{{#if user.isadmin}}hide{{/if}} navbar-brand">{{folder.name}}</span>
 					</div>
 					{{#if view == 'home'}}
-					<span class="navbar-brand">MyPhotos</span>
+						<span class="navbar-brand">MyPhotos</span>
+					{{elseif view == 'photo'}}
+						<span class="navbar-brand">{{photos[photoid].filename}}</span>
 					{{/if}}
 				</div>
 				<ul class="nav navbar-nav">
@@ -261,16 +263,25 @@
 		</p>
 
 	{{elseif view == 'photo'}}
-		<div class="view" style="background-image: url('{{photos[photoid].previewurl}}');">
-			<button on-click="previous" type="button" class="btn btn-default btn-lg prev"
-			{{#unless photoid}} disabled="disabled" {{/unless}}>
-				<span class="glyphicon glyphicon-chevron-left"></span>
-			</button>
-			<button on-click="next" type="button" class="btn btn-default btn-lg nxt"
-			{{#if photoid == photos.length-1}} disabled="disabled" {{/if}}>
-				<span class="glyphicon glyphicon-chevron-right"></span>
-			</button>
-		</div>
+		<button on-click="previous" type="button" class="btn btn-default btn-lg prev"
+		{{#unless photoid}} disabled="disabled" {{/unless}}>
+			<span class="glyphicon glyphicon-chevron-left"></span>
+		</button>
+		{{#photos[photoid]}}
+			{{#if type == 'image'}}
+				<div class="view" style="background-image: url('{{previewurl}}');">
+				</div>
+			{{elseif type == 'video'}}
+				<div class="view">
+					<iframe class="video" width="100%" height="100%" src="{{previewurl}}" frameborder="0" allowfullscreen="true">
+					</iframe>
+				</div>
+			{{/if}}
+		{{/}}
+		<button on-click="next" type="button" class="btn btn-default btn-lg nxt"
+		{{#if photoid == photos.length-1}} disabled="disabled" {{/if}}>
+			<span class="glyphicon glyphicon-chevron-right"></span>
+		</button>
 	{{else}}
 		{{#if folders}}
 			<h5>{{t('albums')}}</h5>

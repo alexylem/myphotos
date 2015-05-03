@@ -215,7 +215,7 @@ function manage ($nb) {
 
 					$dir = dirname(dirname($file));
 					chdir($dir);
-					$photos = glob('*.{jpeg,JPEG,jpg,JPG,png,PNG,gif,GIF,bmp,BMP}', GLOB_BRACE|GLOB_NOSORT);
+					$medias = glob('*.{jpeg,JPEG,jpg,JPG,png,PNG,gif,GIF,bmp,BMP,mov,MOV,avi,AVI}', GLOB_BRACE|GLOB_NOSORT);
 
 					if (file_exists($file)) {
 						$json = file_get_contents($file);
@@ -228,7 +228,7 @@ function manage ($nb) {
 					else {
 						$old_files = array ();
 						$new_name = basename($dir);
-						$new_cover = count($photos)?$photos[0]:false;
+						$new_cover = count($medias)?$medias[0]:false;
 						$new_visibility = $config['defaultvisibility'];	
 					}
 /*
@@ -236,7 +236,7 @@ $old_files
 'photo1' => [hidden => true],
 'photo2' => [hidden => false, size => 12],
 
-$photos (from glob)
+$medias (from glob)
 'photo1'
 'photo3' (added)
 (photo2 removed)
@@ -246,13 +246,14 @@ $new_files
 'photo3' => [hidden => false, size => 13],
 */
 					$new_files = array ();
-					foreach ($photos as $photo) {
-						$old_photo = isset ($old_files[$photo])?$old_files[$photo]:new stdClass();
-						$new_files[$photo] = array (
+					foreach ($medias as $media) {
+						$old_photo = isset ($old_files[$media])?$old_files[$media]:new stdClass();
+						$new_files[$media] = array (
+							'type' => strstr (mime_type_from_ext ($media), '/', true), // image/video
 							'hidden' => isset($old_photo->hidden)?$old_photo->hidden:false,
-							'size' => isset($old_photo->size)?$old_photo->size:filesize ($photo),
-							'updated' => filemtime ($photo),
-							'previewsize' => filesize (MYPHOTOS_DIR.PREVIEW_DIR.$photo)
+							'size' => isset($old_photo->size)?$old_photo->size:filesize ($media),
+							'updated' => filemtime ($media),
+							'previewsize' => @filesize (MYPHOTOS_DIR.PREVIEW_DIR.$media) // if not thumbnail (ex: video for now..)
 						);
 					}
 					$settings = array (

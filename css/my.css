@@ -45,6 +45,7 @@ input.error {
 	position: absolute;
 	top: 50%;
 	margin-top: -26px;
+	z-index: 1; /* over .view div */
 }
 
 .prev {
@@ -109,6 +110,8 @@ input.error {
 	border-radius: 2px;
 	height: 204px; /* 200px + 2 * border */
 	width: 204px;
+	background-size: cover;
+	background-position: center;
 }
 
 .thumb.private {
