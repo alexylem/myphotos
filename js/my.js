@@ -1,4 +1,5 @@
 my.loglevel = 4;
+window.___gcfg = { lang: navigator.language };
 
 var gallery,
 	tooltipopts = {
