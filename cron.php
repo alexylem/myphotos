@@ -221,15 +221,17 @@ function manage ($nb) {
 						$json = file_get_contents($file);
 						$old_settings = json_decode($json);
 						$new_name = isset ($old_settings->name)?$old_settings->name:basename($dir);
-						$old_files = isset ($old_settings->files)?$old_settings->files:[];
+						$old_files = isset ($old_settings->files)?$old_settings->files:array ();
 						$new_cover = $old_settings->cover;
 						$new_visibility = $old_settings->visibility;
+						$new_groups = isset ($old_settings->groups)?$old_settings->groups:array ();
 					}
 					else {
 						$old_files = array ();
 						$new_name = basename($dir);
 						$new_cover = count($medias)?$medias[0]:false;
-						$new_visibility = $config['defaultvisibility'];	
+						$new_visibility = $config['defaultvisibility'];
+						$new_groups = array ();
 					}
 /*
 $old_files
@@ -247,7 +249,8 @@ $new_files
 */
 					$new_files = array ();
 					foreach ($medias as $media) {
-						$old_photo = isset ($old_files[$media])?$old_files[$media]:new stdClass();
+						//print_r($old_files);
+						$old_photo = isset ($old_files->{$media})?$old_files->{$media}:new stdClass();
 						$new_files[$media] = array (
 							'type' => strstr (mime_type_from_ext ($media), '/', true), // image/video
 							'hidden' => isset($old_photo->hidden)?$old_photo->hidden:false,
@@ -260,7 +263,8 @@ $new_files
 						'name' => $new_name,
 						'files' => $new_files,
 						'cover' => $new_cover,
-						'visibility' => $new_visibility
+						'visibility' => $new_visibility,
+						'groups' => $new_groups
 					);
 					if ($simulate)
 						warning ('Simulated');
@@ -297,37 +301,38 @@ $new_files
 				break;
 
 			case 'thumb':
-				if ($task['operation'] == 'create')
-					$thumbfile = dirname ($file).'/'.MYPHOTOS_DIR.THUMB_DIR.basename ($file);
-					ongoing ('generating '.$thumbfile);
-					if ($simulate)
-						warning ('Simulated');
-					elseif ($original = WideImage::loadFromFile($file)) {
-						$original = $original->resize(THUMB_SIZE, THUMB_SIZE, 'outside');
-						$exif = exif_read_data($file);
-						if (isset ($exif['Orientation']))
-							$original = $original->exifOrient($exif['Orientation']);
-						$original->saveToFile($thumbfile, IMG_QUALITY);
-						success ();
-					} else
-						error ("Unable to load $file");
+				//if ($task['operation'] == 'create')
+				$thumbfile = dirname ($file).'/'.MYPHOTOS_DIR.THUMB_DIR.basename ($file);
+				print_r ($thumbfile);
+				ongoing ('generating '.$thumbfile);
+				if ($simulate)
+					warning ('Simulated');
+				elseif ($original = WideImage::loadFromFile($file)) {
+					$original = $original->resize(THUMB_SIZE, THUMB_SIZE, 'outside');
+					$exif = exif_read_data($file);
+					if (isset ($exif['Orientation']))
+						$original = $original->exifOrient($exif['Orientation']);
+					$original->saveToFile($thumbfile, IMG_QUALITY);
+					success ();
+				} else
+					error ("Unable to load $file");
 				break;
 
 			case 'preview':
-				if ($task['operation'] == 'create')
-					$previewfile = dirname ($file).'/'.MYPHOTOS_DIR.PREVIEW_DIR.basename ($file);
-					ongoing ('generating '.$previewfile);
-					if ($simulate)
-						warning ('Simulated');
-					elseif ($original = WideImage::loadFromFile($file)) {
-						$original->resize(null, PREVIEW_HEIGHT, 'inside', 'down');
-						$exif = exif_read_data($file);
-						if (isset ($exif['Orientation']))
-							$original = $original->exifOrient($exif['Orientation']);
-						$original->saveToFile($previewfile, IMG_QUALITY);
-						success ();
-					} else
-						error ("Unable to load $file");
+				//if ($task['operation'] == 'create')
+				$previewfile = dirname ($file).'/'.MYPHOTOS_DIR.PREVIEW_DIR.basename ($file);
+				ongoing ('generating '.$previewfile);
+				if ($simulate)
+					warning ('Simulated');
+				elseif ($original = WideImage::loadFromFile($file)) {
+					$original->resize(null, PREVIEW_HEIGHT, 'inside', 'down');
+					$exif = exif_read_data($file);
+					if (isset ($exif['Orientation']))
+						$original = $original->exifOrient($exif['Orientation']);
+					$original->saveToFile($previewfile, IMG_QUALITY);
+					success ();
+				} else
+					error ("Unable to load $file");
 				break;
 
 			default:
