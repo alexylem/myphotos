@@ -24,13 +24,13 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 - [X] MyPhotos reads files stored in a filesystem, works great with NAS
 - [X] Ability to change default Album covers and title
 - [X] Now supports videos that contain in their name a youtubeid between `()`
-  * ex: `tom's first steps (1a2e3e4r5t6).avi`
+  * ex: `tom's first steps (1a2e3e4r5t6).avi` <-- youtube id is *1a2e3e4r5t6*
 
 ### Sharing
 
 - [X] Share albums as public, restricted, or keep them private
 - [X] Restricted albums are shared to groups of people
-- [X] People authenticate using their Google account
+- [X] People authenticate using their :lock: Google account
 - [X] Hide bad/dupplicate photos instead of having to delete them
 
 ### Additional user features
