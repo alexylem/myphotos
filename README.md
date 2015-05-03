@@ -30,7 +30,7 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 
 - [X] Share albums as public, restricted, or keep them private
 - [X] Restricted albums are shared to groups of people
-- [X] People authenticate using their :lock: Google account
+- [X] People authenticate using their Google account
 - [X] Hide bad/dupplicate photos instead of having to delete them
 
 ### Additional user features
@@ -57,7 +57,7 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 * WebServer with PHP - no need for mysql :)
   * [MAMP](http://www.mamp.info) for Mac
   * [NGINX](http://www.raspipress.com/2014/06/tutorial-install-nginx-and-php-on-raspbian/) for Raspberry Pi
-* git installed (for automatic updates)
+* (*optional*) git installed (for automatic updates)
 ```
 sudo apt-get install git
 ```
@@ -65,7 +65,7 @@ sudo apt-get install git
 
 ### Installation steps
 
-* Clone the repo on a web directory
+* Clone (or download & extract) the repo on a web directory
 ```
 cd /var/www/myphotos
 git clone --recursive https://github.com/alexylem/myphotos.git
@@ -79,14 +79,14 @@ cp config.default.php config.php
 nano config.php
 ```
 * Login and click on *Update Library*
-* (optional) Change owner of .git directories for automatic updates:
+* (*optional*) Change owner of .git directories for automatic updates:
 ```
 sudo chown -R www-data:www-data .*
 ```
 
 ### Update your version of MyPhotos
 
-1. Login and click on *Check updates*
+* Login and click on *Check updates*
 
 ## Report an issue
 
