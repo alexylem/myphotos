@@ -65,16 +65,16 @@ sudo apt-get install git
 
 ### Installation steps
 
-* Clone (or download & extract) the repo on a web directory
+* Clone (or [download](https://github.com/alexylem/myphotos/archive/master.zip) the repo on a web directory:
 ```
 cd /var/www/myphotos
 git clone --recursive https://github.com/alexylem/myphotos.git
 ```
-* Create `config.php` from a copy of `config.default.php`
+* Create `config.php` from a copy of `config.default.php`:
 ```
 cp config.default.php config.php
 ```
-* Fill-in `config.php` with your settings & Google API Key
+* Fill-in `config.php` with your settings & Google API Key:
 ```
 nano config.php
 ```
