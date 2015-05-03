@@ -9,7 +9,7 @@ Easily share photo albums without database
 
 ## Screenshots
 
-(soon)
+*(soon)*
 
 ## Synopsis & Features
 
@@ -45,6 +45,10 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 * Generates thumbnails & optimized versions of your photos for faster display
 * Leverage broswer cache on already viewed photos
 * Preload next photo in the background
+
+### Upcoming features
+
+- [ ] Let users download entire albums
 
 ## Installation
 
