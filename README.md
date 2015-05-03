@@ -20,31 +20,31 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 
 ### Photo Library
 
-* Easily share photo albums without database
-* MyPhotos reads files stored in a filesystem, works great with NAS
-* Ability to change default Album covers and title
-* Now supports videos that contain in their name a youtubeid between `()`
+- [X] Easily share photo albums without database
+- [X] MyPhotos reads files stored in a filesystem, works great with NAS
+- [X] Ability to change default Album covers and title
+- [X] Now supports videos that contain in their name a youtubeid between `()`
   * ex: `tom's first steps (1a2e3e4r5t6).avi`
 
 ### Sharing
 
-* Share albums as public, restricted, or keep them private
-* Restricted albums are shared to groups of people
-* People authenticate using their Google account
-* Hide bad/dupplicate photos instead of having to delete them
+- [X] Share albums as public, restricted, or keep them private
+- [X] Restricted albums are shared to groups of people
+- [X] People authenticate using their Google account
+- [X] Hide bad/dupplicate photos instead of having to delete them
 
 ### Additional user features
 
-* Multilanguage support (English, French) - easy to add yours
-* Download photos in optimized or original sizes
-* Use keyboard arrows to swipe photos
-* Automatic updates
+- [X] Multilanguage support (English, French) - easy to add yours
+- [X] Download photos in optimized or original sizes
+- [X] Use keyboard arrows to swipe photos
+- [X] Automatic updates
 
 ### Performance
 
-* Generates thumbnails & optimized versions of your photos for faster display
-* Leverage broswer cache on already viewed photos
-* Preload next photo in the background
+- [X] Generates thumbnails & optimized versions of your photos for faster display
+- [X] Leverage broswer cache on already viewed photos
+- [X] Preload next photo in the background
 
 ### Upcoming features
 
@@ -65,11 +65,11 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 1. Clone the repo `git clone --recursive https://github.com/alexylem/myphotos.git`
 2. Create `config.php` from a copy of `config.default.php`
 3. Fill-in `config.php` with your settings & Google API Key
-4. Login and click on Update Library
+4. Login and click on *Update Library*
 
 ### Update your version of MyPhotos
 
-1. Pull updates using `git pull --recurse-submodules`
+1. Login and click on *Check updates*
 
 ## Report an issue
 
