@@ -87,7 +87,7 @@ $(document).ready (function () {
 								users: data.users
 							});
 						} catch (err) {
-							my.error ('Ractive error');
+							console.error ('Ractive error', err);
 							location.reload();
 						}
 					}
@@ -402,14 +402,20 @@ function signInCallback(authResult) {
 						data: { action: 'getGroups' },
 						success: function (sdata) {
 							var data = JSON.parse (sdata);
-							gallery.set ({
-								groups: data.groups,
-								users: data.users
-							});
+							try { // Ractive crash DEBUG
+								gallery.set ({
+									groups: data.groups,
+									users: data.users
+								});
+							} catch (err) {
+								console.error ('Ractive error', err);
+								location.reload();
+							}
 						}
 					});
 				}
-				cwd ('./');
+				var dir = window.location.hash.substr(1) || './';
+				cwd (dir);
       		}
 		);
 	}
