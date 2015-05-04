@@ -73,16 +73,13 @@ $(document).ready (function () {
 					url: 'backend.php',
 					data: { action: 'getGroups' },
 					success: function (sdata) {
-						var data = JSON.parse (sdata);
-						try { // DEBUG ractive freeze
-							gallery.set ({
-								groups: data.groups,
-								users: data.users
-							});
-						} catch (err) {
-							console.error ('Ractive error', err);
-							location.reload();
-						}
+						var groups = JSON.parse (sdata);
+						//try { // DEBUG ractive freeze
+							gallery.set ('groups', groups);
+						//} catch (err) {
+						//	console.error ('Ractive error', err);
+							//location.reload();
+						//}
 					}
 				});
 				}
@@ -174,7 +171,7 @@ gallery.on ('removegroup', function (event, index) {
 });
 gallery.on ('adduser', function (event) {
 	event.original.preventDefault();
-	am.addRow ($('#users'), {
+	am.addRecord ($('#users'), {
 		name:  gallery.get ('newname'),
 		email: gallery.get ('newemail'),
 		groups: gallery.get ('newgroups')
@@ -402,12 +399,9 @@ function signInCallback(authResult) {
 						url: 'backend.php',
 						data: { action: 'getGroups' },
 						success: function (sdata) {
-							var data = JSON.parse (sdata);
+							var groups = JSON.parse (sdata);
 							try { // Ractive crash DEBUG
-								gallery.set ({
-									groups: data.groups,
-									users: data.users
-								});
+								gallery.set ('groups', groups);
 							} catch (err) {
 								console.error ('Ractive error', err);
 								location.reload();

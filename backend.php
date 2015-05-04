@@ -136,33 +136,30 @@ switch($_REQUEST['action']) {
 	case 'getGroups':
 		if (!isadmin ())
 			respond ('Operation not authorized', true);
-		$json = @json_decode(file_get_contents($config['photopath'].MYPHOTOS_DIR.'.groups'));
-		respond (json_encode(array (
-			'groups' => @$json->groups?$json->groups:[],
-			'users'  => @$json->users?$json->users:[]
-		)));
+		$json = file_get_contents($config['photopath'].MYPHOTOS_DIR.'groups.json');
+		respond ($json?$json:[]);
 		break;
 
 	case 'getPeople':
 		if (!isadmin ())
 			respond ('Operation not authorized', true);
-		$json = @json_decode(file_get_contents($config['photopath'].MYPHOTOS_DIR.'.groups'));
-		respond (@$json->users?$json->users:[]);
+		$json = file_get_contents($config['photopath'].MYPHOTOS_DIR.'people.json');
+		exit ($json?$json:[]);
 		break;
 		
 	case 'saveGroups':
 		if (!isadmin ())
 			respond ('Operation not authorized', true);
-		$jsonpath = $config['photopath'].MYPHOTOS_DIR.'.groups';
-		$json = fopen($jsonpath, 'w+');
-		if ($json
-			&& fwrite($json, json_encode(array (
-				'groups' => isset ($_REQUEST['groups'])?$_REQUEST['groups']:[],
-				'users' => isset ($_REQUEST['users'])?$_REQUEST['users']:[])))
+		// saving groups
+		if (($json = fopen($config['photopath'].MYPHOTOS_DIR.'groups.json', 'w+'))
+			&& fwrite($json, json_encode($_REQUEST['groups']))
+			&& fclose($json)
+			&& ($json = fopen($config['photopath'].MYPHOTOS_DIR.'people.json', 'w+'))
+			&& fwrite($json, json_encode($_REQUEST['users']))
 			&& fclose($json))
 			respond ();
 		else
-			respond ('Error while trying to write the groups file', true);
+			respond ('Error while writing groups & people files', true);
 		break;
 
 	case 'checkupdates':
@@ -191,10 +188,9 @@ function hasaccess ($visibility, $groups) {
 		if (!isset ($_SESSION['groups'])) {
 			global $config;
 			$_SESSION['groups'] = array ();
-			$json = @file_get_contents($config['photopath'].MYPHOTOS_DIR.'.groups');
-		    $settings = json_decode($json);
-			if ($settings->users)
-			    foreach ($settings->users as $user)
+			$json = @file_get_contents($config['photopath'].MYPHOTOS_DIR.'people.json');
+			if ($users = json_decode($json))
+			    foreach ($users as $user)
 					if ($user->email == $_SESSION['me']['email']) {
 			        	$_SESSION['groups'] = $user->groups;
 						break;

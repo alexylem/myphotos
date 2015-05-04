@@ -1,27 +1,17 @@
-// x-editable options
-$.extend($.fn.editable.defaults, {
-    inputclass: 'input-sm',
-    mode: 'inline',
-    toggle: 'dblclick',
-    showbuttons: false,
-    onblur: 'submit'
-});
-
-// function to validate required fields
-function frequired (value) {
-	if ($.trim(value) === '')
-        return 'This field is required';
-}
+$.fn.editable.defaults.mode = 'inline';
 
 var am = new function () {
-	this.config = {}; // must be initialized with am.config = XXX
+	this.config = {}; // set in config.js; TODO load repo by js name?
 	
 	this.getRecords = function (objectkey, callback) {
 		switch (typeof this.config.objects[objectkey].source) {
 			case 'string': // ajax url
 				jQuery.ajaxSetup({async:false});
-				my.getJSON(this.config.objects[objectkey].source, function (records) {
-					callback (records);
+				my.get({
+					url: this.config.objects[objectkey].source,
+					success: function (records) {
+						callback (records);
+					}
 				});
 				break;
 			case 'object': // array
@@ -36,27 +26,23 @@ var am = new function () {
 	};
 
 	this.drawDatatable = function ($table, objectkey) {
-		//my.debug ('drawing datatable for', objectkey, 'on table', $table);
-		var config = this.config, // this.config out of function scopes
+		var config = this.config,
 			columns = [{
 				checkbox: true
 			},
 			{
 				field: 'ID',
-				visible: false // true for debug
+				visible: false
 			}];
 		$.each (config.objects[objectkey].fields, function (fieldkey, field) {
 			var editor = {
 				name: fieldkey,
+				onblur: 'submit',
+				showbuttons: false,
 				success: function(response, newValue) {}
 			};
-			if (field.required)
-				editor.validate = frequired;
 			editor.type = 'text';
 			switch (field.type) {
-				case 'integer':
-					editor.type = 'number';
-					break;
 				case 'string':
 				case 'email':
 					break; // valid
@@ -64,11 +50,7 @@ var am = new function () {
 					editor.type = 'textarea';
 					break;
 				case 'boolean':
-					editor.type = 'checklist';
-					editor.source = [{value: '1', text:field.label}];
-					editor.display = function (value) {
-						$(this).html(value == '1'?'Y':'N');
-					};
+					editor.type = 'checkbox';
 					break;
 				case 'list':
 				case 'multivalue':
@@ -86,9 +68,7 @@ var am = new function () {
 					var options = [];
 					if (field.object) {
 						editor.source = config.objects[field.object].source;
-					} else if (field.list) {
-						editor.source = 'getList.php?type='+field.list;
-					} else if (field.options) {
+					} else {
 						$.each (field.options, function (key, option) {
 							options.push ({
 								value: key,
@@ -96,8 +76,6 @@ var am = new function () {
 							});
 						});
 						editor.source = options;
-					} else {
-						my.error ('no data source provided for field', field.label);
 					}
 					break;
 				default:
@@ -106,7 +84,7 @@ var am = new function () {
 			columns.push ({
 				title: field.label,
 				field: fieldkey,
-				sortable: false, // newrecord
+				sortable: true,
 				editable: editor
 			});
 			
@@ -116,8 +94,6 @@ var am = new function () {
 			for (var i=0; i<records.length; i++) {
 				records[i].ID = i;
 			}
-			//my.debug ('ready to draw on', $table, 'with columns', columns, 'data', records);
-			$table.bootstrapTable ('destroy');
 			$table.bootstrapTable ({
 				columns: columns,
 				data: records,
@@ -138,36 +114,20 @@ var am = new function () {
 		});
 	};
 
-	this.newID = function ($table) {
+	this.addRow = function ($table, record) {
 		var records = $table.bootstrapTable ('getData');
-		return Math.max.apply(Math,records.map(function(r){return r.ID;}))+1;
-	};
-
-	this.newRecord = function ($table) {
-		this.addRecord ($table, {});
-	};
-
-	this.addRecord = function ($table, record) {
-		record.ID = this.newID ($table);
-		$table.bootstrapTable ('uncheckAll');
-		$table.bootstrapTable ('selectPage', 1);
-		$table.bootstrapTable ('prepend', record); // needs nosort !
-		$table.bootstrapTable ('checkBy', { field: 'ID', values: [record.ID] });
+		record.ID = Math.max.apply(Math,records.map(function(r){return r.ID;}))+1;
+		$table.bootstrapTable ('append', record);
 	};
 
 	this.removeChecked = function ($table) {
 	    var selects = $table.bootstrapTable('getSelections');
-	    if (selects.length) {
-	        if (confirm ('Are you sure?')) {
-		        ids = $.map(selects, function (row) {
-		            return row.ID;
-		        });
-		        $table.bootstrapTable('remove', {
-					field: 'ID',
-					values: ids
-		        });
-		    }
-	    } else
-	    	my.error ('Please select a record first');
+        ids = $.map(selects, function (row) {
+            return row.ID;
+        });
+        $table.bootstrapTable('remove', {
+			field: 'ID',
+			values: ids
+        });
 	};
 } ();

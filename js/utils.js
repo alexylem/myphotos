@@ -71,7 +71,7 @@ var my = new function () { // new is needed!
 		_LOG_     = 3,
 		_DEBUG_   = 4;
 	
-	this.loglevel = 3;
+	this.loglevel = 4;
 	
 	this.notify = function (type, message, url) {
 		$.notify ({
@@ -123,6 +123,17 @@ var my = new function () { // new is needed!
 		if (this.loglevel >= _DEBUG_) {
 			console.debug.apply (console, Array.prototype.slice.call(arguments));
 		}
+	};
+
+	this.getJSON = function (url, fsuccess) {
+		my.log ('	loading "'+url+'"...');
+		$.getJSON (url, function (json) {
+			my.log ('	loaded from "'+url+'":', json);
+			if (typeof(fsuccess) == 'function')
+				fsuccess(json);
+		}).fail (function (jqxhr, textStatus, error) {
+			my.error( "Error ("+textStatus+") from "+url+": " + error); // http://jsonlint.com
+		});
 	};
 
 	this.get = function (args) {
