@@ -21,9 +21,8 @@ body { padding-top: 70px; }
 	margin: 6px;
 }
 
-.bootstrap-table .pagination-detail {
-	display: none;
-}
+tr.selected td { background-color: #f89406 !important;}
+.pagination-detail {display: none;}
 
 input.error {
     color: #a94442 !important;

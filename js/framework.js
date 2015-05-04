@@ -109,7 +109,6 @@ var am = new function () {
 				sortable: false, // newrecord
 				editable: editor
 			});
-			
 		});
 		
 		this.getRecords (objectkey, function (records) {
@@ -124,7 +123,8 @@ var am = new function () {
 				pagination: true,
 				search: true,
 				clickToSelect: true,
-				singleSelect: true
+				singleSelect: true,
+				searchTimeOut: 200
 			});
 		});
 		
@@ -149,24 +149,25 @@ var am = new function () {
 
 	this.addRecord = function ($table, record) {
 		record.ID = this.newID ($table);
-		$table.bootstrapTable ('uncheckAll');
-		$table.bootstrapTable ('selectPage', 1);
-		$table.bootstrapTable ('prepend', record); // needs nosort !
-		$table.bootstrapTable ('checkBy', { field: 'ID', values: [record.ID] });
+		$('.bootstrap-table .search > input').val('').trigger('keyup');
+		setTimeout (function () {
+			$table.bootstrapTable ('uncheckAll');
+			$table.bootstrapTable ('selectPage', 1);
+			$table.bootstrapTable ('prepend', record); // needs nosort !
+			$table.bootstrapTable ('checkBy', { field: 'ID', values: [record.ID] });
+		}, 400); // has to be greater than bootstraptable searchtimeout
 	};
 
 	this.removeChecked = function ($table) {
 	    var selects = $table.bootstrapTable('getSelections');
 	    if (selects.length) {
-	        if (confirm ('Are you sure?')) {
-		        ids = $.map(selects, function (row) {
-		            return row.ID;
-		        });
-		        $table.bootstrapTable('remove', {
-					field: 'ID',
-					values: ids
-		        });
-		    }
+	        ids = $.map(selects, function (row) {
+	            return row.ID;
+	        });
+	        $table.bootstrapTable('remove', {
+				field: 'ID',
+				values: ids
+	        });
 	    } else
 	    	my.error ('Please select a record first');
 	};

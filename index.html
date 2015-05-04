@@ -232,6 +232,9 @@
 											</div>
 										{{/if}}
 										<div id="toolbar">
+											<button on-click="adduser" type="button" class="btn btn-default">
+												<span class="glyphicon glyphicon-plus"></span> New
+											</button>
 											<button on-click="removeuser" type="button" class="btn btn-default">
 												<span class="glyphicon glyphicon-remove"></span> Delete
 											</button>
@@ -241,8 +244,10 @@
 											data-classes="table table-hover table-no-bordered"
 											data-striped="true"
 											data-page-size="5"
+											data-show-pagination-switch="true"
 											data-toolbar="#toolbar">
 										</table>
+										<!--
 										<form class="form-inline" on-submit="adduser">
 										  <div class="form-group">
 										    <input type="text" class="form-control input-sm" value="{{newname}}" placeholder="ex: Mum">
@@ -259,6 +264,7 @@
 										  </div>
 										  <button type="submit" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-plus"></span></button>
 										</form>
+										-->
 									</div>
 									<div class="modal-footer">
 										<small>Changes are saved automatically.</small>

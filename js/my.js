@@ -169,6 +169,7 @@ gallery.on ('removegroup', function (event, index) {
     	$('#multiselect').multiselect('rebuild');
 	}	
 });
+/*
 gallery.on ('adduser', function (event) {
 	event.original.preventDefault();
 	am.addRecord ($('#users'), {
@@ -178,6 +179,10 @@ gallery.on ('adduser', function (event) {
 	});
 	this.set({ newname: '', newemail: '', newgroups: [] });
 	$('#multiselect').multiselect('rebuild');
+});
+*/
+gallery.on ('adduser', function () {
+	am.newRecord ($('#users'));
 });
 gallery.on ('removeuser', function () {
 	if (confirm (i18n.t('are_you_sure')))
