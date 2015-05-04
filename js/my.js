@@ -31,13 +31,6 @@ var gallery = new Ractive({
 		user: false,
 		groups: [],
 		users: [],
-		userfilter: false,
-		filter: function (user) {
-			var userfilter = this.get('userfilter');
-			my.log ('checking if', user, 'is on filter', userfilter);
-			return !userfilter ||
-				   $.inArray (userfilter, user.groups) > -1;
-		},
 		cron: {
 			striped: true,
 			progress: 0,
@@ -107,7 +100,7 @@ $(document).ready (function () {
 });
 
 // Actions
-gallery.on ('cwd', function (event, dir) {
+gallery.on ('cwd', function (event, dir) { // still needed? as now done by hash
 	cwd (dir);
 });
 $(window).on('hashchange', function() { // change album
@@ -120,7 +113,7 @@ gallery.on ('view', function (event, photoid) {
 	// cache next image
 	var src = this.get ('photos['+(photoid+1)+'].previewurl');
 	my.debug ('preloading image', src);
-	(new Image()).src = src;
+	(new Image()).src = src; // TODO don't preload videos
 });
 gallery.on ('previous', function (event) {
 	this.add ('photoid', -1);
@@ -195,7 +188,7 @@ gallery.on ('removeuser', function () {
 });
 gallery.on ('filterpeople', function (event, group) {
 	my.log ('filtering poeple on', group);
-	this.set ('userfilter', group);
+	$('.bootstrap-table .search > input').val(group).trigger('keyup');
 });
 gallery.on ('ignore', function (event, group) {
 	this.set ({
