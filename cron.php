@@ -163,6 +163,7 @@ function prepare ($dir, $reset = false, $output = 'verbose') {
 					case 'jpeg':
 					case 'png':
 					case 'bmp':
+					case 'png':
 						debug ("checking if thumb exists for $dir/$f");
 						$thumbfile = $dir.'/'.MYPHOTOS_DIR.THUMB_DIR.$f;
 						if (file_exists($thumbfile)) {

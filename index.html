@@ -311,6 +311,20 @@
 			{{/each}}
 			<div class="clearfix"></div>
 			<hr />
+			{{#if !user}}
+				<div class="panel panel-default">
+				  <div class="panel-body">
+					 <h4><span class="glyphicon glyphicon-question-sign"></span> {{t('missing_albums')}}</h4>
+					 <p>{{t('plz_sign_in')}}</p>
+					 <p>
+					 	{{t('no_google_account')}}
+					 	<a href="https://accounts.google.com/SignUpWithoutGmail" target="_blank">
+					 		{{t('create_google_account')}}
+					 	</a>
+					 </p>
+					  </div>
+				</div>
+			{{/if}}
 		{{elseif view == 'home'}}
 			<div class="jumbotron">
 			  <h1><span class="glyphicon glyphicon-eye-close"></span> {{t('oops')}}</h1>
