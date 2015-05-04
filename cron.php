@@ -303,7 +303,6 @@ $new_files
 			case 'thumb':
 				//if ($task['operation'] == 'create')
 				$thumbfile = dirname ($file).'/'.MYPHOTOS_DIR.THUMB_DIR.basename ($file);
-				print_r ($thumbfile);
 				ongoing ('generating '.$thumbfile);
 				if ($simulate)
 					warning ('Simulated');

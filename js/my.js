@@ -1,5 +1,6 @@
 my.loglevel = 4;
-window.___gcfg = { lang: navigator.language };
+Ractive.DEBUG = (my.loglevel >= 4);
+window.___gcfg = { lang: navigator.language }; // Google sign-in in local language
 
 var gallery,
 	tooltipopts = {
@@ -66,6 +67,8 @@ $(document).ready (function () {
 			$('.addtooltip').i18n().tooltip(tooltipopts); // need to translate title before
 	});
 
+	// Get direct link dir
+	var dir = window.location.hash.substr(1) || './';
 	my.get({
 		url: 'plus.php',
 		data: { action: 'init' },
@@ -78,10 +81,15 @@ $(document).ready (function () {
 					data: { action: 'getGroups' },
 					success: function (sdata) {
 						var data = JSON.parse (sdata);
-						gallery.set ({
-							groups: data.groups,
-							users: data.users
-						});
+						try { // DEBUG ractive freeze
+							gallery.set ({
+								groups: data.groups,
+								users: data.users
+							});
+						} catch (err) {
+							my.error ('Ractive error');
+							location.reload();
+						}
 					}
 				});
 				}
@@ -89,11 +97,11 @@ $(document).ready (function () {
 			else {
 				gallery.set ('user', false);
 			}
-			cwd ('./');
+			cwd (dir);
 		},
 		error: function () { // is needed?
 			gallery.set ('user', false);
-			cwd ('./');
+			cwd (dir);
 		}
 	});
 });
@@ -349,12 +357,8 @@ function cwd (dir) {
 			gallery.set ('folder', message.folder);
 			gallery.set ('folders', message.folders);
 
-			my.log ('Unsorted', message.files);
-
 			// Sort by updated
 			message.files.sort(function compare(a,b) { return a.updated - b.updated; });
-
-			my.log ('Sorted', message.files);
 
 			// Humanize values
 			$.each (message.files, function (i, file) {
@@ -363,6 +367,9 @@ function cwd (dir) {
 			});
 
 			gallery.set ('photos', message.files);
+
+			// Set URL hash
+			window.location.hash = '#'+message.folder.filepath;
 
 			if (message.folder.filepath !== './') { // in a directory
 				gallery.set ('view', 'album');
