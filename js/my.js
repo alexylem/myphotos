@@ -68,7 +68,7 @@ $(document).ready (function () {
 	});
 
 	// Get direct link dir
-	var dir = window.location.hash.substr(1) || './';
+	var dir = decodeURIComponent (window.location.hash.slice(1)) || './';
 	my.get({
 		url: 'plus.php',
 		data: { action: 'init' },
@@ -109,6 +109,9 @@ $(document).ready (function () {
 // Actions
 gallery.on ('cwd', function (event, dir) {
 	cwd (dir);
+});
+$(window).on('hashchange', function() { // change album
+	cwd (window.location.hash.slice(1));
 });
 gallery.on ('view', function (event, photoid) {
 	my.debug ('setting photoid to', photoid);
@@ -372,11 +375,13 @@ function cwd (dir) {
 			gallery.set ('photos', message.files);
 
 			// Set URL hash
-			window.location.hash = '#'+message.folder.filepath;
+			//window.location.hash = '#'+message.folder.filepath;
 
 			if (message.folder.filepath !== './') { // in a directory
+				document.title = message.folder.name;
 				gallery.set ('view', 'album');
 			} else { // root
+				document.title = 'MyPhotos';
 				gallery.set ('parentpath', false); // needed?
 				gallery.set ('view', 'home');
 			}

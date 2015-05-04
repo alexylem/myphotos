@@ -302,7 +302,7 @@
 			<h5>{{t('albums')}}</h5>
 			{{#each folders}}
 			<div class="thumb stack">
-				<a href="#" on-click="cwd:{{filepath}}" style="background-image: url('{{coverurl}}');">
+				<a href="#{{filepath}}" style="background-image: url('{{coverurl}}');">
 					<div class="cover">
 						<span class="glyphicon glyphicon-{{visibility == 'public' ? 'globe' : (visibility == 'restricted' ? 'user' : 'lock')}}"></span> {{filename}}
 					</div>
@@ -323,7 +323,7 @@
 			<h5>{{t('photos')}}</h5>
 			{{#each photos}}
 			<div class="thumb {{#if hidden}}private{{/if}}" style="background-image: url('{{thumburl}}');">
-				<a href="#" on-click="view:{{@index}}"></a>
+				<a href="#{{folder.filepath}}" on-click="view:{{@index}}"></a>
 			</div>
 			{{/each}}
 			<div class="clearfix"></div>
