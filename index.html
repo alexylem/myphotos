@@ -29,9 +29,9 @@
 						</button>
 						{{else}}
 						{{#if view == 'album'}}
-						<button on-click="cwd:{{folder.parentpath}}" type="button" class="btn btn-default navbar-btn pull-left">
+						<a href="#{{folder.parentpath}}" class="btn btn-default navbar-btn pull-left">
 							<span class="glyphicon glyphicon-chevron-left"></span> {{t('back')}}
-						</button>
+						</a>
 						{{/if}}
 					{{/if}}
 					
