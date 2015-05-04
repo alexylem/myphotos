@@ -222,6 +222,9 @@ gallery.on ('checkupdates', function () {
 						timeout: 60*1000, // 1m
 						success: function () {
 							my.success (i18n.t('updated'));
+							setTimeout(function(){
+								location.reload();
+							}, 3*1000); // 3 seconds
 						}
 					}); 
 				}
