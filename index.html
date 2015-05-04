@@ -231,21 +231,12 @@
 												Showing people in {{userfilter}} <a href="#" class="alert-link" on-click="filterpeople:false">See all</a>
 											</div>
 										{{/if}}
-										<div id="toolbar">
-											<button on-click="adduser" type="button" class="btn btn-default">
-												<span class="glyphicon glyphicon-plus"></span> New
-											</button>
-											<button on-click="removeuser" type="button" class="btn btn-default">
-												<span class="glyphicon glyphicon-remove"></span> Delete
-											</button>
-										</div>
 										<table
 											id="users"
 											data-classes="table table-hover table-no-bordered"
 											data-striped="true"
 											data-page-size="5"
-											data-show-pagination-switch="true"
-											data-toolbar="#toolbar">
+											data-show-pagination-switch="true">
 										</table>
 										<!--
 										<form class="form-inline" on-submit="adduser">
@@ -373,7 +364,7 @@
 <script src="lib/bootstrap/js/bootstrap.min.js"></script>
 <script src="lib/multiselect/js/bootstrap-multiselect.js"></script>
 <script src="lib/bootstrap-notify/bootstrap-notify.min.js"></script>
-<script src="lib/bootstrap-table/dist/bootstrap-table.min.js"></script>
+<script src="lib/bootstrap-table/dist/bootstrap-table.js"></script> <!-- https://github.com/wenzhixin/bootstrap-table/issues/839 -->
 <script src="lib/bootstrap-table/dist/locale/bootstrap-table-fr-FR.min.js"></script>
 <script src="lib/bootstrap-table/dist/extensions/editable/bootstrap-table-editable.min.js"></script>
 <script src="lib/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js"></script>

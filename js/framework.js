@@ -116,15 +116,36 @@ var am = new function () {
 				records[i].ID = i;
 			}
 			//my.debug ('ready to draw on', $table, 'with columns', columns, 'data', records);
+			
+			// Generate toolbar
+			if ($('#am_toolbar').length === 0) {
+				$toolbar = $('<div id="am_toolbar"></div>').insertBefore ($table);
+				$newbtn = $('<button on-click="adduser" type="button" class="btn btn-default">'+
+						'<span class="glyphicon glyphicon-plus"></span> New'+
+					'</button>').click (function () {
+					am.newRecord ($table);
+				}).appendTo ($toolbar);
+				$deletebtn = $('<button on-click="removeuser" type="button" class="btn btn-default">'+
+						'<span class="glyphicon glyphicon-remove"></span> Delete'+
+					'</button>').click (function () {
+					if (confirm (i18n.t('are_you_sure')))
+						am.removeChecked ($('#users'));
+				}).appendTo ($toolbar);
+			}
+
+			// Destroy previous table
 			$table.bootstrapTable ('destroy');
+
+			// Create table
 			$table.bootstrapTable ({
 				columns: columns,
 				data: records,
 				pagination: true,
-				search: true,
+				search: false, // temporary due to https://github.com/wenzhixin/bootstrap-table/issues/840
+				toolbar: '#am_toolbar',
 				clickToSelect: true,
-				singleSelect: true,
-				searchTimeOut: 200
+				searchTimeOut: 200,
+				singleSelect: true
 			});
 		});
 		
@@ -150,12 +171,12 @@ var am = new function () {
 	this.addRecord = function ($table, record) {
 		record.ID = this.newID ($table);
 		$('.bootstrap-table .search > input').val('').trigger('keyup');
+		$table.bootstrapTable ('uncheckAll');
+		$table.bootstrapTable ('selectPage', 1);
+		$table.bootstrapTable ('prepend', record); // needs nosort !
 		setTimeout (function () {
-			$table.bootstrapTable ('uncheckAll');
-			$table.bootstrapTable ('selectPage', 1);
-			$table.bootstrapTable ('prepend', record); // needs nosort !
 			$table.bootstrapTable ('checkBy', { field: 'ID', values: [record.ID] });
-		}, 400); // has to be greater than bootstraptable searchtimeout
+		}, 300); // has to be greater than bootstrap table search timeout
 	};
 
 	this.removeChecked = function ($table) {

@@ -101,7 +101,7 @@ gallery.on ('cwd', function (event, dir) { // still needed? as now done by hash
 	cwd (dir);
 });
 $(window).on('hashchange', function() { // change album
-	cwd (window.location.hash.slice(1));
+	cwd (decodeURIComponent (window.location.hash.slice(1)));
 });
 gallery.on ('view', function (event, photoid) {
 	my.debug ('setting photoid to', photoid);
@@ -189,7 +189,7 @@ gallery.on ('removeuser', function () {
 		am.removeChecked ($('#users'));
 });
 gallery.on ('filterpeople', function (event, group) {
-	my.log ('filtering poeple on', group);
+	my.debug ('filtering poeple on', group);
 	$('.bootstrap-table .search > input').val(group).trigger('keyup');
 });
 gallery.on ('ignore', function (event, group) {
