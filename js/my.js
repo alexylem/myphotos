@@ -68,6 +68,7 @@ $(document).ready (function () {
 		success: function (user) {
 			if (user) { // logged in
 				gallery.set ('user', user);
+				ga('set', '&uid', user.email); // send user id to google analytics
 				if (user.isadmin) {
 					my.get ({
 					url: 'backend.php',
@@ -102,6 +103,9 @@ gallery.on ('cwd', function (event, dir) { // still needed? as now done by hash
 });
 $(window).on('hashchange', function() { // change album
 	cwd (decodeURIComponent (window.location.hash.slice(1)));
+	ga('send', 'pageview', { // send hash to google analytics
+ 		'page': location.pathname + location.search  + location.hash
+	});
 });
 gallery.on ('view', function (event, photoid) {
 	my.debug ('setting photoid to', photoid);
@@ -169,28 +173,9 @@ gallery.on ('removegroup', function (event, index) {
     	$('#multiselect').multiselect('rebuild');
 	}	
 });
-/*
-gallery.on ('adduser', function (event) {
-	event.original.preventDefault();
-	am.addRecord ($('#users'), {
-		name:  gallery.get ('newname'),
-		email: gallery.get ('newemail'),
-		groups: gallery.get ('newgroups')
-	});
-	this.set({ newname: '', newemail: '', newgroups: [] });
-	$('#multiselect').multiselect('rebuild');
-});
-*/
-gallery.on ('adduser', function () {
-	am.newRecord ($('#users'));
-});
-gallery.on ('removeuser', function () {
-	if (confirm (i18n.t('are_you_sure')))
-		am.removeChecked ($('#users'));
-});
 gallery.on ('filterpeople', function (event, group) {
 	my.debug ('filtering poeple on', group);
-	$('.bootstrap-table .search > input').val(group).trigger('keyup');
+	$('.bootstrap-table .search > input').val(group).trigger('drop');
 });
 gallery.on ('ignore', function (event, group) {
 	this.set ({
@@ -399,6 +384,7 @@ function signInCallback(authResult) {
 			function( data ) {
 				var user = JSON.parse(data).message;
 				gallery.set ('user', user);
+				ga('set', '&uid', user.email); // send user id to google analytics
 				if (user.isadmin) {
 					my.get ({
 						url: 'backend.php',

@@ -1,3 +1,4 @@
+/* Overrides bootstrap */
 body { padding-top: 70px; }
 
 .navbar-brand
@@ -21,8 +22,15 @@ body { padding-top: 70px; }
 	margin: 6px;
 }
 
-tr.selected td { background-color: #f89406 !important;}
+/* Overrides bootstrap-table */
 .pagination-detail {display: none;}
+
+/* Overrides boostrap-table-editable */
+a.editable { display: block; }
+.editable-click, a.editable-click, a.editable-click:hover { border-bottom: none; }
+
+/* App */
+tr.selected td { background-color: #f89406 !important;}
 
 input.error {
     color: #a94442 !important;

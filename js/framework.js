@@ -13,6 +13,21 @@ function frequired (value) {
         return 'This field is required';
 }
 
+function listenTabs ($table) {
+	$table.find ('td > a.editable').on('shown', function () {
+		var $td = $(this).parent();
+	    $(this).data('editable').input.$input.on('keydown', function(e) {
+	        if (e.keyCode == 9) {
+	            e.preventDefault();
+	            if (e.shiftKey)
+	                $td.prev('td').find ('a.editable').editable('show');
+	            else
+	                $td.next('td').find ('a.editable').editable('show');
+	        }
+	    });
+	});
+}
+
 var am = new function () {
 	this.config = {}; // must be initialized with am.config = XXX
 	
@@ -125,7 +140,7 @@ var am = new function () {
 				$newbtn = $('<button on-click="adduser" type="button" class="btn btn-default">'+
 						'<span class="glyphicon glyphicon-plus"></span> New'+
 					'</button>').click (function () {
-					am.newRecord ($table);
+					am.newRecord ($table, objectkey);
 				}).appendTo ($toolbar);
 				$deletebtn = $('<button on-click="removeuser" type="button" class="btn btn-default">'+
 						'<span class="glyphicon glyphicon-remove"></span> Delete'+
@@ -149,9 +164,11 @@ var am = new function () {
 				clickToSelect: true, // enable checkbox selection
 				searchTimeOut: 200,
 				singleSelect: true
+			}).on ('editable-init.bs.table', function () {
+				listenTabs ($(this));
 			});
+			listenTabs ($table);
 		});
-		
 	};
 
 	this.getData = function ($table) {
@@ -168,14 +185,17 @@ var am = new function () {
 		return Math.max.apply(Math,records.map(function(r){return r.ID;}))+1;
 	};
 
-	this.newRecord = function ($table) {
-		this.addRecord ($table, {}, true);
+	this.newRecord = function ($table, objectkey) {
+		var record = {};
+		$.each (this.config.objects[objectkey].fields, function (fieldkey, field) {
+			record[fieldkey] = field.default || ''; // TODO default
+		});
+		this.addRecord ($table, record, true);
 	};
 
 	this.addRecord = function ($table, record, editnow) {
 		record.ID = this.newID ($table);
-		$('.bootstrap-table .search > input').val('').trigger('keyup');
-		$table.bootstrapTable ('uncheckAll');
+		$('.bootstrap-table .search > input').val('').trigger('drop'); // keyup not always work
 		$table.bootstrapTable ('selectPage', 1);
 		$table.bootstrapTable ('prepend', record); // needs nosort !
 		setTimeout (function () {
