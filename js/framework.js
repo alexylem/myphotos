@@ -2,7 +2,7 @@
 $.extend($.fn.editable.defaults, {
     inputclass: 'input-sm',
     mode: 'inline',
-    toggle: 'dblclick',
+    //toggle: 'dblclick', // default 'click'
     showbuttons: false,
     onblur: 'submit'
 });
@@ -39,6 +39,7 @@ var am = new function () {
 		//my.debug ('drawing datatable for', objectkey, 'on table', $table);
 		var config = this.config, // this.config out of function scopes
 			columns = [{
+				field: '_selected',
 				checkbox: true
 			},
 			{
@@ -106,6 +107,7 @@ var am = new function () {
 			columns.push ({
 				title: field.label,
 				field: fieldkey,
+				clickToSelect: false,
 				sortable: false, // newrecord
 				editable: editor
 			});
@@ -119,7 +121,7 @@ var am = new function () {
 			
 			// Generate toolbar
 			if ($('#am_toolbar').length === 0) {
-				$toolbar = $('<div id="am_toolbar"></div>').insertBefore ($table);
+				$toolbar = $('<div id="am_toolbar" class="btn-toolbar"></div>').insertBefore ($table);
 				$newbtn = $('<button on-click="adduser" type="button" class="btn btn-default">'+
 						'<span class="glyphicon glyphicon-plus"></span> New'+
 					'</button>').click (function () {
@@ -140,10 +142,11 @@ var am = new function () {
 			$table.bootstrapTable ({
 				columns: columns,
 				data: records,
+				idField: 'ID',
 				pagination: true,
 				search: true,
 				toolbar: '#am_toolbar',
-				clickToSelect: true,
+				clickToSelect: true, // enable checkbox selection
 				searchTimeOut: 200,
 				singleSelect: true
 			});
@@ -155,6 +158,7 @@ var am = new function () {
 		return $table.bootstrapTable ('getOptions').data.map (function (record) {
 			var copy = $.extend({}, record); // clone to preserve datatable
 			delete copy.ID; // remove fake ID
+			delete copy._selected; // remove internal selection field
 			return copy;
 		});
 	};
@@ -165,10 +169,10 @@ var am = new function () {
 	};
 
 	this.newRecord = function ($table) {
-		this.addRecord ($table, {});
+		this.addRecord ($table, {}, true);
 	};
 
-	this.addRecord = function ($table, record) {
+	this.addRecord = function ($table, record, editnow) {
 		record.ID = this.newID ($table);
 		$('.bootstrap-table .search > input').val('').trigger('keyup');
 		$table.bootstrapTable ('uncheckAll');
@@ -176,6 +180,8 @@ var am = new function () {
 		$table.bootstrapTable ('prepend', record); // needs nosort !
 		setTimeout (function () {
 			$table.bootstrapTable ('checkBy', { field: 'ID', values: [record.ID] });
+			if (editnow)
+				$('a[data-pk='+record.ID+']').first().editable('show');
 		}, 300); // has to be greater than bootstrap table search timeout
 	};
 

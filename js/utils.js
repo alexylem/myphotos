@@ -81,7 +81,7 @@ var my = new function () { // new is needed!
 			offset: {x: 20, y: 70},
 			delay: 2000,
 			mouse_over: 'pause',
-			z_index: 900 // bs dropdown at 1000
+			z_index: 1041 // bs dropdown at 1000 but bs modal at 1040
 		});
 	};
 
