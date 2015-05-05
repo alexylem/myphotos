@@ -141,7 +141,7 @@ var am = new function () {
 				columns: columns,
 				data: records,
 				pagination: true,
-				search: false, // temporary due to https://github.com/wenzhixin/bootstrap-table/issues/840
+				search: true,
 				toolbar: '#am_toolbar',
 				clickToSelect: true,
 				searchTimeOut: 200,
@@ -152,7 +152,7 @@ var am = new function () {
 	};
 
 	this.getData = function ($table) {
-		return $table.bootstrapTable ('getData').map (function (record) {
+		return $table.bootstrapTable ('getOptions').data.map (function (record) {
 			var copy = $.extend({}, record); // clone to preserve datatable
 			delete copy.ID; // remove fake ID
 			return copy;
