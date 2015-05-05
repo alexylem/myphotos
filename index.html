@@ -275,8 +275,7 @@
 		</p>
 
 	{{elseif view == 'photo'}}
-		<button on-click="previous" type="button" class="btn btn-default btn-lg prev"
-		{{#unless photoid}} disabled="disabled" {{/unless}}>
+		<button on-click="previous" type="button" class="btn btn-default btn-lg prev {{#unless photoid}}hidden{{/unless}}">
 			<span class="glyphicon glyphicon-chevron-left"></span>
 		</button>
 		{{#photos[photoid]}}
@@ -290,8 +289,7 @@
 				</div>
 			{{/if}}
 		{{/}}
-		<button on-click="next" type="button" class="btn btn-default btn-lg nxt"
-		{{#if photoid == photos.length-1}} disabled="disabled" {{/if}}>
+		<button on-click="next" type="button" class="btn btn-default btn-lg nxt {{#if photoid == photos.length-1}}hidden{{/if}}">
 			<span class="glyphicon glyphicon-chevron-right"></span>
 		</button>
 	{{else}}
