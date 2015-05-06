@@ -18,7 +18,7 @@ Grant albums to group of people that can then securely connect to this web-app h
 It uses any directory-structured photo library stored in a drive, usb stick or a NAS.
 It is optimized for low energy computers & bandwidth, and does not require any database.
 
-### Photo Library
+### :camera: Photo Library
 
 - [X] Easily share photo albums without database
 - [X] MyPhotos reads files stored in a filesystem, works great with NAS
@@ -26,7 +26,7 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 - [X] Now supports videos that contain in their name a youtubeid between `()`
   * ex: `tom's first steps (1a2e3e4r5t6).avi` <-- youtube id is *1a2e3e4r5t6*
 
-### Admin features & sharing
+### :busts_in_silhouette: Admin features & sharing
 
 - [X] Share albums as public, restricted, or keep them private
 - [X] Restricted albums are shared to groups of people
@@ -34,26 +34,26 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 - [X] Hide bad/dupplicate photos instead of having to delete them
 - [X] Check for updates and upgrade in 1 click
 
-### Additional user features
+### :+1: Additional user features
 
-- [X] Multilanguage support (English, French) - easy to add yours
+- :fr: Multilanguage support (English, French) - easy to add yours
 - [X] Download photos in optimized or original sizes
 - [X] Use keyboard to browse albums
 - [X] Web-app for smartphones and tablets
 
-### Performance
+### :fast_forward: Performance
 
 - [X] Generates thumbnails & optimized versions of your photos for faster display
 - [X] Leverage broswer cache on already viewed photos
 - [X] Preload next photo in the background
 
-### Upcoming features
+### :clock10: Upcoming features
 
 - [ ] Let users download entire albums
 
 ## Installation
 
-### Pre-requisites
+### :ballot_box_with_check: Pre-requisites
 
 * WebServer with PHP - no need for mysql :)
   * [MAMP](http://www.mamp.info) for Mac
@@ -64,7 +64,7 @@ sudo apt-get install git
 ```
 * [Create Google API project](http://support.wpsocial.com/support/articles/144223-creating-a-google-project-with-the-google-api-console) for Public & Secret keys
 
-### Installation steps
+### :mans_shoe: Installation steps
 
 * Clone (or [download](https://github.com/alexylem/myphotos/archive/master.zip) & extract) the repo on a web directory:
 ```
