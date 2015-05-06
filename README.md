@@ -36,7 +36,7 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 
 ### :+1: Additional user features
 
-- :fr: Multilanguage support (English, French) - easy to add yours
+- [X] Multilanguage support (:uk: English, :fr: French) - easy to add yours
 - [X] Download photos in optimized or original sizes
 - [X] Use keyboard to browse albums
 - [X] Web-app for smartphones and tablets
