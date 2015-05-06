@@ -9,7 +9,12 @@ Easily share photo albums without database
 
 ## Screenshots
 
-*(soon)*
+![Public](screenshots/public.png)
+![Album](screenshots/album.png)
+![Photo](screenshots/photo.png)
+![Admin](screenshots/admin.png)
+![Folder](screenshots/folder.png)
+![Groups](screenshots/groups.png)
 
 ## Synopsis & Features
 
@@ -26,19 +31,20 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 - [X] Now supports videos that contain in their name a youtubeid between `()`
   * ex: `tom's first steps (1a2e3e4r5t6).avi` <-- youtube id is *1a2e3e4r5t6*
 
-### Sharing
+### Admin features & sharing
 
 - [X] Share albums as public, restricted, or keep them private
 - [X] Restricted albums are shared to groups of people
 - [X] People authenticate using their Google account
 - [X] Hide bad/dupplicate photos instead of having to delete them
+- [X] Check for updates and upgrade in 1 click
 
 ### Additional user features
 
 - [X] Multilanguage support (English, French) - easy to add yours
 - [X] Download photos in optimized or original sizes
-- [X] Use keyboard arrows to swipe photos
-- [X] Automatic updates
+- [X] Use keyboard to browse albums
+- [X] Web-app for smartphones and tablets
 
 ### Performance
 

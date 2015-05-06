@@ -4,7 +4,8 @@ $.extend($.fn.editable.defaults, {
     mode: 'inline',
     //toggle: 'dblclick', // default 'click'
     showbuttons: false,
-    onblur: 'submit'
+    onblur: 'submit',
+    unsavedclass: 'null' // otherwize edited content goes bold
 });
 
 // function to validate required fields
@@ -163,7 +164,14 @@ var am = new function () {
 				toolbar: '#am_toolbar',
 				clickToSelect: true, // enable checkbox selection
 				searchTimeOut: 200,
-				singleSelect: true
+				singleSelect: true,
+				icons: {
+					paginationSwitchDown: 'glyphicon-resize-full icon-chevron-down',
+					paginationSwitchUp: 'glyphicon-resize-small icon-chevron-up',
+					refresh: 'glyphicon-refresh icon-refresh',
+					toggle: 'glyphicon-list-alt icon-list-alt',
+					columns: 'glyphicon-th icon-th'
+				}
 			}).on ('editable-init.bs.table', function () {
 				listenTabs ($(this));
 			});
