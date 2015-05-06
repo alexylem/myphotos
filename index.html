@@ -2,15 +2,47 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>My Photos</title>
+	<title>MyPhotos</title>
+
+	<meta name="description" content="">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- App Icons -->
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
+	<link rel="apple-touch-icon" sizes="57x57" href="img/apple-touch-icon-57x57.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="img/apple-touch-icon-60x60.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="img/apple-touch-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="img/apple-touch-icon-76x76.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="img/apple-touch-icon-114x114.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="img/apple-touch-icon-120x120.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="img/apple-touch-icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="img/apple-touch-icon-152x152.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon-180x180.png">
+	<link rel="icon" type="image/png" href="img/favicon-16x16.png" sizes="16x16">
+	<link rel="icon" type="image/png" href="img/favicon-32x32.png" sizes="32x32">
+	<link rel="icon" type="image/png" href="img/favicon-96x96.png" sizes="96x96">
+	<link rel="icon" type="image/png" href="img/android-chrome-192x192.png" sizes="192x192">
+	<meta name="msapplication-square70x70logo" content="img/smalltile.png" />
+	<meta name="msapplication-square150x150logo" content="img/mediumtile.png" />
+	<meta name="msapplication-wide310x150logo" content="img/widetile.png" />
+	<meta name="msapplication-square310x310logo" content="img/largetile.png" />
+	
+    <!-- Run full screen when added to homescreen -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="MyPhotos">
 
 	<!-- Bootstrap -->
 	<link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css">
 	<link rel="stylesheet" href="lib/multiselect/css/bootstrap-multiselect.css">
 	<link rel="stylesheet" href="lib/bootstrap-table/dist/bootstrap-table.css">
 	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css">
+
+	<!-- Add to Homescreen -->
+	<link rel="stylesheet" href="lib/add-to-homescreen/style/addtohomescreen.css">
 
 	<!-- App -->
 	<link rel="stylesheet" href="css/my.css">
@@ -193,11 +225,10 @@
 								</div>
 							</div>
 						</div>
-						<div class="modal fade" id="groupsModal" tabindex="-1" role="dialog">
+						<div class="modal fade" id="groupsModal" tabindex="-1" role="dialog" data-keyboard="false" data-backdrop="static">
 							<div class="modal-dialog modal-lg">
 								<div class="modal-content">
 									<div class="modal-header">
-										<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 										<h4 class="modal-title" id="myModalLabel">Groups</h4>
 									</div>
 									<div class="modal-body">
@@ -258,7 +289,8 @@
 										-->
 									</div>
 									<div class="modal-footer">
-										<small>Changes are saved automatically.</small>
+										<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+       									<button on-click="saveGroups" type="button" class="btn btn-success">Save</button>
 									</div>
 								</div>
 							</div>
@@ -355,8 +387,8 @@
 <script src='lib/i18next/i18next.min.js'></script>
 
 <!-- Ractive -->
-<script src='lib/ractive/ractive.js'></script>
-<!--<script src='http://cdn.ractivejs.org/latest/ractive.js'></script>-->
+<!--<script src='lib/ractive/ractive.js'></script>-->
+<script src='http://cdn.ractivejs.org/latest/ractive.js'></script> <!-- where map exists --> 
 
 <!-- Bootstrap -->
 <script src="lib/bootstrap/js/bootstrap.min.js"></script>
@@ -368,7 +400,10 @@
 <script src="lib/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
 
 <!-- Other Plugins -->
-<script src="lib/filesize/filesize.min.js"></script>
+<script src="lib/filesize.js/lib/filesize.min.js"></script>
+
+<!-- Add to Homescreen -->
+<script src="lib/add-to-homescreen/src/addtohomescreen.min.js"></script>
 
 <!-- My -->
 <script src="js/utils.js"></script>

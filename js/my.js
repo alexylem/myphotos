@@ -1,55 +1,55 @@
-my.loglevel = 4;
+my.loglevel = 2;
 Ractive.DEBUG = (my.loglevel >= 4);
 window.___gcfg = { lang: navigator.language }; // Google sign-in in local language
 
-var gallery,
-	tooltipopts = {
+var tooltipopts = {
 		container: 'body',
 		placement: 'bottom',
 		html: true
-	};
-
-var gallery = new Ractive({
-	el: 'container',
-	template: '#template',
-	data: {
-		// i18next
-		t: i18n.t,
-		// For display
-		view: 'loading',
-		// data
-		folder: {
-			name: false,
-			visibility: '',
-			filepath: '',
-			parentpath: false,
-			groups: []
-		},
-		folders: [],
-		photos: [],
-		photoid: false,
-		user: false,
-		groups: [],
-		users: [],
-		cron: {
-			striped: true,
-			progress: 0,
-			status: '',
-			class: 'primary'
+	},
+	gallery = new Ractive({
+		el: 'container',
+		template: '#template',
+		data: {
+			// i18next
+			t: i18n.t,
+			// For display
+			view: 'loading',
+			// data
+			folder: {
+				name: false,
+				visibility: '',
+				filepath: '',
+				parentpath: false,
+				groups: []
+			},
+			folders: [],
+			photos: [],
+			photoid: false,
+			user: false,
+			groups: [],
+			users: [],
+			cron: {
+				striped: true,
+				progress: 0,
+				status: '',
+				class: 'primary'
+			}
 		}
-	}
-	//lazy: true
-});
+		//lazy: true
+	});
 
 // Start
 $(document).ready (function () {
+	// Add 2 homescreen
+	addToHomescreen();
 
 	// Enable internationalization
 	i18n.init({
 		fallbackLng: 'en',
 		useLocalStorage: false, // true for Production
 		getAsync: false,
-		debug: true,
+		debug: (my.loglevel >= 4),
 		sendMissing: true,
 		missingKeyHandler: function(lng, ns, key, defaultValue, lngs) { // NOT WORKING!
 			console.error ("Translation missing for key", key, "in language",lng);
@@ -228,25 +228,25 @@ gallery.on ('logout', function () {
 
 // Keyboard shortcuts
 $(document).keydown(function(e) {
-	var photoid = gallery.get ('photoid');
 	my.debug ('hotkey pressed', e.keyCode);
-	switch(e.keyCode) {
-		case 27: // esc
-			if (photoid !== false)
+	if (gallery.get ('view') == 'photo') {
+		var photoid = gallery.get ('photoid');
+		switch(e.keyCode) {
+			case 27: // esc
 				gallery.fire ('close');
-			break;
-		case 37 : // left
-			if (photoid)
-				gallery.fire ('previous');
-			break;
-		case 39 : // right
-			if (photoid !== false && photoid < gallery.get ('photos').length - 1)
-				gallery.fire ('next');
-			break;
-		case 72 : // H
-			if (photoid !== false)
+				break;
+			case 37 : // left
+				if (photoid > 0)
+					gallery.fire ('previous');
+				break;
+			case 39 : // right
+				if (photoid < gallery.get ('photos').length - 1)
+					gallery.fire ('next');
+				break;
+			case 72 : // H
 				gallery.fire ('hide');
-			break;
+				break;
+		}
 	}
 });
 
@@ -268,7 +268,7 @@ $('#groupsModal').on('show.bs.modal', function () {
 		}
 	});
 });
-$('#groupsModal').on('hide.bs.modal', function () {
+gallery.on ('saveGroups', function () {
 	my.get ({
 		url: 'backend.php',
 		data: {
@@ -277,6 +277,7 @@ $('#groupsModal').on('hide.bs.modal', function () {
 			users: am.getData ($('#users'))
 		},
 		success: function () {
+			$('#groupsModal').modal('hide');
 			my.success ('Groups & People saved successfuly');
 		}
 	});
