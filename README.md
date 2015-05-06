@@ -9,12 +9,7 @@ Easily share photo albums without database
 
 ## Screenshots
 
-![Public](screenshots/public.png)
-![Album](screenshots/album.png)
-![Photo](screenshots/photo.png)
-![Admin](screenshots/admin.png)
-![Folder](screenshots/folder.png)
-![Groups](screenshots/groups.png)
+See [Screenshots](https://github.com/alexylem/myphotos/tree/master/screenshots) folder.
 
 ## Synopsis & Features
 
