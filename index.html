@@ -8,7 +8,7 @@
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    
+
     <!-- App Icons -->
     <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
 	<link rel="apple-touch-icon" sizes="57x57" href="img/apple-touch-icon-57x57.png">
@@ -28,7 +28,7 @@
 	<meta name="msapplication-square150x150logo" content="img/mediumtile.png" />
 	<meta name="msapplication-wide310x150logo" content="img/widetile.png" />
 	<meta name="msapplication-square310x310logo" content="img/largetile.png" />
-	
+
     <!-- Run full screen when added to homescreen -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -121,56 +121,63 @@
 								{{/if}}
 							</ul>
 						</li>
-						<div class="modal fade" id="folderModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						<div class="modal fade" id="folderModal" tabindex="-1" role="dialog" data-keyboard="false" data-backdrop="static">
 							<div class="modal-dialog">
 								<div class="modal-content">
+								{{#folder}}
 									<div class="modal-header">
-										<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 										<h4 class="modal-title" id="myModalLabel">{{t('folder_opt')}}</h4>
 									</div>
 									<div class="modal-body">
 										<div class="form-group">
-											<input type="text" class="form-control" value="{{folder.name}}" placeholder="{{t('album_name')}}">
+											<input type="text" class="form-control" value="{{name}}" placeholder="{{t('album_name')}}">
 										</div>
-										<p>Define the visiblity for album <strong>{{folder.name}}</strong></p>
+										<p>Define the visiblity for album <strong>{{name}}</strong></p>
 										<div class="radio">
 											<label>
-												<input type="radio" name="{{folder.visibility}}" value="private" checked>
+												<input type="radio" name="{{visibility}}" value="private" checked>
 												<span class="glyphicon glyphicon-lock" aria-hidden="true"></span> Private
 												<p class="help-block">Only visible by Admin accounts.</p>
 											</label>
 										</div>
 										<div class="radio">
 											<label>
-												<input type="radio" name="{{folder.visibility}}" value="public">
+												<input type="radio" name="{{visibility}}" value="public">
 												<span class="glyphicon glyphicon-globe" aria-hidden="true"></span> Public
 												<p class="help-block">Visible by everyone without authentication.</p>
 											</label>
 										</div>
 										<div class="radio">
 											<label>
-												<input type="radio" name="{{folder.visibility}}" value="restricted">
+												<input type="radio" name="{{visibility}}" value="restricted">
 												<span class="glyphicon glyphicon-user" aria-hidden="true"></span> Restricted
 												<p class="help-block">Visible by a selection of groups</p>
 											</label>
 										</div>
-										<div class="col-md-offset-1 {{#if folder.visibility !== 'restricted'}}hide{{/if}}">
-											<select id="foldergroups" value='{{folder.groups}}' multiple="multiple">
-												  {{#each groups}}
+										<div class="col-md-offset-1 {{#if visibility !== 'restricted'}}hide{{/if}}">
+											<select id="foldergroups" value='{{groups}}' multiple="multiple">
+												  {{#each ../groups}}
 												  	<option>{{this}}</option>
 												  {{/each}}
 											</select>
-										</div>
-										<div class="checkbox">
-											<label>
-												<input type="checkbox" value="">
-												Apply recursively to all sub-albums
-											</label>
+											<div class="checkbox">
+												<label>
+													<input type="checkbox" checked="{{folder.notify}}">
+													Send email notifications to people from these groups
+												</label>
+											</div>
+											<div class="{{#unless notify}}hide{{/unless}}">
+												<textarea class="form-control" rows="3" id="notif_email_body"></textarea>
+											</div>
 										</div>
 									</div>
 									<div class="modal-footer">
-										<small>Changes are saved automatically.</small>
+										<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+       									<button on-click="saveFolder" type="button" class="btn btn-success">
+       										Save{{#visibility == 'restricted' && notify}} & Send{{/if}}
+       									</button>
 									</div>
+								{{/if}}
 								</div>
 							</div>
 						</div>
@@ -405,12 +412,6 @@
 <!-- Add to Homescreen -->
 <script src="lib/add-to-homescreen/src/addtohomescreen.min.js"></script>
 
-<!-- My -->
-<script src="js/utils.js"></script>
-<script src="js/framework.js"></script>
-<script src="repository.js"></script>
-<script src="js/my.js"></script>
-
 <!-- Async Google Plus sign-in library -->
 <script src="https://apis.google.com/js/platform.js"></script>
 <script src="https://apis.google.com/js/client:plusone.js"></script>
@@ -424,5 +425,12 @@
   ga('create', 'UA-29589045-4', 'auto');
   ga('send', 'pageview');
 </script>
+
+<!-- My -->
+<script src="js/utils.js"></script>
+<script src="js/framework.js"></script>
+<script src="repository.js"></script>
+<script src="js/my.js"></script>
+
 </body>
 </html>

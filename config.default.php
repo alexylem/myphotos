@@ -16,7 +16,13 @@ $config = array (
 	// System path to original photo directory are stored (/path/to/photos/)
 	'photopath'			=> '/Users/me/Pictures/',
 	// Default visibility for photo albums (private, restricted, public)
-	'defaultvisibility'	=> 'private'
+	'defaultvisibility'	=> 'private',
+	// Gmail email address of the sender for email notification to people
+	'notif_email'		=> 'email.address@gmail.com',
+	// Display name for the above account
+	'notif_from'		=> 'MyPhotos',
+	// Gmail password for the above account
+	'notif_password'	=> 'ZZZZZZZZZZ'
 );
 
 $admin_mode = false; // true will make everyone an admin! Useful for testing/working offline

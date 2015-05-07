@@ -124,12 +124,38 @@ switch($_REQUEST['action']) {
 			if (isset ($_REQUEST['hidden']))
 				$settings['files'][$_REQUEST['filename']]['hidden'] = ($_REQUEST['hidden'] == 'true');
 		}
-		$json = fopen($jsonpath, 'w');
-		if ($json
+		if (($json = fopen($jsonpath, 'w'))
 			&& fwrite($json, json_encode($settings))
-			&& fclose($json))
+			&& fclose($json)) {
+			
+			if ($_REQUEST['notify'] == 'true') {
+				require 'lib/PHPMailer/PHPMailerAutoload.php';
+
+				$mail = new PHPMailer;
+				$mail->isSMTP();
+				$mail->Host = 'smtp.gmail.com';
+				$mail->Port = 587;
+				$mail->SMTPSecure = 'tls';
+				$mail->SMTPAuth = true;
+				$mail->Username = $config['notif_email'];
+				$mail->Password = $config['notif_password'];
+				$mail->setFrom($config['notif_email'], $config['notif_from']);
+				
+				$emails = emailsInGroups ($_REQUEST['groups']);
+				$emails = array_merge($emails, $admins); // add admins in bcc
+				if (count ($emails))
+					foreach ($emails as $email)
+						$mail->addBCC($email);
+				
+				$mail->CharSet = 'UTF-8';
+				$mail->Subject = 'MyPhotos'; // Define?
+				$mail->Body = $_REQUEST['body'];
+				// $mail->addAttachment('images/phpmailer_mini.png'); // TODO album cover?
+				if (!$mail->send())
+					respond ("Mailer Error: " . $mail->ErrorInfo, true);
+			}
 			respond ();
-		else
+		} else
 			respond ('Error while trying to write the folder settings file', true);
 		break;
 
@@ -177,6 +203,19 @@ switch($_REQUEST['action']) {
 		break;
 
 	default: respond ("unknown action ".$_REQUEST['action'], true);
+}
+
+function emailsInGroups ($groups) {
+	global $config;
+	$emails = array ();
+	if (($json = @file_get_contents($config['photopath'].MYPHOTOS_DIR.'people.json'))
+		&& ($users = json_decode($json))
+		&& count ($users))
+		foreach ($users as $user)
+			if (count (array_intersect($groups, $user->groups))
+				&& !in_array($user->email, $emails))
+				$emails[] = $user->email;
+	return $emails;
 }
 
 function hasaccess ($visibility, $groups) {

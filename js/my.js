@@ -1,100 +1,98 @@
-my.loglevel = 2;
+my.loglevel = 2; // dev = 4, production = 2
 Ractive.DEBUG = (my.loglevel >= 4);
 window.___gcfg = { lang: navigator.language }; // Google sign-in in local language
 
-var tooltipopts = {
-		container: 'body',
-		placement: 'bottom',
-		html: true
-	},
-	gallery = new Ractive({
-		el: 'container',
-		template: '#template',
-		data: {
-			// i18next
-			t: i18n.t,
-			// For display
-			view: 'loading',
-			// data
-			folder: {
-				name: false,
-				visibility: '',
-				filepath: '',
-				parentpath: false,
-				groups: []
-			},
-			folders: [],
-			photos: [],
-			photoid: false,
-			user: false,
-			groups: [],
-			users: [],
-			cron: {
-				striped: true,
-				progress: 0,
-				status: '',
-				class: 'primary'
-			}
-		}
-		//lazy: true
-	});
+// Enable internationalization
+i18n.init({
+	//lng: 'en', // to test in english
+	fallbackLng: 'en',
+	useLocalStorage: false, // true for Production
+	getAsync: false,
+	debug: (my.loglevel >= 4),
+	sendMissing: true,
+	missingKeyHandler: function(lng, ns, key, defaultValue, lngs) { // NOT WORKING!
+		console.error ("Translation missing for key", key, "in language",lng);
+	}
+});
 
-// Start
-$(document).ready (function () {
-	// Add 2 homescreen
-	addToHomescreen();
-
-	// Enable internationalization
-	i18n.init({
-		fallbackLng: 'en',
-		useLocalStorage: false, // true for Production
-		getAsync: false,
-		debug: (my.loglevel >= 4),
-		sendMissing: true,
-		missingKeyHandler: function(lng, ns, key, defaultValue, lngs) { // NOT WORKING!
-			console.error ("Translation missing for key", key, "in language",lng);
-		}
-	}, function (t) { // translations loaded
-		// Enable tooptips on non-touch devices
-		if (!Modernizr.touch)
-			$('.addtooltip').i18n().tooltip(tooltipopts); // need to translate title before
-	});
-
-	// Get direct link dir
-	var dir = decodeURIComponent (window.location.hash.slice(1)) || './';
-	my.get({
-		url: 'plus.php',
-		data: { action: 'init' },
-		success: function (user) {
-			if (user) { // logged in
-				gallery.set ('user', user);
-				ga('set', '&uid', user.email); // send user id to google analytics
-				if (user.isadmin) {
-					my.get ({
-					url: 'backend.php',
-					data: { action: 'getGroups' },
-					success: function (sdata) {
-						var groups = JSON.parse (sdata);
-						//try { // DEBUG ractive freeze
-							gallery.set ('groups', groups);
-						//} catch (err) {
-						//	console.error ('Ractive error', err);
-							//location.reload();
-						//}
-					}
-				});
-				}
-			}
-			else {
-				gallery.set ('user', false);
-			}
-			cwd (dir);
+var gallery = new Ractive({
+	el: 'container',
+	template: '#template',
+	data: {
+		// i18next
+		t: i18n.t,
+		// For display
+		view: 'loading',
+		// data
+		folder: {
+			name: false,
+			visibility: '',
+			filepath: '',
+			parentpath: false,
+			groups: []
 		},
-		error: function () { // is needed?
-			gallery.set ('user', false);
-			cwd (dir);
+		folders: [],
+		photos: [],
+		photoid: false,
+		user: false,
+		groups: [],
+		users: [],
+		cron: {
+			striped: true,
+			progress: 0,
+			status: '',
+			class: 'primary'
 		}
-	});
+	}
+	//lazy: true
+});
+
+// Enable tooptips on non-touch devices
+	if (!Modernizr.touch)
+		$('.addtooltip').i18n().tooltip({
+			container: 'body',
+			placement: 'bottom',
+			html: true
+		}); // need to translate title before
+
+// Get direct link dir
+var dir = decodeURIComponent (window.location.hash.slice(1)) || './';
+
+if (dir == './') // Only root should be added to homescreen (to limit auth errors)
+	addToHomescreen(); // Add 2 homescreen
+
+my.get({
+	url: 'plus.php',
+	data: { action: 'init' },
+	success: function (user) {
+		if (user) { // logged in
+			gallery.set ('user', user);
+			ga('set', '&uid', user.email); // send user id to google analytics
+			if (user.isadmin) {
+				my.get ({
+				url: 'backend.php',
+				data: { action: 'getGroups' },
+				success: function (sdata) {
+					var groups = JSON.parse (sdata);
+					//try { // DEBUG ractive freeze
+						gallery.set ('groups', groups);
+					//} catch (err) {
+					//	console.error ('Ractive error', err);
+						//location.reload();
+					//}
+				}
+			});
+			}
+		}
+		else {
+			gallery.set ('user', false);
+		}
+		cwd (dir);
+	},
+	error: function () { // is needed?
+		gallery.set ('user', false);
+		cwd (dir);
+	}
 });
 
 // Actions
@@ -288,20 +286,30 @@ $('#folderModal').on('show.bs.modal', function () {
 			gallery.set('folder.groups', $('#foldergroups').val ());
 		}
 	});
+	gallery.set('folder.notify', false);
+	$('#notif_email_body').val (i18n.t('notif_email_body', {
+		user: gallery.get ('user.displayName'),
+		name: gallery.get ('folder.name'),
+		url: location.href.replace(/ /g, '%20')
+	}));
 });
-$('#folderModal').on('hide.bs.modal', function (e) {
-	gallery.set ('folder.name',gallery.get ('folder.name') || i18n.t('untitled'));
+gallery.on ('saveFolder', function (e) {
+	$('#folderModal').modal('hide');
+	gallery.set ('folder.name',gallery.get ('folder.name') || i18n.t('untitled')); // TODO required
 	my.get ({
 		url: 'backend.php',
+		timeout: 10*1000, // 10s as email sending can be slow
 		data: {
 			action: 'updateFolder',
 			dir: gallery.get ('folder.filepath'),
 			name: gallery.get('folder.name'),
 			visibility: gallery.get ('folder.visibility'),
+			notify: gallery.get ('folder.notify'),
+			body: $('#notif_email_body').val (),
 			groups: gallery.get ('folder.groups') || false // else undefined index groups even with []
 		},
 		success: function () {
-			my.success ('Album settings saved successfuly.');
+			my.success ('Album settings saved'+(gallery.get('folder.notify')?' and emails sent':'')+' successfuly.');
 		}
 	});
 });
@@ -392,7 +400,7 @@ function signInCallback(authResult) {
 						data: { action: 'getGroups' },
 						success: function (sdata) {
 							var groups = JSON.parse (sdata);
-							try { // Ractive crash DEBUG
+							try { // Ractive crash DEBUG still needed?
 								gallery.set ('groups', groups);
 							} catch (err) {
 								console.error ('Ractive error', err);
@@ -401,8 +409,8 @@ function signInCallback(authResult) {
 						}
 					});
 				}
-				var dir = window.location.hash.substr(1) || './';
-				cwd (dir);
+				my.debug ('signInCallback, calling cwd after login...'); // TODO cwd only is user was false before
+				cwd (decodeURIComponent (window.location.hash.slice(1)) || './'); // why?? this causes a refresh! apparently not anymore..
       		}
 		);
 	}

@@ -14,6 +14,7 @@
 	"missing_albums": "Albums manquants?",
 	"no_album_visible": "Il n'y as pas d'album publique disponible ou partagé avec vous.",
 	"no_google_account": "Pas encore de compte Google?",
+	"notif_email_body": "Bonjour,\n\n__user__ a partagé avec vous de nouvelles photos dans l'album __name__:\n__url__\n\nConnectez-vous avec cette adresse email pour y accéder.",
 	"original": "Original",
 	"oops": "Oups",
 	"photos": "Photos",
