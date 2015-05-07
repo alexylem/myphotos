@@ -218,11 +218,10 @@
 											  <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 100%">
 											  </div>
 										  {{else}}
-
+										  	<span class="percentage">{{cron.progress}}</span>
 										  	<div class="progress-bar progress-bar-{{cron.class}} active" role="progressbar" style="width: {{cron.percentage}}%">
-										  		<span class="pull-left">{{cron.progress}}</span>
 											</div>
-											<span class="pull-right">{{cron.remaining}}</span>
+											<span class="remaining">{{cron.remaining}}</span>
 										  {{/if}}
 										</div>
 										<p class="text-{{cron.class}}">{{cron.text}}</p>

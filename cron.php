@@ -310,7 +310,7 @@ $new_files
 					warning ('Simulated');
 				elseif ($original = WideImage::loadFromFile($file)) {
 					$original = $original->resize(THUMB_SIZE, THUMB_SIZE, 'outside');
-					$exif = exif_read_data($file);
+					$exif = @exif_read_data($file); // warning on PNG files
 					if (isset ($exif['Orientation']))
 						$original = $original->exifOrient($exif['Orientation']);
 					$original->saveToFile($thumbfile, IMG_QUALITY);
@@ -327,7 +327,7 @@ $new_files
 					warning ('Simulated');
 				elseif ($original = WideImage::loadFromFile($file)) {
 					$original->resize(null, PREVIEW_HEIGHT, 'inside', 'down');
-					$exif = exif_read_data($file);
+					$exif = @exif_read_data($file); // warning on PNG files
 					if (isset ($exif['Orientation']))
 						$original = $original->exifOrient($exif['Orientation']);
 					$original->saveToFile($previewfile, IMG_QUALITY);

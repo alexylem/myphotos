@@ -16,6 +16,9 @@ body { padding-top: 70px; }
 
 .navbar-brand:focus { outline: none; } /* remove blue outline when closing modal */
 .modal p { word-wrap: break-word; } /* cron.text */
+.progress {position: relative;}
+.percentage {position: absolute; left: 5px;}
+.remaining {position: absolute; right: 5px;}
 
 /* Overrides bootstrap-table */
 .pagination-detail {display: none;}
