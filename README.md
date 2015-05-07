@@ -45,7 +45,7 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 ### :fast_forward: Performance
 
 - [X] Generates thumbnails & optimized versions of your photos for faster display
-- [X] Leverage broswer cache on already viewed photos
+- [X] Leverage browser cache on already viewed photos
 - [X] Preload next photo in the background
 
 ### :clock10: Upcoming features
