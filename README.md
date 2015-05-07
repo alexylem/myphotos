@@ -50,7 +50,7 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 
 ### :clock10: Upcoming features
 
-- [ ] Let users download entire albums
+See the [todo](todo.md) list
 
 ## Installation
 
