@@ -31,6 +31,7 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 - [X] Share albums as public, restricted, or keep them private
 - [X] Restricted albums are shared to groups of people
 - [X] People authenticate using their Google account
+- [X] Send email notification about shared albums
 - [X] Hide bad/dupplicate photos instead of having to delete them
 - [X] Check for updates and upgrade in 1 click
 
