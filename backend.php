@@ -128,7 +128,8 @@ switch($_REQUEST['action']) {
 			&& fwrite($json, json_encode($settings))
 			&& fclose($json)) {
 			
-			if ($_REQUEST['notify'] == 'true') {
+			if (isset ($_REQUEST['notify']) // not set for set cover for example
+				&& $_REQUEST['notify'] == 'true') {
 				require 'lib/PHPMailer/PHPMailerAutoload.php';
 
 				$mail = new PHPMailer;

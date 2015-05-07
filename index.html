@@ -218,11 +218,14 @@
 											  <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 100%">
 											  </div>
 										  {{else}}
-										  	<div class="progress-bar progress-bar-{{cron.class}} active" role="progressbar" style="width: {{cron.progress}}%">
+
+										  	<div class="progress-bar progress-bar-{{cron.class}} active" role="progressbar" style="width: {{cron.percentage}}%">
+										  		<span class="pull-left">{{cron.progress}}</span>
 											</div>
+											<span class="pull-right">{{cron.remaining}}</span>
 										  {{/if}}
 										</div>
-										<p class="text-{{cron.class}}">{{cron.status}}</p>
+										<p class="text-{{cron.class}}">{{cron.text}}</p>
 									</div>
 									<div class="modal-footer">
 										{{#if cron.class == 'danger'}}

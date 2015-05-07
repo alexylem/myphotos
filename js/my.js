@@ -1,4 +1,4 @@
-my.loglevel = 2; // dev = 4, production = 2
+my.loglevel = 4; // dev = 4, production = 2
 Ractive.DEBUG = (my.loglevel >= 4);
 window.___gcfg = { lang: navigator.language }; // Google sign-in in local language
 
@@ -37,12 +37,7 @@ var gallery = new Ractive({
 		user: false,
 		groups: [],
 		users: [],
-		cron: {
-			striped: true,
-			progress: 0,
-			status: '',
-			class: 'primary'
-		}
+		cron: {}
 	}
 	//lazy: true
 });
@@ -317,8 +312,8 @@ $('#cronModal').on('shown.bs.modal', function (e) {
   gallery.set ({
 		'cron.class': 'primary',
 		'cron.striped': true,
-		'cron.progress': 100,
-		'cron.status': 'Checking what to do...'
+		//'cron.percentage': 100, // needed?
+		'cron.text': 'Checking what to do...'
 	});
   my.get({
   	url: 'cron.php',
@@ -327,8 +322,8 @@ $('#cronModal').on('shown.bs.modal', function (e) {
   	success: function (nbtask) {
   		gallery.set ({
   			'cron.striped': false,
-			'cron.progress': 0,
-			'cron.status': 'Execution of '+nbtask+' tasks...'
+			'cron.percentage': 0,
+			'cron.text': 'Execution of '+nbtask+' tasks...'
   		});
   		continueCron ();
   	}
@@ -425,21 +420,23 @@ function continueCron () {
 		timeout: 60*1000, // 1m
 		success: function (status) {
 			gallery.set ({
-				'cron.progress': Math.round ((status.total?status.done/status.total:1)*100),
-				'cron.status': status.done+'/'+status.total+' completed - '+status.remaining
+				'cron.percentage': Math.round ((status.total?status.done/status.total:1)*100),
+				'cron.progress': status.done+'/'+status.total,
+				'cron.remaining': status.remaining || 'estimating...',
+				'cron.text': status.next
 	  		});
 	  		if (status.todo)
 				continueCron ();
 			else
 				gallery.set ({
 					'cron.class': 'success',
-					'cron.status': 'Your photo library is up to date!'
+					'cron.text': 'Your photo library is up to date!'
 				});
 		},
 		error: function (error) {
 			gallery.set ({
 				'cron.class': 'danger',
-				'cron.status': error
+				'cron.text': error
 			});
 		}
 	});

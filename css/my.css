@@ -14,13 +14,8 @@ body { padding-top: 70px; }
     */
 }
 
-.navbar-brand:focus {
-	outline: none; /* remove blue outline when closing modal */
-}
-
-.g-signin {
-	margin: 6px;
-}
+.navbar-brand:focus { outline: none; } /* remove blue outline when closing modal */
+.modal p { word-wrap: break-word; } /* cron.text */
 
 /* Overrides bootstrap-table */
 .pagination-detail {display: none;}
@@ -30,6 +25,8 @@ a.editable { display: block; }
 .editable-click, a.editable-click, a.editable-click:hover { border-bottom: none; }
 
 /* App */
+.g-signin { margin: 6px; }
+
 tr.selected td { background-color: #694f37 !important;}
 
 input.error {

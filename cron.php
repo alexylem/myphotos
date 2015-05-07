@@ -76,7 +76,8 @@ switch ($action) {
 				'todo' => count ($_SESSION['tasks']),
 				'done' => $_SESSION['tasks_done'],
 				'total' => $_SESSION['tasks_total'],
-				'remaining' => $remaining
+				'remaining' => $remaining,
+				'next' => end($_SESSION ['tasks'])['file']
 			));
     	if (count ($_SESSION['tasks'])) {
     		echo '<script>parent.window.location.reload(true);</script>';
@@ -424,7 +425,7 @@ function remainingtime ($done, $total) {
 	if ($done > 0)
 		return time_elapsed (round($total*(microtime(true)-$_SESSION['pb_started_at'])/$done)).' left';
 	$_SESSION['pb_started_at'] = microtime(true);
-	return false;
+	return '';
 }
 function progressbar($done = 0, $total = 100, $length = 50, $theme = '[=>.]')
 {
