@@ -26,15 +26,15 @@ var gallery = new Ractive({
 		// parameters
 		album_sort_options: {
 			'title_asc': {
-				'title': 'By title',
+				'title': i18n.t('by_title'),
 				'field': 'filename',
 				'order': '<'},
 			'modified_desc': {
-				'title': 'Newest first',
+				'title': i18n.t('newest_first'),
 				'field': 'updated',
 				'order': '>'},
 			'modified_asc': {
-				'title': 'Oldest first',
+				'title': i18n.t('oldest_first'),
 				'field': 'updated',
 				'order': '<'
 		}},
