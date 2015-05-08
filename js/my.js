@@ -23,6 +23,34 @@ var gallery = new Ractive({
 		t: i18n.t,
 		// For display
 		view: 'loading',
+		// parameters
+		album_sort_options: {
+			'title_asc': {
+				'title': 'By title',
+				'field': 'filename',
+				'order': '<'},
+			'modified_desc': {
+				'title': 'Newest first',
+				'field': 'updated',
+				'order': '>'},
+			'modified_asc': {
+				'title': 'Oldest first',
+				'field': 'updated',
+				'order': '<'
+		}},
+		album_sort_field: 'modified_desc', // default album sort
+		sort: function (array, column, order) {
+			my.debug ('sorting', array, 'by', column, 'order', order);
+			array = array.slice(); // clone, don't modify inderlying data
+			my.debug ('copied array is', array);
+			array = array.sort (function (a,b) {
+				if (order == '<')
+					return a[column] < b[column]? -1 : 1;
+				return a[column] > b[column]? -1 : 1;
+			});
+			my.debug ('sorted array is', array);
+			return array;
+		},
 		// data
 		folder: {
 			name: false,

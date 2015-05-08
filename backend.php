@@ -74,30 +74,22 @@ switch($_REQUEST['action']) {
 			$files[] = $file;
 		}
 
+		chdir($absolute);
 		$folders = array ();
-        if ($handle = @opendir($absolute)) {
-            while (false !== ($file = readdir($handle))) { 
-            	if ($file[0] != ".") { // skip '.', '..' & hidden files
-                	$filepath = $dir.$file;
-                    if (is_dir($absolute.$file)) {
-                        $json = @file_get_contents($config['photopath'].$filepath.'/'.MYPHOTOS_DIR.SETTINGS_FILE); // in case no .myphotos yet
-						$settings = @json_decode($json);
-						$visibility = @$settings->visibility?$settings->visibility:$config['defaultvisibility'];
-						if (hasaccess ($visibility, @$settings->groups))
-							$folders[] = array (
-								'filepath'		=> $filepath.'/',
-								'coverurl'		=> 'img.php?f='.$filepath.'/'.MYPHOTOS_DIR.THUMB_DIR.@$settings->cover,
-								'visibility'	=> $visibility,
-								'filename'		=> @$settings->name?$settings->name:$file,
-								'updated'		=> filemtime($absolute.$file)
-							);
-                    }
-                }
-            }
-            closedir($handle);
-        } else {
-        	respond ("Impossible to access photo library ($absolute) Verify your config.php", true);
-        }
+		foreach (glob ('*', GLOB_ONLYDIR|GLOB_MARK) as $directory) {
+			$folderpath = $dir.$directory; // already has trailing '/'
+            $json = @file_get_contents($config['photopath'].$folderpath.MYPHOTOS_DIR.SETTINGS_FILE); // in case no .myphotos yet
+			$settings = @json_decode($json);
+			$visibility = @$settings->visibility?$settings->visibility:$config['defaultvisibility'];
+			if (hasaccess ($visibility, @$settings->groups))
+				$folders[] = array (
+					'filepath'		=> $folderpath,
+					'coverurl'		=> 'img.php?f='.$folderpath.MYPHOTOS_DIR.THUMB_DIR.@$settings->cover,
+					'visibility'	=> $visibility,
+					'filename'		=> @$settings->name?$settings->name:$directory,
+					'updated'		=> filemtime($absolute.$directory)
+				);
+		}
 
 		respond (json_encode(array (
 			'folder'	=> $folder,
