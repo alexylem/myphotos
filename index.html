@@ -88,13 +88,18 @@
 					{{elseif view == 'photo'}}
 						<span class="navbar-brand">{{photos[photoid].filename}}</span>
 					{{/if}}
-					
-					
 				</div>
-
 				<div class="collapse navbar-collapse" id="collapsible">
+					
 					<ul class="nav navbar-nav navbar-right">
-						
+						<!-- Search -->
+						<li class="navbar-form {{#unless view == 'home' || view == 'search'}}hide{{/unless}}">
+							<div class="has-feedback">
+							    <input type="text" value="{{search}}" id="search" class="form-control" placeholder="Search albums" autocomplete="off" />
+							    <i class="glyphicon glyphicon-search form-control-feedback"></i>
+							</div>
+						</li>
+
 						<!-- Sort -->
 						<li class="dropdown {{#if view !== 'home'}}hide{{/if}}">
 							<a href="#" class="dropdown-toggle addtooltip" data-i18n="[title]sort" data-toggle="dropdown" role="button">
@@ -113,21 +118,21 @@
 
 						<!-- Hide -->
 						<li class="{{#if !user.isadmin || view !== 'photo'}}hide{{/if}} {{#if photos[photoid].hidden}}active{{/if}}">
-							<a class="addtooltip" data-i18n="[title]hide" href="#" on-click="hide">
+							<a class="addtooltip" data-i18n="[title]hide" on-click="hide">
 								<span class="glyphicon glyphicon-eye-close"></span>
 							</a>
 						</li>
 
 						<!-- Cover -->
 						<li class="{{#if !user.isadmin || view !== 'photo'}}hide{{/if}}">
-							<a class="addtooltip" data-i18n="[title]set_cover" href="#" on-click="cover">
+							<a class="addtooltip" data-i18n="[title]set_cover" on-click="cover">
 								<span class="glyphicon glyphicon-picture"></span>
 							</a>
 						</li>
 
 						<!-- Download -->
 						<li class="dropdown {{#if view !== 'photo'}}hide{{/if}}">
-							<a href="#" class="dropdown-toggle addtooltip" data-i18n="[title]dl_photo" data-toggle="dropdown" role="button">
+							<a class="dropdown-toggle addtooltip" data-i18n="[title]dl_photo" data-toggle="dropdown" role="button">
 								<span class="glyphicon glyphicon-download-alt"></span>
 							</a>
 							<ul class="dropdown-menu" role="menu">
@@ -216,8 +221,8 @@
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{displayName}} <span class="caret"></span></a>
 							<ul class="dropdown-menu" role="menu">
 								{{#isadmin}}
-								<li><a data-toggle="modal" href="#cronModal"><span class="glyphicon glyphicon-retweet"></span> Update Library</a></li>
-								<li><a data-toggle="modal" href="#groupsModal"><span class="glyphicon glyphicon-user"></span> Groups & people</a></li>
+								<li><a data-toggle="modal" href="#cronModal"><span class="glyphicon glyphicon-retweet"></span> {{t('update_library')}}</a></li>
+								<li><a data-toggle="modal" href="#groupsModal"><span class="glyphicon glyphicon-user"></span> {{t('groups_people')}}</a></li>
 								<li><a on-click="checkupdates" href="#"><span class="glyphicon glyphicon-circle-arrow-up"></span> {{t('check_updates')}}</a></li>
 								{{/if}}
 								<li><a target="_blank" href="https://github.com/alexylem/myphotos/issues/new"><span class="glyphicon glyphicon-fire"></span> {{t('report-issue')}}</a></li>
@@ -330,7 +335,7 @@
 		</nav>
 	<div class="container">
 
-	{{#if view == 'loading'}}
+	{{#if loading}}
 		<p class="text-center">
 			<span class="glyphicon glyphicon-refresh rotate"></span> {{t('loading')}}
 		</p>
@@ -353,6 +358,17 @@
 		<button on-click="next" type="button" class="btn btn-default btn-lg nxt {{#if photoid == photos.length-1}}hidden{{/if}}">
 			<span class="glyphicon glyphicon-chevron-right"></span>
 		</button>
+	{{elseif view == 'search'}}
+			<h5>Search results</h5>
+			{{#each filter(structure, 'filename', search)}}
+			<div class="thumb stack">
+				<a href="#{{filepath}}" style="background-image: url('{{coverurl}}');">
+					<div class="cover">
+						<span class="glyphicon glyphicon-{{visibility == 'public' ? 'globe' : (visibility == 'restricted' ? 'user' : 'lock')}}"></span> {{filename}}
+					</div>
+				</a>
+			</div>
+			{{/each}}
 	{{else}}
 		{{#if folders}}
 			<h5>{{t('albums')}}</h5>

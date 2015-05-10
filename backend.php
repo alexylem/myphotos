@@ -98,6 +98,34 @@ switch($_REQUEST['action']) {
 		)));
 		break;
 
+	case 'getStructure':
+		function getStructure ($path='') {
+			global $config;
+			$folders = array ();
+			foreach (glob ($path.'*', GLOB_MARK|GLOB_ONLYDIR|GLOB_NOSORT) as $folderpath) {
+				$json = @file_get_contents($config['photopath'].$folderpath.MYPHOTOS_DIR.SETTINGS_FILE);
+				$settings = @json_decode($json);
+				$visibility = @$settings->visibility?:$config['defaultvisibility'];
+				$folders = array_merge ($folders,
+					array (array (
+						'filepath'		=> $folderpath,
+						'coverurl'		=> 'img.php?f='.$folderpath.MYPHOTOS_DIR.THUMB_DIR.@$settings->cover,
+						'visibility'	=> $visibility,
+						'filename'		=> @$settings->name?$settings->name:basename ($folderpath),
+						'updated'		=> filemtime($config['photopath'].$folderpath)
+					)), getStructure($folderpath));
+			}
+			return $folders;
+		}
+		
+		if (!isset ($_SESSION['structure'])) {
+			chdir($config['photopath']);
+			$_SESSION['structure'] = getStructure ();
+		}
+
+		respond ($_SESSION['structure']);
+		break;
+
 	case 'updateFolder':
 		if (!isadmin ())
 			respond ('Operation not authorized', true);

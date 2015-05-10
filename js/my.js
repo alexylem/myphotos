@@ -22,7 +22,8 @@ var gallery = new Ractive({
 		// i18next
 		t: i18n.t,
 		// For display
-		view: 'loading',
+		view: 'home',
+		loading: true,
 		// parameters
 		album_sort_options: {
 			'title_asc': {
@@ -40,16 +41,25 @@ var gallery = new Ractive({
 		}},
 		album_sort_field: 'modified_desc', // default album sort
 		sort: function (array, column, order) {
-			my.debug ('sorting', array, 'by', column, 'order', order);
+			//my.debug ('sorting', array, 'by', column, 'order', order);
 			array = array.slice(); // clone, don't modify inderlying data
-			my.debug ('copied array is', array);
+			//my.debug ('copied array is', array);
 			array = array.sort (function (a,b) {
 				if (order == '<')
 					return a[column] < b[column]? -1 : 1;
 				return a[column] > b[column]? -1 : 1;
 			});
-			my.debug ('sorted array is', array);
+			//my.debug ('sorted array is', array);
 			return array;
+		},
+		filter: function (array, field, criteria) {
+			my.debug ('filtering', array, 'on', field, 'for', criteria);
+			return array.filter (function (a) {
+				var found = a[field].match(new RegExp(criteria, "i"));
+				if (found)
+					my.debug ('found', criteria, 'on', a[field]);
+				return found;
+			});
 		},
 		// data
 		folder: {
@@ -65,7 +75,9 @@ var gallery = new Ractive({
 		user: false,
 		groups: [],
 		users: [],
-		cron: {}
+		cron: {}, // object to store info during library update
+		search: '', // user search criterias
+		structure: false // full visible album structure, for search results
 	}
 	//lazy: true
 });
@@ -84,6 +96,7 @@ var dir = decodeURIComponent (window.location.hash.slice(1)) || './';
 if (dir == './') // Only root should be added to homescreen (to limit auth errors)
 	addToHomescreen(); // Add 2 homescreen
 
+// Init
 my.get({
 	url: 'plus.php',
 	data: { action: 'init' },
@@ -118,7 +131,7 @@ my.get({
 	}
 });
 
-// Actions
+// Open Album
 gallery.on ('cwd', function (event, dir) { // still needed? as now done by hash
 	cwd (dir);
 });
@@ -128,6 +141,9 @@ $(window).on('hashchange', function() { // change album
  		'page': location.pathname + location.search  + location.hash
 	});
 });
+/*******************
+* View Photo/Video *
+*******************/
 gallery.on ('view', function (event, photoid) {
 	my.debug ('setting photoid to', photoid);
 	this.set ('photoid', photoid);
@@ -188,6 +204,32 @@ gallery.on ('cover', function (event) {
 		}
 	});
 });
+// Keyboard shortcuts
+$(document).keydown(function(e) {
+	//my.debug ('hotkey pressed', e.keyCode);
+	if (gallery.get ('view') == 'photo') {
+		var photoid = gallery.get ('photoid');
+		switch(e.keyCode) {
+			case 27: // esc
+				gallery.fire ('close');
+				break;
+			case 37 : // left
+				if (photoid > 0)
+					gallery.fire ('previous');
+				break;
+			case 39 : // right
+				if (photoid < gallery.get ('photos').length - 1)
+					gallery.fire ('next');
+				break;
+			case 72 : // H
+				gallery.fire ('hide');
+				break;
+		}
+	}
+});
+/******************
+* Groups & People *
+******************/
 gallery.on ('removegroup', function (event, index) {
 	if (confirm (i18n.t('are_you_sure'))) {
     	gallery.splice('groups', index, 1);
@@ -198,6 +240,7 @@ gallery.on ('filterpeople', function (event, group) {
 	my.debug ('filtering poeple on', group);
 	$('.bootstrap-table .search > input').val(group).trigger('drop');
 });
+// Update Library
 gallery.on ('ignore', function (event, group) {
 	this.set ({
 		'cron.status': '',
@@ -205,6 +248,7 @@ gallery.on ('ignore', function (event, group) {
 	}); 
 	continueCron ();
 });
+// Check Updates
 gallery.on ('checkupdates', function () {
 	my.get({
 		url: 'backend.php',
@@ -236,6 +280,7 @@ gallery.on ('checkupdates', function () {
 		}
 	});
 });
+// Logout
 gallery.on ('logout', function () {
 	my.get({
 		url: 'plus.php',
@@ -245,30 +290,6 @@ gallery.on ('logout', function () {
 			cwd ('./');
 		}
 	});
-});
-
-// Keyboard shortcuts
-$(document).keydown(function(e) {
-	my.debug ('hotkey pressed', e.keyCode);
-	if (gallery.get ('view') == 'photo') {
-		var photoid = gallery.get ('photoid');
-		switch(e.keyCode) {
-			case 27: // esc
-				gallery.fire ('close');
-				break;
-			case 37 : // left
-				if (photoid > 0)
-					gallery.fire ('previous');
-				break;
-			case 39 : // right
-				if (photoid < gallery.get ('photos').length - 1)
-					gallery.fire ('next');
-				break;
-			case 72 : // H
-				gallery.fire ('hide');
-				break;
-		}
-	}
 });
 
 // Observers
@@ -358,9 +379,36 @@ $('#cronModal').on('shown.bs.modal', function (e) {
   });
 });
 
+/*********
+* Search *
+*********/
+gallery.observe( 'search', function (value) {
+	if (value) {
+		gallery.set ('view', 'search');
+		var structure = gallery.get ('structure');
+		if (structure !== false) { // in cache
+			my.debug ('in cache');
+		} else { // not in cache
+			my.debug ('not in cache');
+			gallery.set ('loading', true);
+			my.get ({
+				url: 'backend.php',
+				data: { action: 'getStructure'},
+				timeout: 20*1000, // 20s in case HDD is on sleep + search time
+				success: function (structure) {
+					gallery.set ('structure', structure);
+					gallery.set ('loading', false);
+				}
+			});
+		}
+	} else
+		gallery.set ('view', 'home');
+});
+
 // Main functions
 function cwd (dir) {
-	gallery.set ('view', 'loading');
+	gallery.set ('loading', true);
+	gallery.set ('search', '');
 	my.log ('loading...');
 	my.get ({
 		url: 'backend.php',
@@ -397,10 +445,12 @@ function cwd (dir) {
 				gallery.set ('parentpath', false); // needed?
 				gallery.set ('view', 'home');
 			}
+			gallery.set ('loading', false);
 		},
 		error: function (message) {
 			my.error (message);
 			gallery.set ('view', 'home');
+			gallery.set ('loading', false);
 		}
 	});
 }

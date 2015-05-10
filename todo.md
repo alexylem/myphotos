@@ -4,7 +4,9 @@ Here is my personal todo-list.
 It completes the existing ideas from the [Github issue list](https://github.com/alexylem/myphotos/issues).
 
 - [X] Show ongoing task during library update
-- [ ] Global search on album titles with instant propositions
+- [X] Global search on album titles with instant propositions
+		- how to list albums? too slow server side
+		- get all albums recursively at login/init?
 - [ ] Smart albums: tag photos to see them grouped in virtual albums from homepage
 - [ ] Local favorites: people can locally mark pictures as favorites and download them all in a zip
 - [X] Possibility to order albums by title or newest first

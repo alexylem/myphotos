@@ -28,6 +28,7 @@ a.editable { display: block; }
 .editable-click, a.editable-click, a.editable-click:hover { border-bottom: none; }
 
 /* App */
+a { cursor: pointer; } /* links with no href */
 .g-signin { margin: 6px; }
 
 tr.selected td { background-color: #694f37 !important;}
@@ -36,6 +37,20 @@ input.error {
     color: #a94442 !important;
     background-color: #ee5f5b !important;
     border: 1px solid #ed4d63 !important;
+}
+
+#search {
+	width: 0px;
+	background-color: transparent;
+	-webkit-transition: all .40s ease;
+	-moz-transition: all .40s ease;
+	-ms-transition: all .40s ease;
+	-o-transition: all .40s ease;
+	transition: all .40s ease;
+}
+#search:focus {
+	width: 200px;
+	background-color: white;
 }
 
 .view {

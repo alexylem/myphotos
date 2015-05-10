@@ -10,6 +10,7 @@
 	"close": "Fermer",
 	"dl_photo": "Télécharger...",
 	"folder_opt": "Paramètres de l'album",
+	"groups_people": "Groupes & personnes",
 	"hide": "Cacher (H)",
 	"loading": "Chargement...",
 	"missing_albums": "Albums manquants?",
@@ -31,5 +32,6 @@
 	"sort": "Trier",
 	"untitled": "Sans nom",
 	"up_to_date": "Votre version de MyPhotos est à jour.",
+	"update_library": "Synchroniser",
 	"updated": "Votre version de MyPhotos a été mise à jour avec succès. L'application va maintenant redémarrer."
 }
