@@ -1,4 +1,4 @@
-my.loglevel = 4; // dev = 4, production = 2
+my.loglevel = 3; // dev = 4, production = 2
 Ractive.DEBUG = (my.loglevel >= 4);
 window.___gcfg = { lang: navigator.language }; // Google sign-in in local language
 
