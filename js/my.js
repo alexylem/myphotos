@@ -61,6 +61,14 @@ var gallery = new Ractive({
 				return found;
 			});
 		},
+		// Photos
+		showhidden: false, // don't show hidden photos by default
+		visiblephotos: function () {
+			var that = this;
+			return this.get('photos').filter (function (photo) {
+				return !photo.hidden || that.get ('showhidden');
+			});
+		},
 		// data
 		folder: {
 			name: false,
@@ -155,12 +163,17 @@ gallery.on ('view', function (event, photoid) {
 });
 gallery.on ('previous', function (event) {
 	this.add ('photoid', -1);
+	while (!this.get ('showhidden') && this.get('photos['+this.get('photoid')+'].hidden'))
+		this.add ('photoid', -1);
 	// cache previous image
 	//(new Image()).src = this.get ('photos['+(this.get('photoid')-1)+'].previewurl');
 });
 gallery.on ('next', function (event) {
 	this.add ('photoid', 1);
-	// cache next image
+	// go to next visible photo
+	while (!this.get ('showhidden') && this.get('photos['+this.get('photoid')+'].hidden'))
+		this.add ('photoid', 1);
+	// cache next image // TODO next visible image!
 	var src = this.get ('photos['+(this.get('photoid')+1)+'].previewurl');
 	my.debug ('preloading image', src);
 	(new Image()).src = src;
@@ -171,23 +184,22 @@ gallery.on ('close', function (event) {
 });
 gallery.on ('hide', function (event) {
 	var photoid = this.get ('photoid'),
-		hide = !this.get ('photos['+photoid+'].hidden');
+		photo = this.get ('photos')[photoid],
+		hide = !photo.hidden;
 	my.get ({
 		url: 'backend.php',
 		data: {
 			action: 'updateFolder',
 			dir: gallery.get ('folder.filepath'),
-			filename: this.get ('photos['+photoid+'].filename'),
+			filename: photo.filename,
 			hidden: hide
 		},
 		success: function () {
-			if (hide) {
-				gallery.set ('photos['+photoid+'].hidden', true);
+			gallery.set ('photos['+photoid+'].hidden', hide);
+			if (hide)
 				my.warn (i18n.t ('pic_hidden'));
-			} else {
-				gallery.set ('photos['+photoid+'].hidden', false);
+			else
 				my.success (i18n.t ('pic_visible'));
-			}
 		}
 	});
 });

@@ -116,8 +116,16 @@
 							</ul>
 						</li>
 
+						<!-- Toggle hidden -->
+						<li class="navbar-form {{#if view !== 'album'}}hide{{/if}}">
+				            <label class="checkbox">
+				                <input type="checkbox" checked="{{showhidden}}">
+				                {{t('show_hidden')}}
+				            </label>
+					    </li>
+
 						<!-- Hide -->
-						<li class="{{#if !user.isadmin || view !== 'photo'}}hide{{/if}} {{#if photos[photoid].hidden}}active{{/if}}">
+						<li class="{{#if !user.isadmin || view !== 'photo'}}hide{{/if}} {{#if photofilter(photos)[photoid].hidden}}active{{/if}}">
 							<a class="addtooltip" data-i18n="[title]hide" on-click="hide">
 								<span class="glyphicon glyphicon-eye-close"></span>
 							</a>
@@ -346,7 +354,7 @@
 		</button>
 		{{#photos[photoid]}}
 			{{#if type == 'image'}}
-				<div class="view" style="background-image: url('{{previewurl}}');">
+				<div class="view {{#hidden}}private{{/}}" style="background-image: url('{{previewurl}}');">
 				</div>
 			{{elseif type == 'video'}}
 				<div class="view">
@@ -408,7 +416,7 @@
 		{{#if photos}}
 			<h5>{{t('photos')}}</h5>
 			{{#each photos}}
-			<div class="thumb {{#if hidden}}private{{/if}}" style="background-image: url('{{thumburl}}');">
+			<div class="thumb {{#hidden}}{{^showhidden}}hide{{/}} private{{/}}" style="background-image: url('{{thumburl}}');">
 				<a href="#{{folder.filepath}}" on-click="view:{{@index}}"></a>
 			</div>
 			{{/each}}

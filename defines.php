@@ -33,5 +33,5 @@ define ('TASK_NB', 1); // nb of task to execute per page load
 
 // MyPhoto Update
 define ('GIT_CHECK', 'git fetch -q 2>&1 && git log HEAD..origin/master --oneline --format="%an: %s (%ar)"'); // command to show pending updates
-define ('GIT_PULL', 'git fetch --all && git reset --hard origin/master 2>&1'); // command to update local repository
+define ('GIT_PULL', 'git fetch --all 2>&1 && git reset --hard origin/master 2>&1'); // command to update local repository
 ?>

@@ -31,6 +31,8 @@ a.editable { display: block; }
 a { cursor: pointer; } /* links with no href */
 .g-signin { margin: 6px; }
 
+.navbar-form .checkbox { margin-top: 8px; }
+
 tr.selected td { background-color: #694f37 !important;}
 
 input.error {
@@ -140,7 +142,7 @@ input.error {
 	background-position: center;
 }
 
-.thumb.private {
+.private {
 	opacity: 0.2;
 	filter: alpha(opacity=40); /* For IE8 and earlier */
 }

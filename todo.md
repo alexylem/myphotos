@@ -13,5 +13,7 @@ It completes the existing ideas from the [Github issue list](https://github.com/
 - [ ] Reset library / album if for example image quality setting is changed
 - [ ] Optimize using dev tools (ex: minifiy..)
 - [ ] Show icon titles in mobile mode
+- [X] Switch to show/hide hidden photos in albums
+- [ ] Login as per Group to test visibility
 
 Click [here](https://github.com/alexylem/myphotos/issues/new) to submit a new feature request.
