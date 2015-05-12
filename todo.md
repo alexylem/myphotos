@@ -15,6 +15,6 @@ It completes the existing ideas from the [Github issue list](https://github.com/
 - [ ] Show icon titles in mobile mode
 - [X] Switch to show/hide hidden photos in albums
 - [X] Show as per Group to test visibility
-- [ ] Swipe photos on touch devices
+- [X] Swipe photos on touch devices
 
 Click [here](https://github.com/alexylem/myphotos/issues/new) to submit a new feature request.
