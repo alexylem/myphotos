@@ -240,8 +240,15 @@ function emailsInGroups ($groups) {
 }
 
 function hasaccess ($visibility, $groups) {
-	if ($visibility == 'public' || isadmin ())
+	if ($visibility == 'public')
 		return true;
+	$see_as = isset ($_REQUEST['see_as'])?$_REQUEST['see_as']:false;
+	if (isadmin ()) { 
+		if ($see_as)
+			$_SESSION['groups'] = array ($see_as);
+		else
+			return true;
+	}
 	if ($visibility == 'restricted') {
 		if (!isset ($_SESSION['me']) || !is_array($groups))
 			return false;

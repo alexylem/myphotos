@@ -1,8 +1,8 @@
-my.loglevel = 3; // dev = 4, production = 2
+my.loglevel = 2; // dev = 4, production = 2
 Ractive.DEBUG = (my.loglevel >= 4);
 window.___gcfg = { lang: navigator.language }; // Google sign-in in local language
 
-// Enable internationalization
+// Enable localization
 i18n.init({
 	//lng: 'en', // to test in english
 	fallbackLng: 'en',
@@ -19,7 +19,7 @@ var gallery = new Ractive({
 	el: 'container',
 	template: '#template',
 	data: {
-		// i18next
+		// localization
 		t: i18n.t,
 		// For display
 		view: 'home',
@@ -40,6 +40,21 @@ var gallery = new Ractive({
 				'order': '<'
 		}},
 		album_sort_field: 'modified_desc', // default album sort
+		// Photos
+		photos: [],
+		photoid: false,
+		showhidden: false, // don't show hidden photos by default
+		// Albums
+		folder: {
+			name: false,
+			visibility: '',
+			filepath: '',
+			parentpath: false,
+			groups: []
+		},
+		folders: [],
+		search: '', // user search criterias
+		structure: false, // full visible album structure, for search results
 		sort: function (array, column, order) {
 			//my.debug ('sorting', array, 'by', column, 'order', order);
 			array = array.slice(); // clone, don't modify inderlying data
@@ -61,33 +76,15 @@ var gallery = new Ractive({
 				return found;
 			});
 		},
-		// Photos
-		showhidden: false, // don't show hidden photos by default
-		visiblephotos: function () {
-			var that = this;
-			return this.get('photos').filter (function (photo) {
-				return !photo.hidden || that.get ('showhidden');
-			});
-		},
-		// data
-		folder: {
-			name: false,
-			visibility: '',
-			filepath: '',
-			parentpath: false,
-			groups: []
-		},
-		folders: [],
-		photos: [],
-		photoid: false,
-		user: false,
+		// Groups
 		groups: [],
+		see_as: '',
+		// Users
+		user: false,
 		users: [],
-		cron: {}, // object to store info during library update
-		search: '', // user search criterias
-		structure: false // full visible album structure, for search results
+		// Synchonization
+		cron: {}, // object to store info during Sychronization
 	}
-	//lazy: true
 });
 
 // Enable tooptips on non-touch devices
@@ -417,6 +414,13 @@ gallery.observe( 'search', function (value) {
 		gallery.set ('view', 'home');
 });
 
+/*********
+* See as *
+*********/
+gallery.observe( 'see_as', function (value) {
+	cwd ('./');
+});
+
 // Main functions
 function cwd (dir) {
 	gallery.set ('loading', true);
@@ -426,7 +430,8 @@ function cwd (dir) {
 		url: 'backend.php',
 		data: {
 			action: 'list',
-			dir: dir
+			dir: dir,
+			see_as: gallery.get ('see_as')
 		},
 		timeout: 10*1000, // 10s in case HDD is on sleep
 		success: function (smessage) {
