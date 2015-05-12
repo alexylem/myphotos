@@ -248,7 +248,7 @@
 								{{#isadmin}}
 								<li><a data-toggle="modal" href="#cronModal"><span class="glyphicon glyphicon-retweet"></span> {{t('update_library')}}</a></li>
 								<li><a data-toggle="modal" href="#groupsModal"><span class="glyphicon glyphicon-user"></span> {{t('groups_people')}}</a></li>
-								<li><a on-click="checkupdates" href="#"><span class="glyphicon glyphicon-circle-arrow-up"></span> {{t('check_updates')}}</a></li>
+								<li><a on-click="checkupdates" href="#"><span class="glyphicon glyphicon-circle-arrow-down"></span> {{t('check_updates')}}</a></li>
 								{{/if}}
 								<li><a target="_blank" href="https://github.com/alexylem/myphotos/issues/new"><span class="glyphicon glyphicon-fire"></span> {{t('report-issue')}}</a></li>
 								<li><a on-click="logout" href="#"><span class="glyphicon glyphicon-log-out"></span> {{t('sign-off')}}</a></li>
@@ -366,23 +366,28 @@
 		</p>
 
 	{{elseif view == 'photo'}}
+		{{^touch}}
 		<button on-click="previous" type="button" class="btn btn-default btn-lg prev {{#unless photoid}}hidden{{/unless}}">
 			<span class="glyphicon glyphicon-chevron-left"></span>
 		</button>
+		{{/}}
 		{{#photos[photoid]}}
 			{{#if type == 'image'}}
-				<div class="view {{#hidden}}private{{/}}" style="background-image: url('{{previewurl}}');">
+				<div class="view {{#hidden}}private{{/}}" style="background-image: url('{{previewurl}}');" 
+					on-swiperight="previous" on-swipeleft="next">
 				</div>
 			{{elseif type == 'video'}}
-				<div class="view">
+				<div class="view" on-swiperight="previous" on-swipeleft="next">
 					<iframe class="video" width="100%" height="100%" src="{{previewurl}}" frameborder="0" allowfullscreen="true">
 					</iframe>
 				</div>
 			{{/if}}
 		{{/}}
+		{{^touch}}
 		<button on-click="next" type="button" class="btn btn-default btn-lg nxt {{#if photoid == photos.length-1}}hidden{{/if}}">
 			<span class="glyphicon glyphicon-chevron-right"></span>
 		</button>
+		{{/}}
 	{{elseif view == 'search'}}
 			<h5>Search results</h5>
 			{{#each filter(structure, 'filename', search)}}
@@ -459,6 +464,8 @@
 <!-- Ractive -->
 <!--<script src='lib/ractive/ractive.js'></script>-->
 <script src='http://cdn.ractivejs.org/latest/ractive.js'></script> <!-- where map exists --> 
+<script src='lib/hammerjs/hammer.min.js'></script> <!-- touch support -->
+<script src='lib/ractive-touch/index.js'></script> <!-- ractive touch events -->
 
 <!-- Bootstrap -->
 <script src="lib/bootstrap/js/bootstrap.min.js"></script>

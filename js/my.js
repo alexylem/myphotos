@@ -24,6 +24,7 @@ var gallery = new Ractive({
 		// For display
 		view: 'home',
 		loading: true,
+		touch: Modernizr.touch,
 		// parameters
 		album_sort_options: {
 			'title_asc': {
