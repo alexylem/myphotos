@@ -1,4 +1,4 @@
-my.loglevel = 2; // dev = 4, production = 2
+my.loglevel = 4; // dev = 4, production = 2
 Ractive.DEBUG = (my.loglevel >= 4);
 window.___gcfg = { lang: navigator.language }; // Google sign-in in local language
 
@@ -6,7 +6,7 @@ window.___gcfg = { lang: navigator.language }; // Google sign-in in local langua
 i18n.init({
 	//lng: 'en', // to test in english
 	fallbackLng: 'en',
-	useLocalStorage: false, // true for Production
+	useLocalStorage: (my.loglevel <= 2), // true for Production
 	getAsync: false,
 	debug: (my.loglevel >= 4),
 	sendMissing: true,

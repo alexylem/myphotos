@@ -159,10 +159,11 @@ input.error {
 
 .thumb .cover {
 	position: absolute;
-	top: 0px;
-	left: 5px;
-	bottom: 0px;
-	right: 5px;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	padding: 5px;
 	text-align: center;
 	text-overflow: ellipsis;
 	overflow: hidden;
