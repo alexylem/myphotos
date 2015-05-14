@@ -106,14 +106,12 @@
 								<span class="glyphicon glyphicon-sort"></span>
 								<span class="visible-xs-inline">{{t('sort')}}</span>
 							</a>
-							<ul class="dropdown-menu" role="menu">
-								<li>
-									<select value="{{album_sort_field}}" class="form-control">
-										{{#each album_sort_options:i}}
-											<option value="{{i}}">{{title}}</option>
-										{{/each}}
-									</select>
-								</li>
+							<ul class="dropdown-menu" role="menu" style="padding: 0px 10px;">
+								{{#each album_sort_options:i}}
+								<li class="radio"><label>
+									<input type="radio" name="{{album_sort_field}}" value="{{i}}">{{title}}
+								</label></li>
+								{{/each}}
 							</ul>
 						</li>
 
@@ -123,15 +121,15 @@
 								<span class="glyphicon glyphicon-eye-open"></span>
 								<span class="visible-xs-inline">{{t('see_as')}}</span>
 							</a>
-							<ul class="dropdown-menu" role="menu">
-								<li>
-									<select value="{{see_as}}" class="form-control">
-											<option value="">{{user.displayName}}</option>
-										{{#each groups}}
-											<option value="{{.}}">{{.}}</option>
-										{{/each}}
-									</select>
-								</li>
+							<ul class="dropdown-menu" role="menu" style="padding: 0px 10px;">
+								<li class="radio"><label>
+									<input type="radio" name="{{see_as}}" value="">{{user.displayName}}
+								</label></li>
+								{{#each groups}}
+								<li class="radio"><label>
+									<input type="radio" name="{{see_as}}" value="{{.}}">{{.}}
+								</label></li>
+								{{/each}}
 							</ul>
 						</li>
 

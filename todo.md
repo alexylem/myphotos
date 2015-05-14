@@ -17,6 +17,6 @@ It completes the existing ideas from the [Github issue list](https://github.com/
 - [X] Switch to show/hide hidden photos in albums
 - [X] Show as per Group to test visibility
 - [X] Swipe photos on touch devices
-- [ ] Fix sort & see as dropdowns on chrome
+- [X] Fix sort & see as dropdowns on chrome
 
 Click [here](https://github.com/alexylem/myphotos/issues/new) to submit a new feature request.
