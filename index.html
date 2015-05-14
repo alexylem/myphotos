@@ -45,7 +45,7 @@
 	<link rel="stylesheet" href="lib/add-to-homescreen/style/addtohomescreen.css">
 
 	<!-- App -->
-	<link rel="stylesheet" href="css/my.css?v=1">
+	<link rel="stylesheet" href="css/my.css?v=2">
 </head>
 <body>
 	<div id='container'></div>
@@ -55,7 +55,7 @@
 				<div class="navbar-header">
 
 					<!-- Back/Close buttons -->
-					{{#if photoid !== false}}
+					{{#if view == 'photo'}}
 						<button on-click="close" type="button" class="btn btn-default navbar-btn pull-left">
 							<span class="glyphicon glyphicon-remove"></span> {{t('close')}}
 						</button>
@@ -77,11 +77,11 @@
 					
 					<!-- App/Folder/File title -->
 					<div class="{{#if view !== 'album'}}hide{{/if}} pull-left">
-						<a class="{{#if !user.isadmin}}hide{{/if}} navbar-brand addtooltip" data-i18n="[title]folder_opt"
+						<a class="{{#if !user.isadmin || folder.smart}}hide{{/if}} navbar-brand addtooltip" title="{{t('folder_opt')}}"
 						   data-toggle="modal" href="#folderModal">
 							{{folder.name}}
 						</a>
-						<span class="{{#if user.isadmin}}hide{{/if}} navbar-brand">{{folder.name}}</span>
+						<span class="{{#if user.isadmin && !folder.smart}}hide{{/if}} navbar-brand">{{folder.name}}</span>
 					</div>
 					{{#if view == 'home'}}
 						<span class="navbar-brand">MyPhotos</span>
@@ -102,8 +102,9 @@
 
 						<!-- Sort -->
 						<li class="dropdown {{#if view !== 'home'}}hide{{/if}}">
-							<a href="#" class="dropdown-toggle addtooltip" data-i18n="[title]sort" data-toggle="dropdown" role="button">
+							<a href="#" class="dropdown-toggle addtooltip" title="{{t('sort')}}" data-toggle="dropdown" role="button">
 								<span class="glyphicon glyphicon-sort"></span>
+								<span class="visible-xs-inline">{{t('sort')}}</span>
 							</a>
 							<ul class="dropdown-menu" role="menu">
 								<li>
@@ -118,8 +119,9 @@
 
 						<!-- See as -->
 						<li class="dropdown {{#if !user.isadmin || view !== 'home'}}hide{{/if}}">
-							<a href="#" class="dropdown-toggle addtooltip" data-i18n="[title]see_as" data-toggle="dropdown" role="button">
+							<a href="#" class="dropdown-toggle addtooltip" title="{{t('see_as')}}" data-toggle="dropdown" role="button">
 								<span class="glyphicon glyphicon-eye-open"></span>
+								<span class="visible-xs-inline">{{t('see_as')}}</span>
 							</a>
 							<ul class="dropdown-menu" role="menu">
 								<li>
@@ -133,32 +135,43 @@
 							</ul>
 						</li>
 
-						<!-- Toggle hidden -->
-						<li class="navbar-form {{#if view !== 'album'}}hide{{/if}}">
+						<!-- Show hidden -->
+						<li class="navbar-form {{#if !user.isadmin || view !== 'album' || folder.smart}}hide{{/if}}">
 				            <label class="checkbox">
 				                <input type="checkbox" checked="{{showhidden}}">
 				                {{t('show_hidden')}}
 				            </label>
 					    </li>
 
+					    <!-- Mark favorite -->
+						<li class="{{#if view !== 'photo'}}hide{{/if}}">
+				            <a class="addtooltip" title="{{t('mark_favorite')}}{{^touch}} (F){{/}}" on-click="favorite">
+								<span class="glyphicon glyphicon-star{{^photos[photoid].favorite}}-empty{{/}}"></span>
+								<span class="visible-xs-inline">{{t('mark_favorite')}}</span>
+							</a>
+					    </li>
+
 						<!-- Hide -->
 						<li class="{{#if !user.isadmin || view !== 'photo'}}hide{{/if}} {{#if photos[photoid].hidden}}active{{/if}}">
-							<a class="addtooltip" data-i18n="[title]hide" on-click="hide">
+							<a class="addtooltip" title="{{t('hide')}}{{^touch}} (H){{/}}" on-click="hide">
 								<span class="glyphicon glyphicon-eye-close"></span>
+								<span class="visible-xs-inline">{{t('hide')}}</span>
 							</a>
 						</li>
 
 						<!-- Cover -->
 						<li class="{{#if !user.isadmin || view !== 'photo'}}hide{{/if}}">
-							<a class="addtooltip" data-i18n="[title]set_cover" on-click="cover">
+							<a class="addtooltip" title="{{t('set_cover')}}" on-click="cover">
 								<span class="glyphicon glyphicon-picture"></span>
+								<span class="visible-xs-inline">{{t('set_cover')}}</span>
 							</a>
 						</li>
 
 						<!-- Download -->
 						<li class="dropdown {{#if view !== 'photo'}}hide{{/if}}">
-							<a class="dropdown-toggle addtooltip" data-i18n="[title]dl_photo" data-toggle="dropdown" role="button">
+							<a class="dropdown-toggle addtooltip" title="{{t('dl_photo')}}" data-toggle="dropdown" role="button">
 								<span class="glyphicon glyphicon-download-alt"></span>
+								<span class="visible-xs-inline">{{t('dl_photo')}}</span>
 							</a>
 							<ul class="dropdown-menu" role="menu">
 								{{#photos[photoid]}}
@@ -231,7 +244,7 @@
 								</div>
 							</div>
 						</div>
-						<li data-i18n="[title]sign-in" class="addtooltip g-signin {{#if user}}hide{{/if}}">
+						<li title="{{t('sign-in')}}" class="addtooltip g-signin {{#if user}}hide{{/if}}">
 							<span class="g-signin"
 								data-width="wide"
 								data-scope="https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/userinfo.email"
@@ -400,6 +413,24 @@
 			</div>
 			{{/each}}
 	{{else}}
+		{{#if view == 'home'}}
+			<h5>{{t('smart_albums')}}</h5>
+			<div class="thumb stack">
+				<a href="#favorites" style="background-image: url('');">
+					<div class="cover">
+						<span class="glyphicon glyphicon-star"></span> {{t('favorites')}}
+					</div>
+				</a>
+			</div>
+			<div class="clearfix"></div>
+			<hr />
+		{{elseif folder.smart}}
+			<div class="panel panel-default">
+			  <div class="panel-body">
+				 <p><span class="glyphicon glyphicon-info-sign"></span> {{t('contains_favorites')}}</p>
+			</div>
+		{{/if}}
+
 		{{#if folders}}
 			<h5>{{t('albums')}}</h5>
 			{{#each sort(folders, album_sort_options[album_sort_field].field, album_sort_options[album_sort_field].order)}}
@@ -427,19 +458,13 @@
 					  </div>
 				</div>
 			{{/if}}
-		{{elseif view == 'home'}}
-			<div class="jumbotron">
-			  <h1><span class="glyphicon glyphicon-eye-close"></span> {{t('oops')}}</h1>
-			  <p>{{t('no_album_visible')}}</p>
-			  <p>{{t('plz_sign_in')}}</p>
-			</div>
 		{{/if}}
 
 		{{#if photos}}
 			<h5>{{t('photos')}}</h5>
 			{{#each photos}}
 			<div class="thumb {{#hidden}}{{^showhidden}}hide{{/}} private{{/}}" style="background-image: url('{{thumburl}}');">
-				<a href="#{{folder.filepath}}" on-click="view:{{@index}}"></a>
+				<a on-click="view:{{@index}}"></a>
 			</div>
 			{{/each}}
 			<div class="clearfix"></div>
@@ -497,10 +522,10 @@
 </script>
 
 <!-- My -->
-<script src="js/utils.js?v=1"></script>
-<script src="js/framework.js?v=1"></script>
-<script src="repository.js?v=1"></script>
-<script src="js/my.js?v=1"></script>
+<script src="js/utils.js?v=2"></script>
+<script src="js/framework.js?v=2"></script>
+<script src="repository.js?v=2"></script>
+<script src="js/my.js?v=2"></script>
 
 </body>
 </html>

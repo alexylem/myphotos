@@ -45,6 +45,8 @@ var gallery = new Ractive({
 		photos: [],
 		photoid: false,
 		showhidden: false, // don't show hidden photos by default
+		// Smart Albums
+		// TODO
 		// Albums
 		folder: {
 			name: false,
@@ -84,7 +86,7 @@ var gallery = new Ractive({
 		user: false,
 		users: [],
 		// Synchonization
-		cron: {}, // object to store info during Sychronization
+		cron: {} // object to store info during Sychronization
 	}
 });
 
@@ -137,12 +139,12 @@ my.get({
 	}
 });
 
-// Open Album
-gallery.on ('cwd', function (event, dir) { // still needed? as now done by hash
-	cwd (dir);
-});
+/**************
+* Open Albums *
+**************/
 $(window).on('hashchange', function() { // change album
-	cwd (decodeURIComponent (window.location.hash.slice(1)));
+	var folder = decodeURIComponent (window.location.hash.slice(1));
+	cwd (folder);
 	ga('send', 'pageview', { // send hash to google analytics
  		'page': location.pathname + location.search  + location.hash
 	});
@@ -152,6 +154,8 @@ $(window).on('hashchange', function() { // change album
 *******************/
 gallery.on ('view', function (event, photoid) {
 	my.debug ('setting photoid to', photoid);
+	if (Modernizr.touch)
+		my.info (i18n.t('swipe_to_navigate'));
 	this.set ('photoid', photoid);
 	this.set ('view', 'photo');
 	// cache next image
@@ -179,6 +183,25 @@ gallery.on ('next', function (event) {
 gallery.on ('close', function (event) {
 	this.set ('photoid', false);
 	this.set ('view', 'album');
+});
+gallery.on ('favorite', function (event) {
+	var photoid = this.get ('photoid'),
+		photo = this.get ('photos')[photoid];
+	if (photo.favorite) { // was favorite
+		if (this.get ('folder.filepath') == 'favorites') {
+			this.splice('photos', photoid, 1);
+			removeObject ('mp_favorites', photoid);
+			my.success (i18n.t('pic_unstarred'));
+			this.set ('view', 'album');
+		} else
+			my.info ('Remove favorites from Favorite smart album');
+	}
+	else {
+		photo.favorite = true;
+		this.set('photos['+photoid+']', photo);
+		addObject ('mp_favorites', photo);
+		my.success (i18n.t('pic_starred'));
+	}
 });
 gallery.on ('hide', function (event) {
 	var photoid = this.get ('photoid'),
@@ -216,7 +239,7 @@ gallery.on ('cover', function (event) {
 });
 // Keyboard shortcuts
 $(document).keydown(function(e) {
-	//my.debug ('hotkey pressed', e.keyCode);
+	my.debug ('hotkey pressed', e.keyCode);
 	if (gallery.get ('view') == 'photo') {
 		var photoid = gallery.get ('photoid');
 		switch(e.keyCode) {
@@ -231,6 +254,9 @@ $(document).keydown(function(e) {
 				if (photoid < gallery.get ('photos').length - 1)
 					gallery.fire ('next');
 				break;
+			case 70 : // F
+				gallery.fire ('favorite');
+				break;
 			case 72 : // H
 				gallery.fire ('hide');
 				break;
@@ -240,15 +266,17 @@ $(document).keydown(function(e) {
 /******************
 * Groups & People *
 ******************/
+/*
 gallery.on ('removegroup', function (event, index) {
 	if (confirm (i18n.t('are_you_sure'))) {
     	gallery.splice('groups', index, 1);
     	$('#multiselect').multiselect('rebuild');
 	}	
 });
+*/
 gallery.on ('filterpeople', function (event, group) {
 	my.debug ('filtering poeple on', group);
-	$('.bootstrap-table .search > input').val(group).trigger('drop');
+	$('.bootstrap-table .search > input').val(group).trigger('drop'); // not working anymore??
 });
 // Update Library
 gallery.on ('ignore', function (event, group) {
@@ -308,17 +336,17 @@ $("#addgroupform").validate({
   errorPlacement: function() {},
   submitHandler: function(form) {
     gallery.push ('groups', gallery.get ('newgroup'));
-	$('#multiselect').multiselect('rebuild');
 	gallery.set ('newgroup', '');
   }
 });
 $('#groupsModal').on('show.bs.modal', function () {
 	am.drawDatatable($('#users'), 'people');
-	$('#multiselect').multiselect({
+	$('#foldergroups').multiselect({
 		onChange: function (option, checked, select) { // fix ractive not seing multiselect updates
 			gallery.set('newgroups', $('#multiselect').val ());
 		}
 	});
+	$('#foldergroups').multiselect('rebuild'); // if groups added during session
 });
 gallery.on ('saveGroups', function () {
 	my.get ({
@@ -418,59 +446,74 @@ gallery.observe( 'search', function (value) {
 /*********
 * See as *
 *********/
-gallery.observe( 'see_as', function (value) {
-	cwd ('./');
+gallery.observe( 'see_as', function (value, oldvalue) {
+	if (value || oldvalue) // skip initial set or direct link overriden
+		cwd ('./');
 });
 
 // Main functions
 function cwd (dir) {
 	gallery.set ('loading', true);
 	gallery.set ('search', '');
-	my.log ('loading...');
-	my.get ({
-		url: 'backend.php',
-		data: {
-			action: 'list',
-			dir: dir,
-			see_as: gallery.get ('see_as')
-		},
-		timeout: 10*1000, // 10s in case HDD is on sleep
-		success: function (smessage) {
-			var message = JSON.parse (smessage);
+	
+	if (dir == 'favorites') {
+		gallery.set ('folder', {
+			name: i18n.t('favorites'),
+			filepath: 'favorites',
+			parentpath: './',
+			smart: true // smart album
+		});
+		gallery.set ('folders', []);
+		gallery.set ('photos', getObjects ('mp_favorites'));
+		document.title = i18n.t('favorites');
+		gallery.set ('view', 'album');
+		gallery.set ('loading', false);
+	} else {
+		my.log ('loading...');
+		my.get ({
+			url: 'backend.php',
+			data: {
+				action: 'list',
+				dir: dir,
+				see_as: gallery.get ('see_as')
+			},
+			timeout: 10*1000, // 10s in case HDD is on sleep
+			success: function (smessage) {
+				var message = JSON.parse (smessage);
 
-			gallery.set ('folder', message.folder);
-			gallery.set ('folders', message.folders);
+				gallery.set ('folder', message.folder);
+				gallery.set ('folders', message.folders);
 
-			// Sort by updated
-			message.files.sort(function compare(a,b) { return a.updated - b.updated; });
+				// Sort by updated
+				message.files.sort(function compare(a,b) { return a.updated - b.updated; });
 
-			// Humanize values
-			$.each (message.files, function (i, file) {
-				message.files[i].size = filesize (file.size);
-				message.files[i].previewsize = filesize (file.previewsize);
-			});
+				// Humanize values
+				$.each (message.files, function (i, file) {
+					message.files[i].size = filesize (file.size);
+					message.files[i].previewsize = filesize (file.previewsize);
+				});
 
-			gallery.set ('photos', message.files);
+				gallery.set ('photos', message.files);
 
-			// Set URL hash
-			//window.location.hash = '#'+message.folder.filepath;
+				// Set URL hash
+				//window.location.hash = '#'+message.folder.filepath;
 
-			if (message.folder.filepath !== './') { // in a directory
-				document.title = message.folder.name;
-				gallery.set ('view', 'album');
-			} else { // root
-				document.title = 'MyPhotos';
-				gallery.set ('parentpath', false); // needed?
+				if (message.folder.filepath == './') { // root
+					document.title = 'MyPhotos';
+					gallery.set ('view', 'home');
+				} else { // in a directory
+					document.title = message.folder.name;
+					gallery.set ('view', 'album');
+				}
+				gallery.set ('loading', false);
+			},
+			error: function (message) {
+				my.error (message);
 				gallery.set ('view', 'home');
+				gallery.set ('loading', false);
 			}
-			gallery.set ('loading', false);
-		},
-		error: function (message) {
-			my.error (message);
-			gallery.set ('view', 'home');
-			gallery.set ('loading', false);
-		}
-	});
+		});
+	}
 }
 
 function signInCallback(authResult) {
@@ -515,6 +558,7 @@ function continueCron () {
 		data: {action: 'execute', output: 0},
 		timeout: 60*1000, // 1m
 		success: function (status) {
+			document.title = status.done+'/'+status.total+' - '+(status.remaining || 'estimating...');
 			gallery.set ({
 				'cron.percentage': Math.round ((status.total?status.done/status.total:1)*100),
 				'cron.progress': status.done+'/'+status.total,

@@ -251,8 +251,8 @@ function addObject (collection, object) {
 		objects = [object];
 	setObjects (collection, objects);
 	my.debug ('	item added successfuly');
-	set ('localversion', moment().format('YYYY-MM-DD HH:mm:ss'));
-	sync ();
+	//set ('localversion', moment().format('YYYY-MM-DD HH:mm:ss'));
+	//sync ();
 }
 
 function editObject (collection, index, object) {
@@ -261,16 +261,16 @@ function editObject (collection, index, object) {
 	objects[index] = object;
 	setObjects (collection, objects);
 	my.debug ('	item updated succesfuly');
-	set ('localversion', moment().format('YYYY-MM-DD HH:mm:ss'));
-	sync ();
+	//set ('localversion', moment().format('YYYY-MM-DD HH:mm:ss'));
+	//sync ();
 }
 
 function moveObject (collection, old_index, new_index) {
 	var objects = getObjects (collection);
 	objects.move (old_index, new_index);
 	setObjects (collection, objects);
-	set ('localversion', moment().format('YYYY-MM-DD HH:mm:ss'));
-	sync ();
+	//set ('localversion', moment().format('YYYY-MM-DD HH:mm:ss'));
+	//sync ();
 }
 
 function removeObject (collection, index) {
@@ -279,6 +279,6 @@ function removeObject (collection, index) {
 	objects.splice (index, 1);
 	setObjects (collection, objects);
 	my.debug ('	item removed successfuly');
-	set ('localversion', moment().format('YYYY-MM-DD HH:mm:ss'));
-	sync ();
+	//set ('localversion', moment().format('YYYY-MM-DD HH:mm:ss'));
+	//sync ();
 }
