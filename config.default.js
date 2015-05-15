@@ -5,12 +5,26 @@
 Config = {
 	// Google Analytics Client ID (format UA-XXXX-Y) or false to disable it
 	ga_client_id: false,
-	// log level, can be 1 for production, 2 for network, 3 for logging, 4 for debug
-	log_level: 	1,
-	// language, can be auto (navigator.language) or any language code (http://www.metamodpro.com/browser-language-codes)
+
+	// Level of messages logging, can be:
+	// 0 to display only errors (will not display information and success notifications!!!)
+	// 1 to display all above + warnings (will not display information and success notifications!!!)
+	// 2 to display all above + success & info messages (recommended for production)
+	// 3 to display all above + network exchanges in the console (recommended for troubleshooting)
+	// 4 to display all above + debug information in the console (recommended for development)
+	log_level: 2,
+
+	// language of the user interface, can be:
+	// 'auto' to automatically detect the browser's language
+	// or any language code (http://www.metamodpro.com/browser-language-codes)
 	language: 'auto',
+
 	// fallback language in case translation is not found
 	fallback_language: 'en',
-	// default album sorting, can be title_asc/modified_desc/modified_asc
+
+	// default album sorting, can be:
+	// 'title_asc' to sort albums alphabetically
+	// 'modified_desc' to see newest albums on top
+	// 'modified_asc' to see oldest albums on top
 	default_album_sort: 'modified_desc'
 };
