@@ -65,6 +65,7 @@ See the [todo](todo.md) list
 sudo apt-get install git
 ```
 * [Create Google API project](http://support.wpsocial.com/support/articles/144223-creating-a-google-project-with-the-google-api-console) for Public & Secret keys
+* (*optional*) [Create Google Analytics Client Id](http://www.google.com/analytics/) for tracking the traffic on MyPhotos
 
 ### :mans_shoe: Installation steps
 
@@ -73,15 +74,17 @@ sudo apt-get install git
 cd /var/www/myphotos
 git clone --recursive https://github.com/alexylem/myphotos.git
 ```
-* Create `config.php` from a copy of `config.default.php`:
+* Create `config.php` and `config.js` from copies of `config.default.php` and `config.default.js`:
 ```
 cp config.default.php config.php
+cp config.default.js config.js
 ```
-* Fill-in `config.php` with your settings & Google API Key:
+* Fill-in `config.php` and `config.js` with your settings:
 ```
 nano config.php
+nano config.js
 ```
-* Login and click on *Update Library*
+* Login and click on *Synchronize*
 * (*optional*) Change owner of .git directories for automatic updates:
 ```
 sudo chown -R www-data:www-data .*

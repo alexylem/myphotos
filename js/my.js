@@ -1,19 +1,30 @@
-my.loglevel = 2; // dev = 4, production = 2
-Ractive.DEBUG = (my.loglevel >= 4);
-window.___gcfg = { lang: navigator.language }; // Google sign-in in local language
+// Log levels
+my.loglevel = Config.log_level; // dev = 4, production = 2
+Ractive.DEBUG = (Config.log_level >= 4);
+
+// Google analytics
+if (Config.ga_client_id) {
+	ga('create', Config.ga_client_id, 'auto');
+	ga('send', 'pageview', { // send hash to google analytics
+		'page': location.pathname + location.search  + location.hash
+	});
+}
 
 // Enable localization
-i18n.init({
-	//lng: 'en', // to test in english
-	fallbackLng: 'en',
-	useLocalStorage: (my.loglevel <= 2), // true for Production
+window.___gcfg = { lang: navigator.language }; // Google sign-in in local language
+var i18nConfig = {
+	fallbackLng: Config.fallback_language,
+	useLocalStorage: (Config.log_level <= 2), // true for Production
 	getAsync: false,
-	debug: (my.loglevel >= 4),
+	debug: (Config.log_level >= 4),
 	sendMissing: true,
-	missingKeyHandler: function(lng, ns, key, defaultValue, lngs) { // NOT WORKING!
+	missingKeyHandler: function(lng, ns, key, defaultValue, lngs) { // NOT WORKING! I think it is
 		console.error ("Translation missing for key", key, "in language",lng);
 	}
-});
+};
+if (Config.language != 'auto')
+	i18nConfig.lng = Config.language;
+i18n.init(i18nConfig);
 
 var gallery = new Ractive({
 	el: 'container',
@@ -40,7 +51,7 @@ var gallery = new Ractive({
 				'field': 'updated',
 				'order': '<'
 		}},
-		album_sort_field: 'modified_desc', // default album sort
+		album_sort_field: Config.default_album_sort, // default album sort
 		// Photos
 		photos: [],
 		photoid: false,
@@ -145,9 +156,10 @@ my.get({
 $(window).on('hashchange', function() { // change album
 	var folder = decodeURIComponent (window.location.hash.slice(1));
 	cwd (folder);
-	ga('send', 'pageview', { // send hash to google analytics
- 		'page': location.pathname + location.search  + location.hash
-	});
+	if (Config.ga_client_id)
+		ga('send', 'pageview', { // send hash to google analytics
+	 		'page': location.pathname + location.search  + location.hash
+		});
 });
 /*******************
 * View Photo/Video *
@@ -518,35 +530,32 @@ function cwd (dir) {
 
 function signInCallback(authResult) {
 	if (authResult.code) {
-		$.post('plus.php',
-			{
-				action: 'login',
-				code: authResult.code,
-				state: 'TODO'
-			},
-			function( data ) {
-				var user = JSON.parse(data).message;
-				gallery.set ('user', user);
-				ga('set', '&uid', user.email); // send user id to google analytics
-				if (user.isadmin) {
-					my.get ({
-						url: 'backend.php',
-						data: { action: 'getGroups' },
-						success: function (sdata) {
-							var groups = JSON.parse (sdata);
-							try { // Ractive crash DEBUG still needed?
-								gallery.set ('groups', groups);
-							} catch (err) {
-								console.error ('Ractive error', err);
-								location.reload();
-							}
+		$.post('plus.php', {
+			action: 'login',
+			code: authResult.code,
+			state: 'TODO'
+		}, function( data ) {
+			var user = JSON.parse(data).message;
+			gallery.set ('user', user);
+			ga('set', 'dimension1', user.email);
+			if (user.isadmin) {
+				my.get ({
+					url: 'backend.php',
+					data: { action: 'getGroups' },
+					success: function (sdata) {
+						var groups = JSON.parse (sdata);
+						try { // Ractive crash DEBUG still needed?
+							gallery.set ('groups', groups);
+						} catch (err) {
+							console.error ('Ractive error', err);
+							location.reload();
 						}
-					});
-				}
-				my.debug ('signInCallback, calling cwd after login...'); // TODO cwd only is user was false before
-				cwd (decodeURIComponent (window.location.hash.slice(1)) || './'); // why?? this causes a refresh! apparently not anymore..
-      		}
-		);
+					}
+				});
+			}
+			my.debug ('signInCallback, calling cwd after login...'); // TODO cwd only is user was false before
+			cwd (decodeURIComponent (window.location.hash.slice(1)) || './'); // why?? this causes a refresh! apparently not anymore..
+		});
 	}
 }
 

@@ -1,5 +1,5 @@
 <?php
-// CONFIG file for MyPhotos
+// CONFIG file for MyPhotos Server side
 // 1) Create a copy / rename to config.php
 // 2) Specify below variables as per requested
 
