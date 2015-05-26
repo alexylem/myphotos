@@ -377,9 +377,11 @@ $('#folderModal').on('show.bs.modal', function () {
 	$('input.datepicker').datepicker({
 		format: "yyyy-mm-dd",
 	    weekStart: Config.week_start,
-		language: /[^-]*/.exec(Config.language)[0], // fr-FR does not exists in datepicker
+		language: /[^-]*/.exec(Config.language)[0], // fr-FR does not exist in datepicker
 	    autoclose: true,
 	    todayHighlight: true
+	}).on ('changeDate', function (e) { // fix ractive not seing datepicker updates
+		gallery.set ('folder.date', $(e.target).val()); // would be better $( ).trigger(change) but doesnt work
 	});
 	$('#foldergroups').multiselect({
 		onChange: function (option, checked, select) { // fix ractive not seing multiselect updates
