@@ -374,7 +374,6 @@ gallery.on ('saveGroups', function () {
 	});
 });
 $('#folderModal').on('show.bs.modal', function () {
-	$('input.datepicker').datepicker('update');
 	$('input.datepicker').datepicker({
 		format: "yyyy-mm-dd",
 	    weekStart: Config.week_start,
@@ -384,6 +383,7 @@ $('#folderModal').on('show.bs.modal', function () {
 	}).on ('changeDate', function (e) { // fix ractive not seing datepicker updates
 		gallery.set ('folder.date', $(e.target).val()); // would be better $( ).trigger(change) but doesnt work
 	});
+	$('input.datepicker').datepicker('update');
 	$('#foldergroups').multiselect({
 		onChange: function (option, checked, select) { // fix ractive not seing multiselect updates
 			gallery.set('folder.groups', $('#foldergroups').val ());
