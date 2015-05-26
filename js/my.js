@@ -11,8 +11,9 @@ if (Config.ga_client_id) {
 }
 
 // Enable localization
-window.___gcfg = { lang: navigator.language }; // Google sign-in in local language
-var i18nConfig = {
+window.___gcfg = { lang: Config.language }; // Google sign-in in local language
+i18n.init({
+	lng: Config.language,
 	fallbackLng: Config.fallback_language,
 	useLocalStorage: (Config.log_level <= 2), // true for Production
 	getAsync: false,
@@ -21,10 +22,7 @@ var i18nConfig = {
 	missingKeyHandler: function(lng, ns, key, defaultValue, lngs) { // NOT WORKING! I think it is
 		console.error ("Translation missing for key", key, "in language",lng);
 	}
-};
-if (Config.language != 'auto')
-	i18nConfig.lng = Config.language;
-i18n.init(i18nConfig);
+});
 
 var gallery = new Ractive({
 	el: 'container',
@@ -42,13 +40,13 @@ var gallery = new Ractive({
 				'title': i18n.t('by_title'),
 				'field': 'filename',
 				'order': '<'},
-			'modified_desc': {
+			'date_desc': {
 				'title': i18n.t('newest_first'),
-				'field': 'updated',
+				'field': 'date',
 				'order': '>'},
-			'modified_asc': {
+			'date_asc': {
 				'title': i18n.t('oldest_first'),
-				'field': 'updated',
+				'field': 'date',
 				'order': '<'
 		}},
 		album_sort_field: Config.default_album_sort, // default album sort
@@ -375,6 +373,13 @@ gallery.on ('saveGroups', function () {
 	});
 });
 $('#folderModal').on('show.bs.modal', function () {
+	$('input.datepicker').datepicker({
+		format: "yyyy-mm-dd",
+	    weekStart: Config.week_start,
+		language: /[^-]*/.exec(Config.language)[0], // fr-FR does not exists in datepicker
+	    autoclose: true,
+	    todayHighlight: true
+	});
 	$('#foldergroups').multiselect({
 		onChange: function (option, checked, select) { // fix ractive not seing multiselect updates
 			gallery.set('folder.groups', $('#foldergroups').val ());
@@ -397,6 +402,7 @@ gallery.on ('saveFolder', function (e) {
 			action: 'updateFolder',
 			dir: gallery.get ('folder.filepath'),
 			name: gallery.get('folder.name'),
+			date: gallery.get('folder.date'),
 			visibility: gallery.get ('folder.visibility'),
 			notify: gallery.get ('folder.notify'),
 			body: $('#notif_email_body').val (),

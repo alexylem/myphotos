@@ -69,14 +69,14 @@ input.error {
     background-position: center;
 }
 
-.prev, .nxt {
+.prv, .nxt {
 	position: absolute;
 	top: 50%;
 	margin-top: -26px;
 	z-index: 1; /* over .view div */
 }
 
-.prev {
+.prv {
 	left: 10px;
 }
 

@@ -37,9 +37,13 @@
 
 	<!-- Bootstrap -->
 	<link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="lib/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css">
 	<link rel="stylesheet" href="lib/multiselect/css/bootstrap-multiselect.css">
 	<link rel="stylesheet" href="lib/bootstrap-table/dist/bootstrap-table.css">
+	<!--
 	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css">
+	-->
+	<link rel="stylesheet" href="lib/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css">
 
 	<!-- Add to Homescreen -->
 	<link rel="stylesheet" href="lib/add-to-homescreen/style/addtohomescreen.css">
@@ -192,6 +196,9 @@
 									<div class="modal-body">
 										<div class="form-group">
 											<input type="text" class="form-control" value="{{name}}" placeholder="{{t('album_name')}}">
+										</div>
+										<div class="form-group">
+											<input type="text" class="form-control datepicker" value="{{./date}}" placeholder="{{t('album_date')}}">
 										</div>
 										<p>Define the visiblity for album <strong>{{name}}</strong></p>
 										<div class="radio">
@@ -378,7 +385,7 @@
 
 	{{elseif view == 'photo'}}
 		{{^touch}}
-		<button on-click="previous" type="button" class="btn btn-default btn-lg prev {{#unless photoid}}hidden{{/unless}}">
+		<button on-click="previous" type="button" class="btn btn-default btn-lg prv {{^photoid}}hidden{{/}}">
 			<span class="glyphicon glyphicon-chevron-left"></span>
 		</button>
 		{{/}}
@@ -481,23 +488,29 @@
 <script src="lib/jquery/jquery-2.1.1.min.js"></script>
 <script src="lib/validation/dist/jquery.validate.min.js"></script>
 
-<!-- Localization -->
-<script src='lib/i18next/i18next.min.js'></script>
+
 
 <!-- Ractive -->
-<!--<script src='lib/ractive/ractive.js'></script>-->
-<script src='http://cdn.ractivejs.org/latest/ractive.min.js'></script> <!-- where map exists --> 
+<script src='lib/ractive/ractive.min.js'></script>
+<!--
+<script src='http://cdn.ractivejs.org/latest/ractive.min.js'></script>
+--> 
 <script src='lib/hammerjs/hammer.min.js'></script> <!-- touch support -->
 <script src='lib/ractive-touch/index.js'></script> <!-- ractive touch events -->
 
 <!-- Bootstrap -->
 <script src="lib/bootstrap/js/bootstrap.min.js"></script>
+<script src="lib/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
 <script src="lib/multiselect/js/bootstrap-multiselect.js"></script>
 <script src="lib/bootstrap-notify/bootstrap-notify.min.js"></script>
 <script src="lib/bootstrap-table/dist/bootstrap-table.min.js"></script> <!-- https://github.com/wenzhixin/bootstrap-table/issues/839 -->
 <script src="lib/bootstrap-table/dist/locale/bootstrap-table-fr-FR.min.js"></script>
 <script src="lib/bootstrap-table/dist/extensions/editable/bootstrap-table-editable.min.js"></script>
 <script src="lib/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+
+<!-- Localization -->
+<script src='lib/i18next/i18next.min.js'></script>
+<script src='lib/bootstrap-datepicker/dist/locales/bootstrap-datepicker.fr.min.js'></script>
 
 <!-- Other Plugins -->
 <script src="lib/filesize.js/lib/filesize.min.js"></script>

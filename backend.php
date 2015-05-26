@@ -33,7 +33,7 @@ switch($_REQUEST['action']) {
 		
 		$json = file_get_contents($absolute.MYPHOTOS_DIR.SETTINGS_FILE);
 		$settings = json_decode($json);
-		$visibility = isset ($settings->visibility)?$settings->visibility:$config['defaultvisibility'];
+		$visibility = @$settings->visibility?:$config['defaultvisibility'];
 		
 		if (!($dir == './' || hasaccess ($visibility, @$settings->groups)))
 			respond ("You don't have access to this $visibility album. Please log back in.", true);
@@ -42,8 +42,9 @@ switch($_REQUEST['action']) {
 			'name'			=> isset($settings->name)?$settings->name:basename($dir),
 			'filepath'		=> $dir, 
 			'visibility'	=> $visibility,
+			'date'			=> @$settings->date?:date('Y-m-d', filemtime($absolute)),
 			'parentpath'	=> dirname($dir).'/',
-			'groups'		=> isadmin ()?@$settings->groups:[]
+			'groups'		=> isadmin ()?@$settings->groups:array()
 		);
 		
 		$files = array ();
@@ -86,8 +87,8 @@ switch($_REQUEST['action']) {
 					'filepath'		=> $folderpath,
 					'coverurl'		=> 'img.php?f='.$folderpath.MYPHOTOS_DIR.THUMB_DIR.@$settings->cover,
 					'visibility'	=> $visibility,
-					'filename'		=> @$settings->name?$settings->name:$directory,
-					'updated'		=> filemtime($absolute.$directory)
+					'filename'		=> @$settings->name?:$directory,
+					'date'			=> @$settings->date?:date('Y-m-d', filemtime($absolute.$directory))
 				);
 		}
 
@@ -111,8 +112,8 @@ switch($_REQUEST['action']) {
 						'filepath'		=> $folderpath,
 						'coverurl'		=> 'img.php?f='.$folderpath.MYPHOTOS_DIR.THUMB_DIR.@$settings->cover,
 						'visibility'	=> $visibility,
-						'filename'		=> @$settings->name?$settings->name:basename ($folderpath),
-						'updated'		=> filemtime($config['photopath'].$folderpath)
+						'filename'		=> @$settings->name?:basename ($folderpath),
+						'date'			=> @$settings->date?:date('Y-m-d', filemtime($config['photopath'].$folderpath))
 					)), getStructure($folderpath));
 			}
 			return $folders;
@@ -134,6 +135,8 @@ switch($_REQUEST['action']) {
 		$settings = json_decode($json, true);
 		if (isset ($_REQUEST['name']))
 			$settings['name'] = $_REQUEST['name'];
+		if (isset ($_REQUEST['date']))
+			$settings['date'] = $_REQUEST['date'];
 		if (isset ($_REQUEST['cover']))
 			$settings['cover'] = $_REQUEST['cover'];
 		if (isset ($_REQUEST['visibility']))
@@ -183,15 +186,15 @@ switch($_REQUEST['action']) {
 	case 'getGroups':
 		if (!isadmin ())
 			respond ('Operation not authorized', true);
-		$json = file_get_contents($config['photopath'].MYPHOTOS_DIR.'groups.json');
-		respond ($json?$json:[]);
+		$json = @file_get_contents($config['photopath'].MYPHOTOS_DIR.'groups.json'); // in case groups.json not created yet
+		respond ($json?$json:array ());
 		break;
 
 	case 'getPeople':
 		if (!isadmin ())
 			respond ('Operation not authorized', true);
-		$json = file_get_contents($config['photopath'].MYPHOTOS_DIR.'people.json');
-		exit ($json?$json:[]);
+		$json = @file_get_contents($config['photopath'].MYPHOTOS_DIR.'people.json'); // in case people.json not created yet
+		exit ($json?$json:'[]');
 		break;
 		
 	case 'saveGroups':

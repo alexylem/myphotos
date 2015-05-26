@@ -15,16 +15,21 @@ Config = {
 	log_level: 2,
 
 	// language of the user interface, can be:
-	// 'auto' to automatically detect the browser's language
-	// or any language code (http://www.metamodpro.com/browser-language-codes)
-	language: 'auto',
+	// navigator.language to automatically detect the browser's language
+	// or any supported language code (http://www.metamodpro.com/browser-language-codes)
+	language: navigator.language,
 
 	// fallback language in case translation is not found
 	fallback_language: 'en',
 
 	// default album sorting, can be:
 	// 'title_asc' to sort albums alphabetically
-	// 'modified_desc' to see newest albums on top
-	// 'modified_asc' to see oldest albums on top
-	default_album_sort: 'modified_desc'
+	// 'date_desc' to see newest albums on top
+	// 'date_asc' to see oldest albums on top
+	default_album_sort: 'date_desc',
+
+	// First day of week:
+	// 0 is sunday
+	// 1 is monday
+	week_start: 1
 };
