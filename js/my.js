@@ -380,10 +380,12 @@ $('#folderModal').on('show.bs.modal', function () {
 		language: /[^-]*/.exec(Config.language)[0], // fr-FR does not exist in datepicker
 	    autoclose: true,
 	    todayHighlight: true
-	}).on ('changeDate', function (e) { // fix ractive not seing datepicker updates
+	}).on ('hide', function (e) { // fix ractive not seing datepicker updates // onchange triggers twice
 		gallery.set ('folder.date', $(e.target).val()); // would be better $( ).trigger(change) but doesnt work
+	}).on('show.bs.modal', function(e) {
+	    e.stopPropagation(); // https://github.com/eternicode/bootstrap-datepicker/issues/978
 	});
-	$('input.datepicker').datepicker('update');
+	$('input.datepicker').datepicker('update'); // update selected date when opening other folders
 	$('#foldergroups').multiselect({
 		onChange: function (option, checked, select) { // fix ractive not seing multiselect updates
 			gallery.set('folder.groups', $('#foldergroups').val ());
