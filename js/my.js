@@ -59,6 +59,7 @@ var gallery = new Ractive({
 		// Albums
 		folder: {
 			name: false,
+			date: '',
 			visibility: '',
 			filepath: '',
 			parentpath: false,
