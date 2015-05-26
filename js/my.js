@@ -374,7 +374,8 @@ gallery.on ('saveGroups', function () {
 	});
 });
 $('#folderModal').on('show.bs.modal', function () {
-	$('input.datepicker').datepicker('remove').datepicker({
+	$('input.datepicker').datepicker('remove');
+	$('input.datepicker').datepicker({
 		format: "yyyy-mm-dd",
 	    weekStart: Config.week_start,
 		language: /[^-]*/.exec(Config.language)[0], // fr-FR does not exist in datepicker
