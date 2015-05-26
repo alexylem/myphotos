@@ -374,7 +374,7 @@ gallery.on ('saveGroups', function () {
 	});
 });
 $('#folderModal').on('show.bs.modal', function () {
-	$('input.datepicker').datepicker('remove');
+	//$('input.datepicker').datepicker('remove');
 	$('input.datepicker').datepicker({
 		format: "yyyy-mm-dd",
 	    weekStart: Config.week_start,
