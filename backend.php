@@ -230,10 +230,10 @@ switch($_REQUEST['action']) {
 		break;
 
 	case 'saveConfig':
-		$content = 'var Config = {';
+		$content = '$.extend (Config, {';
 		foreach (json_decode($_REQUEST['config']) as $key => $value)
 			$content .= PHP_EOL."\t".$key.': '.var_export($value, true).',';
-		$content = rtrim ($content, ',').PHP_EOL.'};';
+		$content = rtrim ($content, ',').PHP_EOL.'});';
 		if (($json = fopen('config.js', 'w'))
 			&& fwrite($json, $content)
 			&& fclose($json))
