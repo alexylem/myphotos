@@ -78,7 +78,7 @@ git clone --recursive https://github.com/alexylem/myphotos.git
 ```
 cp config.default.php config.php
 ```
-* Fill-in `config.php` and `config.js` with your settings:
+* Fill-in `config.php` with your settings:
 ```
 nano config.php
 ```
