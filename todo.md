@@ -18,8 +18,11 @@ It completes the existing ideas from the [Github issue list](https://github.com/
 - [ ] Fix remaining time calculation on resumes - make it client side?
 - [ ] Reset library / album if for example image quality setting is changed
 - [/] Optimize using dev tools (ex: minifiy..)
+- [ ] Dynamically load js & css for admin
 - [X] Date of evenement to sort on
 - [ ] Sare to individual people in addition to groups
-- [ ] Automatically check updates (based on config)
+- [X] Automatically check updates (based on config)
+- [X] Config version #
+- [/] Visual config at first login or new config version
 
 Click [here](https://github.com/alexylem/myphotos/issues/new) to submit a new feature request.

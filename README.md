@@ -74,21 +74,20 @@ sudo apt-get install git
 cd /var/www/myphotos
 git clone --recursive https://github.com/alexylem/myphotos.git
 ```
-* Create `config.php` and `config.js` from copies of `config.default.php` and `config.default.js`:
+* Create `config.php` from copy of `config.default.php`:
 ```
 cp config.default.php config.php
-cp config.default.js config.js
 ```
 * Fill-in `config.php` and `config.js` with your settings:
 ```
 nano config.php
-nano config.js
 ```
-* Login and click on *Synchronize*
-* (*optional*) Change owner of .git directories for automatic updates:
+* Change owner of myphotos files for automatic updates & configuration:
 ```
-sudo chown -R www-data:www-data .*
+sudo chown -R www-data:www-data .
 ```
+* Login and set-up your settings
+* Click on admin menu -> *Synchronize*
 
 ### Update your version of MyPhotos
 

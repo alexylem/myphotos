@@ -131,6 +131,16 @@ am.config = {
 					object: 'groups'
 				}
 			}
+		},
+		config: {
+			title: 'Configuration',
+			source: 'backend.php?getConfig',
+			fields: {
+				ga_client_id: {
+					label: 'Google Analytics Client Id',
+					type: 'string'
+				}
+			}
 		}
 	}
 };

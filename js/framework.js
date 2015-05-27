@@ -37,7 +37,7 @@ var am = new function () {
 			case 'string': // ajax url
 				jQuery.ajaxSetup({async:false});
 				my.getJSON(this.config.objects[objectkey].source, function (records) {
-					callback (records);
+					callback (records || []); // in case null is returned
 				});
 				break;
 			case 'object': // array

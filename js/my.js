@@ -1,5 +1,5 @@
 // Log levels
-my.loglevel = Config.log_level; // dev = 4, production = 2
+my.loglevel = Config.log_level;
 Ractive.DEBUG = (Config.log_level >= 4);
 
 // Google analytics
@@ -35,6 +35,8 @@ var gallery = new Ractive({
 		loading: true,
 		touch: Modernizr.touch,
 		// parameters
+		config: Config,
+		version: 1, // increment this when updating config structure
 		album_sort_options: {
 			'title_asc': {
 				'title': i18n.t('by_title'),
@@ -123,17 +125,28 @@ my.get({
 			gallery.set ('user', user);
 			ga('set', '&uid', user.email); // send user id to google analytics
 			if (user.isadmin) {
+				
+				// Config version
+				if (Config.version != gallery.get ('version')) {
+					my.warn ('Your configuration does not exist or is outdated. Opening settings panel.');
+					$('#configModal').modal ('show');
+				}
+
 				my.get ({
 				url: 'backend.php',
 				data: { action: 'getGroups' },
 				success: function (sdata) {
-					var groups = JSON.parse (sdata);
-					//try { // DEBUG ractive freeze
+					gallery.set ('groups', JSON.parse (sdata));
+					if (Config.check_updates)
+							gallery.fire ('checkupdates');
+					/*
+					try { // DEBUG ractive freeze
 						gallery.set ('groups', groups);
-					//} catch (err) {
-					//	console.error ('Ractive error', err);
-						//location.reload();
-					//}
+					} catch (err) {
+						console.error ('Ractive error', err);
+						location.reload();
+					}
+					*/
 				}
 			});
 			}
@@ -277,14 +290,12 @@ $(document).keydown(function(e) {
 /******************
 * Groups & People *
 ******************/
-/*
 gallery.on ('removegroup', function (event, index) {
 	if (confirm (i18n.t('are_you_sure'))) {
     	gallery.splice('groups', index, 1);
     	$('#multiselect').multiselect('rebuild');
 	}	
 });
-*/
 gallery.on ('filterpeople', function (event, group) {
 	my.debug ('filtering poeple on', group);
 	$('.bootstrap-table .search > input').val(group).trigger('drop'); // not working anymore??
@@ -440,6 +451,23 @@ $('#cronModal').on('shown.bs.modal', function (e) {
   	}
   });
 });
+gallery.on ('saveConfig', function () {
+	$('#configModal').modal('hide');
+	this.set ('config.version', this.get ('version'));
+	my.get ({
+		url: 'backend.php',
+		data: {
+			action: 'saveConfig',
+			config: JSON.stringify (this.get ('config')) // preserves types
+		},
+		success: function () {
+			my.success (i18n.t('config_saved'));
+			setTimeout(function(){
+				location.reload();
+			}, 3*1000); // 3 seconds
+		}
+	});
+});
 
 /*********
 * Search *
@@ -553,8 +581,10 @@ function signInCallback(authResult) {
 			if (user.isadmin) {
 				my.get ({
 					url: 'backend.php',
-					data: { action: 'getGroups' },
+					data: { action: 'getGroups' }, // why we need to get groups now?
 					success: function (sdata) {
+						gallery.set ('groups', JSON.parse (sdata));
+						/*
 						var groups = JSON.parse (sdata);
 						try { // Ractive crash DEBUG still needed?
 							gallery.set ('groups', groups);
@@ -562,6 +592,7 @@ function signInCallback(authResult) {
 							console.error ('Ractive error', err);
 							location.reload();
 						}
+						*/
 					}
 				});
 			}

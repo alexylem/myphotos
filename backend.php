@@ -201,11 +201,14 @@ switch($_REQUEST['action']) {
 		if (!isadmin ())
 			respond ('Operation not authorized', true);
 		// saving groups
+		$groups = isset($_REQUEST['groups'])?$_REQUEST['groups']:array();
+		$users = isset($_REQUEST['users'])?$_REQUEST['users']:array();
+
 		if (($json = fopen($config['photopath'].MYPHOTOS_DIR.'groups.json', 'w+'))
-			&& fwrite($json, json_encode($_REQUEST['groups']))
+			&& fwrite($json, json_encode($groups))
 			&& fclose($json)
 			&& ($json = fopen($config['photopath'].MYPHOTOS_DIR.'people.json', 'w+'))
-			&& fwrite($json, json_encode($_REQUEST['users']))
+			&& fwrite($json, json_encode($users))
 			&& fclose($json))
 			respond ();
 		else
@@ -224,6 +227,19 @@ switch($_REQUEST['action']) {
 			respond ('Operation not authorized', true);
 		$message = execute(GIT_PULL, $iserror, '<br/>');
 		respond ($message, $iserror);
+		break;
+
+	case 'saveConfig':
+		$content = 'var Config = {';
+		foreach (json_decode($_REQUEST['config']) as $key => $value)
+			$content .= PHP_EOL."\t".$key.': '.var_export($value, true).',';
+		$content = rtrim ($content, ',').PHP_EOL.'};';
+		if (($json = fopen('config.js', 'w'))
+			&& fwrite($json, $content)
+			&& fclose($json))
+			respond ($content);
+		else
+			respond ('Error while writing configuration files', true);
 		break;
 
 	default: respond ("unknown action ".$_REQUEST['action'], true);
