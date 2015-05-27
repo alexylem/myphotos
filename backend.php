@@ -10,8 +10,10 @@ ini_set('display_errors', 1);
 
 // Settings
 include_once ('defines.php');
-include_once ('config.php');
+include_once ('config.default.php');
+@include_once ('config.php'); // first install
 include_once ('utils.php');
+$admins = explode(',', $config['admins']);
 
 ini_set('session.gc_maxlifetime', SESSION_DURATION); // server side min validity
 session_set_cookie_params(SESSION_DURATION); // client side duration
@@ -229,15 +231,32 @@ switch($_REQUEST['action']) {
 		respond ($message, $iserror);
 		break;
 
+	case 'getConfig':
+		if (!isadmin ())
+			respond ('Operation not authorized', true);
+		respond (json_encode ($config));
+		break;
+
 	case 'saveConfig':
-		$content = '$.extend (Config, {';
-		foreach (json_decode($_REQUEST['config']) as $key => $value)
-			$content .= PHP_EOL."\t".$key.': '.var_export($value, true).',';
-		$content = rtrim ($content, ',').PHP_EOL.'});';
+		if (!isadmin ())
+			respond ('Operation not authorized', true);
+		$client = '$.extend (Config, {';
+		foreach (json_decode($_REQUEST['client']) as $key => $value)
+			$client .= PHP_EOL."\t".$key.': '.var_export($value, true).',';
+		$client = rtrim ($client, ',').PHP_EOL.'});';
+		
+		$server = '<?php'.PHP_EOL.'$config = array_merge ($config, array (';
+		foreach (json_decode($_REQUEST['server']) as $key => $value)
+			$server .= PHP_EOL."\t'".$key."' => ".var_export($value, true).',';
+		$server = rtrim ($server, ',').PHP_EOL.'));'.PHP_EOL.'?>';
+		
 		if (($json = fopen('config.js', 'w'))
-			&& fwrite($json, $content)
+			&& fwrite($json, $client)
+			&& fclose($json)
+			&& ($json = fopen('config.php', 'w'))
+			&& fwrite($json, $server)
 			&& fclose($json))
-			respond ($content);
+			respond ($server);
 		else
 			respond ('Error while writing configuration files', true);
 		break;
@@ -289,7 +308,7 @@ function hasaccess ($visibility, $groups) {
 
 // Specific for myPhotos
 function isadmin () {
-	global $admins, $admin_mode;
-	return $admin_mode || isset ($_SESSION['me']) && in_array($_SESSION['me']['email'], $admins);
+	global $admins, $config;
+	return $config['admin_mode'] || isset ($_SESSION['me']) && in_array($_SESSION['me']['email'], $admins);
 }
 ?>

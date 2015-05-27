@@ -9,7 +9,9 @@ $_SESSION['error'] = false;
 
 // Settings
 include ('defines.php');
+include_once ('config.default.php');
 include ('config.php');
+$admins = explode(',', $config['admins']);
 
 if (STEPPED_DISPLAY) {
 	header( 'Content-Encoding: none; ' ); // disable compression for stepped display
@@ -501,7 +503,7 @@ if (STEPPED_DISPLAY)
 
 // Specific for myPhotos
 function isadmin () {
-	global $admins, $admin_mode;
-	return $admin_mode || isset ($_SESSION['me']) && in_array($_SESSION['me']['email'], $admins);
+	global $admins, $config;
+	return $config['admin_mode'] || isset ($_SESSION['me']) && in_array($_SESSION['me']['email'], $admins);
 }
 ?>

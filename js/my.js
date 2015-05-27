@@ -11,6 +11,8 @@ if (Config.ga_client_id) {
 }
 
 // Enable localization
+if (!Config.language) // user chose automatic detection
+	Config.language = navigator.language;
 window.___gcfg = { lang: Config.language }; // Google sign-in in local language
 i18n.init({
 	lng: Config.language,
@@ -35,7 +37,7 @@ var gallery = new Ractive({
 		loading: true,
 		touch: Modernizr.touch,
 		// parameters
-		config: Config,
+		client: Config,
 		version: 1, // increment this when updating config structure
 		album_sort_options: {
 			'title_asc': {
@@ -451,14 +453,24 @@ $('#cronModal').on('shown.bs.modal', function (e) {
   	}
   });
 });
+$('#configModal').on('show.bs.modal', function () {
+	my.get({
+		url: 'backend.php',
+		data: {action: 'getConfig'}, // 0: Webservice
+		success: function (sserver) {
+			gallery.set ('server', JSON.parse (sserver));
+		}
+	});
+});
 gallery.on ('saveConfig', function () {
 	$('#configModal').modal('hide');
-	this.set ('config.version', this.get ('version'));
+	this.set ('client.version', this.get ('version'));
 	my.get ({
 		url: 'backend.php',
 		data: {
 			action: 'saveConfig',
-			config: JSON.stringify (this.get ('config')) // preserves types
+			client: JSON.stringify (this.get ('client')), // preserves types
+			server: JSON.stringify (this.get ('server'))  // preserves types
 		},
 		success: function () {
 			my.success (i18n.t('config_saved'));

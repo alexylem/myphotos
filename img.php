@@ -3,10 +3,11 @@ ini_set('display_errors', 1);
 //header('Access-Control-Allow-Origin: *'); // only for WS
 
 // Settings
+include_once ('config.default.php');
 include ('config.php');
 include ('utils.php');
 
-$file = $config['photopath'].$_GET['f'];
+$file = $config['photopath'].$_GET['f']; // DANGER, strip out ../ !!
 
 if (isset ($_GET['d']) && $_GET['d']) { // download
 	header('Content-type: application/octet-stream');

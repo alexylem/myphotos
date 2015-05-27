@@ -4,7 +4,9 @@ ini_set('display_errors', 1);
 header('Access-Control-Allow-Origin: *');
 
 // Settings
-include_once ('config.php');
+include_once ('config.default.php');
+@include_once ('config.php'); // first install
+$admins = explode(',', $config['admins']);
 
 // Includes
 include_once ('utils.php');
@@ -43,7 +45,7 @@ switch($_REQUEST['action']) {
   case 'init':
     if (isset ($_SESSION['me']))
         respond ($_SESSION['me']);
-    elseif ($admin_mode)
+    elseif ($config['admin_mode'])
         respond (array (
             'displayName' => 'Admin Mode',
             'email'       => '',

@@ -12,7 +12,7 @@ It completes the existing ideas from the [Github issue list](https://github.com/
 - [X] Global search on album titles with instant propositions
 - [X] Possibility to order albums by title or newest first
 - [ ] Smart albums: tag photos to see them grouped in virtual albums from homepage
-- [/] Local favorites: people can locally mark pictures as favorites
+- [/] Local favorites: people can locally mark pictures as favorites and download them all
 - [ ] Download full albums in zip
 - [ ] Don't compute/use file list, only myphoto.json->hidden + use service-side cache at album level
 - [ ] Fix remaining time calculation on resumes - make it client side?
@@ -23,6 +23,6 @@ It completes the existing ideas from the [Github issue list](https://github.com/
 - [ ] Sare to individual people in addition to groups
 - [X] Automatically check updates (based on config)
 - [X] Config version #
-- [/] Visual config at first login or new config version
+- [X] Visual config at first login or new config version
 
 Click [here](https://github.com/alexylem/myphotos/issues/new) to submit a new feature request.

@@ -267,7 +267,7 @@
 								<li><a data-toggle="modal" href="#cronModal"><span class="glyphicon glyphicon-retweet"></span> {{t('update_library')}}</a></li>
 								<li><a data-toggle="modal" href="#groupsModal"><span class="glyphicon glyphicon-user"></span> {{t('groups_people')}}</a></li>
 								<li><a data-toggle="modal" href="#configModal"><span class="glyphicon glyphicon-cog"></span> {{t('settings')}}</a></li>
-								<li><a on-click="checkupdates" href="#"><span class="glyphicon glyphicon-circle-arrow-down"></span> {{t('check_updates')}}</a></li>
+								<li><a on-click="checkupdates"><span class="glyphicon glyphicon-circle-arrow-down"></span> {{t('check_updates')}}</a></li>
 								{{/if}}
 								<li><a target="_blank" href="https://github.com/alexylem/myphotos/issues/new"><span class="glyphicon glyphicon-fire"></span> {{t('report-issue')}}</a></li>
 								<li><a on-click="logout" href="#"><span class="glyphicon glyphicon-log-out"></span> {{t('sign-off')}}</a></li>
@@ -379,77 +379,172 @@
 							<div class="modal-dialog modal-lg">
 								<div class="modal-content">
 									<div class="modal-header">
-										<h4 class="modal-title">Configuration</h4>
+										<!-- Nav tabs -->
+										  <ul class="nav nav-pills">
+										    <li class="active"><a href="#appearance" data-toggle="tab">Appearance</a></li>
+										    <li><a href="#general" data-toggle="tab">System</a></li>
+										    <li><a href="#security" data-toggle="tab">Security</a></li>
+										  </ul>
 									</div>
 									<div class="modal-body form-horizontal">
-										{{#config}}
-										<div class="form-group">
-											<label for="ga_client_id" class="col-sm-3 control-label">Google Analytics Client Id</label>
-											<div class="col-sm-9">
-												<input class="form-control" type="text" id="ga_client_id" value="{{ga_client_id}}" placeholder="ex: UA-XXXX-Y">
-											</div>
-										</div>
-										<div class="form-group">
-											<label for="log_level" class="col-sm-3 control-label">User notifications</label>
-											<div class="col-sm-9">
-												<input id="log_level" class="form-control" type="number" value="{{log_level}}" placeholder="ex: 2">
-												<span class="help-block">
+
+										  
+
+										  <!-- Tab panes -->
+										  <div class="tab-content">
+										  	<div class="tab-pane fade in active" id="appearance">
+
+										    	<div class="form-group">
+													<label for="language" class="col-sm-3 control-label">Language</label>
+													<div class="col-sm-9">
+														<select id="language" value="{{client.language}}" class="form-control">
+															<option value="">Detect automatically</option>
+															<option value="en">English</option>
+															<option value="fr-fr">Français</option>
+														</select>
+													</div>
+												</div>
+												{{^client.language}}
+												<div class="form-group">
+													<label for="fallback_language" class="col-sm-3 control-label">Fallback language</label>
+													<div class="col-sm-9">
+														<select id="fallback_language" value="{{client.fallback_language}}" class="form-control">
+															<option value="en">English</option>
+															<option value="fr-fr">Français</option>
+														</select>
+														<span class="help-block">In case detected language is not available</span>
+													</div>
+												</div>
+												{{/}}
+												<div class="form-group">
+													<label class="col-sm-3 control-label">Default album sorting</label>
+													<div class="col-sm-9">
+														{{#each album_sort_options:i}}
+														<div class="radio"><label>
+															<input type="radio" name="{{client.default_album_sort}}" value="{{i}}">
+																{{title}}
+														</label></div>
+														{{/each}}
+													</div>
+												</div>
+												<div class="form-group">
+													<label for="week_start" class="col-sm-3 control-label">First day of the week</label>
+													<div class="col-sm-9">
+														<input class="form-control" type="number" id="week_start" value="{{client.week_start}}" placeholder="ex: 1">
+														<span class="help-block">0 is Sunday. 1 is Monday.</span>
+													</div>
+												</div>
+												<div class="form-group">
+													<label for="log_level" class="col-sm-3 control-label">User notifications</label>
+													<div class="col-sm-9">
+														<input id="log_level" class="form-control" type="number" value="{{client.log_level}}" placeholder="ex: 2">
+														<span class="help-block">
 									0 to Display only errors (not recommended)<br />
 									1 to Display all above + warnings (not recommended)<br />
 									2 to Display all above + success & info messages (<strong>recomended</strong> for production)<br />
 									3 to Display all above + network exchanges in the console (recommended for troubleshooting)<br />
 									4 to Display all above + debug information in the console (recommended for development)
-												</span>
+														</span>
+													</div>
+												</div>
+
+										    </div>
+
+										  	<div class="tab-pane fade" id="general">
+
+												<div class="form-group">
+													<label for="photopath" class="col-sm-3 control-label">Photo Library Location</label>
+													<div class="col-sm-9">
+														<input class="form-control" type="text" id="photopath" value="{{server.photopath}}" placeholder="ex: /path/to/photos/">
+													</div>
+												</div>
+												<div class="form-group">
+													<label for="notif_email" class="col-sm-3 control-label">Notification email</label>
+													<div class="col-sm-9">
+														<input class="form-control" type="text" id="notif_email" value="{{server.notif_email}}" placeholder="ex: email.address@gmail.com">
+														<span class="help-block">Gmail email address of the sender for email notification to people</span>
+													</div>
+												</div>
+												<div class="form-group">
+													<label for="notif_from" class="col-sm-3 control-label">Notification display</label>
+													<div class="col-sm-9">
+														<input class="form-control" type="text" id="notif_from" value="{{server.notif_from}}" placeholder="ex: MyPhotos">
+														<span class="help-block">Display name for the above account</span>
+													</div>
+												</div>
+												<div class="form-group">
+													<label for="notif_password" class="col-sm-3 control-label">Notification password</label>
+													<div class="col-sm-9">
+														<input class="form-control" type="password" id="notif_password" value="{{server.notif_password}}">
+														<span class="help-block">Gmail password for the above account</span>
+													</div>
+												</div>
+												<div class="form-group">
+													<label for="ga_client_id" class="col-sm-3 control-label">Google Analytics Client Id</label>
+													<div class="col-sm-9">
+														<input class="form-control" type="text" id="ga_client_id" value="{{client.ga_client_id}}" placeholder="ex: UA-XXXX-Y">
+													</div>
+												</div>
+
 											</div>
-										</div>
-										<div class="form-group">
-											<label for="language" class="col-sm-3 control-label">Language</label>
-											<div class="col-sm-9">
-												<select id="language" value="{{language}}" class="form-control">
-													<option value="">Detect automatically</option>
-													<option value="en">English</option>
-													<option value="fr-fr">Français</option>
-												</select>
-											</div>
-										</div>
-										{{^language}}
-										<div class="form-group">
-											<label for="fallback_language" class="col-sm-3 control-label">Fallback language</label>
-											<div class="col-sm-9">
-												<select id="fallback_language" value="{{fallback_language}}" class="form-control">
-													<option value="en">English</option>
-													<option value="fr-fr">Français</option>
-												</select>
-												<span class="help-block">In case translation is not found</span>
-											</div>
-										</div>
-										{{/}}
-										<div class="form-group">
-											<label class="col-sm-3 control-label">Default album sorting</label>
-											<div class="col-sm-9">
-												{{#each album_sort_options:i}}
-												<div class="radio"><label>
-													<input type="radio" name="{{album_sort_field}}" value="{{i}}">{{title}}
-												</label></div>
-												{{/each}}
-											</div>
-										</div>
-										<div class="form-group">
-											<label for="week_start" class="col-sm-3 control-label">First day of the week</label>
-											<div class="col-sm-9">
-												<input class="form-control" type="number" id="week_start" value="{{week_start}}" placeholder="ex: 1">
-												<span class="help-block">0 is Sunday. 1 is Monday.</span>
-											</div>
-										</div>
-										<div class="form-group">
-											<div class="checkbox col-sm-offset-3 col-sm-9">
-											  <label>
-											    <input type="checkbox" checked="{{check_updates}}">
-											    Automatically check updates on startup
-											  </label>
-											</div>
-										</div>
-										{{/}}
+
+										    
+										    <div class="tab-pane fade" id="security">
+
+										    	<div class="form-group">
+													<label for="admins" class="col-sm-3 control-label">Admin users</label>
+													<div class="col-sm-9">
+														<input class="form-control" type="text" id="admins" value="{{server.admins}}" placeholder="ex: admin1@gmail.com,admin2@gmail.com">
+														<span class="help-block">Comma separated gmail adresses of admin users</span>
+													</div>
+												</div>
+										    	<div class="form-group">
+													<div class="checkbox col-sm-offset-3 col-sm-9">
+													  <label>
+													    <input type="checkbox" checked="{{server.admin_mode}}">
+													    Admin mode
+													  </label>
+													  <span class="help-block">Makes everyone an admin! Useful for testing/working offline</span>
+													</div>
+												</div>
+										    	<div class="form-group">
+													<label for="defaultvisibility" class="col-sm-3 control-label">Default visibility</label>
+													<div class="col-sm-9">
+														<select id="defaultvisibility" value="{{server.defaultvisibility}}" class="form-control">
+															<option value="private">Private</option>
+															<option value="restricted">Restricted</option>
+															<option value="public">Public</option>
+														</select>
+														<span class="help-block">Default visibility for new albums</span>
+													</div>
+												</div>
+										    	<div class="form-group">
+													<label for="client_id" class="col-sm-3 control-label">Google API Client Id</label>
+													<div class="col-sm-9">
+														<input class="form-control" type="text" id="client_id" value="{{server.client_id}}" placeholder="ex: UA-XXXX-Y">
+														<span class="help-block">Create one in the 
+															<a href="https://console.developers.google.com/project" target="_blank">
+																Google Developer Console
+															</a>
+														</span>
+													</div>
+												</div>
+												<div class="form-group">
+													<label for="client_secret" class="col-sm-3 control-label">Google API Client Secret</label>
+													<div class="col-sm-9">
+														<input class="form-control" type="password" id="client_secret" value="{{server.client_secret}}">
+													</div>
+												</div>
+												<div class="form-group">
+													<div class="checkbox col-sm-offset-3 col-sm-9">
+													  <label>
+													    <input type="checkbox" checked="{{client.check_updates}}">
+													    Automatically check updates on startup
+													  </label>
+													</div>
+												</div>
+										    </div>
+										  </div>
 									</div>
 									<div class="modal-footer">
 										<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>

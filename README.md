@@ -33,7 +33,7 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 - [X] People authenticate using their Google account
 - [X] Send email notification about shared albums
 - [X] Hide bad/dupplicate photos instead of having to delete them
-- [X] Check for updates and upgrade in 1 click
+- [X] Auto/Manual check of updates and upgrade in 1 click
 
 ### :+1: Additional user features
 
@@ -74,24 +74,17 @@ sudo apt-get install git
 cd /var/www/myphotos
 git clone --recursive https://github.com/alexylem/myphotos.git
 ```
-* Create `config.php` from copy of `config.default.php`:
-```
-cp config.default.php config.php
-```
-* Fill-in `config.php` with your settings:
-```
-nano config.php
-```
-* Change owner of myphotos files for automatic updates & configuration:
+* Change owner of myphotos files for web configuration & update:
 ```
 sudo chown -R www-data:www-data .
 ```
-* Login and set-up your settings
+* Navigate to MyPhotos and set-up your settings
 * Click on admin menu -> *Synchronize*
 
 ### Update your version of MyPhotos
 
 * Login and click on *Check updates*
+* Automatic check of updates can be enabled in *Settings* / *Security*
 
 ## Report an issue
 
