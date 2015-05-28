@@ -453,6 +453,7 @@
 													<label for="photopath" class="col-sm-3 control-label">Photo Library Location</label>
 													<div class="col-sm-9">
 														<input class="form-control" type="text" id="photopath" value="{{server.photopath}}" placeholder="ex: /path/to/photos/">
+														<span class="help-block">Full system path to the photo library. Must end with a trailing slash (/)</span>
 													</div>
 												</div>
 												<div class="form-group">
@@ -507,7 +508,7 @@
 													    <input type="checkbox" checked="{{server.admin_mode}}">
 													    Admin mode
 													  </label>
-													  <span class="help-block">Makes everyone an admin! Useful for testing/working offline</span>
+													  <span class="help-block">Makes everyone an admin! Defaulted on fresh installs, unflag it when admin users and Google API credentials are correctly set.</span>
 													</div>
 												</div>
 										    	<div class="form-group">

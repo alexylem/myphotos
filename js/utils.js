@@ -193,6 +193,7 @@ $.getScripts = function (srcs) {
         	url: src,
         	dataType: 'script',
         	cache: true,
+        	ifModified: true,
         	error: function (XMLHttpRequest, textStatus, errorThrown) {
         		message = textStatus+';'+XMLHttpRequest.responseText+';'+errorThrown;
         		console.warn ('Warning '+XMLHttpRequest.status+' from '+src+': ', message);
