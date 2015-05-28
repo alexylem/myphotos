@@ -5,7 +5,8 @@ $.extend($.fn.editable.defaults, {
     //toggle: 'dblclick', // default 'click'
     showbuttons: false,
     onblur: 'submit',
-    unsavedclass: 'null' // otherwize edited content goes bold
+    unsavedclass: 'null', // otherwize edited content goes bold
+    highlight: false // not working?
 });
 
 // function to validate required fields

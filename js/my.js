@@ -348,6 +348,7 @@ gallery.on ('logout', function () {
 		data: { action: 'revoke' },
 		success: function() {
 			gallery.set ('user', false);
+			gallery.set ('structure', false);
 			cwd ('./');
 		}
 	});
@@ -403,7 +404,8 @@ $('#folderModal').on('show.bs.modal', function () {
 		    weekStart: Config.week_start,
 			language: /[^-]*/.exec(Config.language)[0], // fr-FR does not exist in datepicker
 		    autoclose: true,
-		    todayHighlight: true
+		    todayHighlight: true,
+		    orientation: 'top right'
 		}).on ('hide', function (e) { // fix ractive not seing datepicker updates // onchange triggers twice
 			gallery.set ('folder.date', $(e.target).val()); // would be better $( ).trigger(change) but doesnt work
 		}).on('show.bs.modal', function(e) {
@@ -604,6 +606,7 @@ function signInCallback(authResult) {
 			var user = JSON.parse(data).message;
 			gallery.set ('user', user);
 			ga('set', 'dimension1', user.email);
+			gallery.set ('structure', false);
 			if (user.isadmin) {
 				my.get ({
 					url: 'backend.php',

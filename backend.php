@@ -109,14 +109,15 @@ switch($_REQUEST['action']) {
 				$json = @file_get_contents($config['photopath'].$folderpath.MYPHOTOS_DIR.SETTINGS_FILE);
 				$settings = @json_decode($json);
 				$visibility = @$settings->visibility?:$config['defaultvisibility'];
-				$folders = array_merge ($folders,
-					array (array (
-						'filepath'		=> $folderpath,
-						'coverurl'		=> 'img.php?f='.$folderpath.MYPHOTOS_DIR.THUMB_DIR.@$settings->cover,
-						'visibility'	=> $visibility,
-						'filename'		=> @$settings->name?:basename ($folderpath),
-						'date'			=> @$settings->date?:date('Y-m-d', filemtime($config['photopath'].$folderpath))
-					)), getStructure($folderpath));
+				if (hasaccess ($visibility, $settings->groups))
+					$folders = array_merge ($folders,
+						array (array (
+							'filepath'		=> $folderpath,
+							'coverurl'		=> 'img.php?f='.$folderpath.MYPHOTOS_DIR.THUMB_DIR.@$settings->cover,
+							'visibility'	=> $visibility,
+							'filename'		=> @$settings->name?:basename ($folderpath),
+							'date'			=> @$settings->date?:date('Y-m-d', filemtime($config['photopath'].$folderpath))
+						)), getStructure($folderpath));
 			}
 			return $folders;
 		}
@@ -125,8 +126,7 @@ switch($_REQUEST['action']) {
 			chdir($config['photopath']);
 			$_SESSION['structure'] = getStructure ();
 		}
-
-		respond ($_SESSION['structure']);
+		respond ($_SESSION['structure']); // respond does not need to json_encode before
 		break;
 
 	case 'updateFolder':
