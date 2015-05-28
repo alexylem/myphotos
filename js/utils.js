@@ -1,5 +1,5 @@
 /*
-jQuery.extend(jQuery.validator.messages, {
+$.extend($.validator.messages, {
     required: "Ce champs est obligatoire.",
     remote: "Please fix this field.",
     email: "Veuillez renseigner une adresse email valide.",
@@ -11,12 +11,12 @@ jQuery.extend(jQuery.validator.messages, {
     creditcard: "Please enter a valid credit card number.",
     equalTo: "Les mots de passe ne sont pas identiques.",
     accept: "Please enter a value with a valid extension.",
-    maxlength: jQuery.validator.format("Please enter no more than {0} characters."),
-    minlength: jQuery.validator.format("Please enter at least {0} characters."),
-    rangelength: jQuery.validator.format("Please enter a value between {0} and {1} characters long."),
-    range: jQuery.validator.format("Please enter a value between {0} and {1}."),
-    max: jQuery.validator.format("Please enter a value less than or equal to {0}."),
-    min: jQuery.validator.format("Please enter a value greater than or equal to {0}.")
+    maxlength: $.validator.format("Please enter no more than {0} characters."),
+    minlength: $.validator.format("Please enter at least {0} characters."),
+    rangelength: $.validator.format("Please enter a value between {0} and {1} characters long."),
+    range: $.validator.format("Please enter a value between {0} and {1}."),
+    max: $.validator.format("Please enter a value less than or equal to {0}."),
+    min: $.validator.format("Please enter a value greater than or equal to {0}.")
 });
 
 moment.lang('fr', {
@@ -185,6 +185,25 @@ var my = new function () { // new is needed!
 		});
 	};
 } ();
+// Function to dynamically load multiple javascripts
+// usage $.getScripts (['script1.js', 'script2.js']).done (function () { dosomething });
+$.getScripts = function (srcs) {
+    var scripts = $.map (srcs, function(src) {
+        return $.ajax({
+        	url: src,
+        	dataType: 'script',
+        	cache: true,
+        	error: function (XMLHttpRequest, textStatus, errorThrown) {
+        		message = textStatus+';'+XMLHttpRequest.responseText+';'+errorThrown;
+        		console.warn ('Warning '+XMLHttpRequest.status+' from '+src+': ', message);
+        	}
+        });
+    });
+    scripts.push ($.Deferred (function (deferred) {
+        $ (deferred.resolve);
+    }));
+    return $.when.apply($, scripts);
+};
 
 function getUrlVars(url) {
     var vars = {};

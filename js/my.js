@@ -295,7 +295,6 @@ $(document).keydown(function(e) {
 gallery.on ('removegroup', function (event, index) {
 	if (confirm (i18n.t('are_you_sure'))) {
     	gallery.splice('groups', index, 1);
-    	$('#multiselect').multiselect('rebuild');
 	}	
 });
 gallery.on ('filterpeople', function (event, group) {
@@ -355,22 +354,29 @@ gallery.on ('logout', function () {
 });
 
 // Observers
-$("#addgroupform").validate({
-  errorClass: 'alert-danger',
-  errorPlacement: function() {},
-  submitHandler: function(form) {
-    gallery.push ('groups', gallery.get ('newgroup'));
-	gallery.set ('newgroup', '');
-  }
-});
 $('#groupsModal').on('show.bs.modal', function () {
-	am.drawDatatable($('#users'), 'people');
-	$('#foldergroups').multiselect({
-		onChange: function (option, checked, select) { // fix ractive not seing multiselect updates
-			gallery.set('newgroups', $('#multiselect').val ());
-		}
+	
+	$.getScripts ([
+		'lib/validation/dist/jquery.validate.min.js',
+		'lib/bootstrap-table/dist/bootstrap-table.min.js',
+		'lib/bootstrap-table/dist/locale/bootstrap-table-fr-FR.min.js',
+		'lib/bootstrap-table/dist/extensions/editable/bootstrap-table-editable.min.js',
+		'lib/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js',
+		'js/framework.js',
+		'repository.js'
+	]).done (function () {
+		am.drawDatatable($('#users'), 'people');
+
+		$("#addgroupform").validate({
+			errorClass: 'alert-danger',
+			errorPlacement: function() {},
+			submitHandler: function(form) {
+				gallery.push ('groups', gallery.get ('newgroup'));
+				gallery.set ('newgroup', '');
+			}
+		});
 	});
-	$('#foldergroups').multiselect('rebuild'); // if groups added during session
+	
 });
 gallery.on ('saveGroups', function () {
 	my.get ({
@@ -387,23 +393,31 @@ gallery.on ('saveGroups', function () {
 	});
 });
 $('#folderModal').on('show.bs.modal', function () {
-	$('input.datepicker').datepicker({
-		format: "yyyy-mm-dd",
-	    weekStart: Config.week_start,
-		language: /[^-]*/.exec(Config.language)[0], // fr-FR does not exist in datepicker
-	    autoclose: true,
-	    todayHighlight: true
-	}).on ('hide', function (e) { // fix ractive not seing datepicker updates // onchange triggers twice
-		gallery.set ('folder.date', $(e.target).val()); // would be better $( ).trigger(change) but doesnt work
-	}).on('show.bs.modal', function(e) {
-	    e.stopPropagation(); // https://github.com/eternicode/bootstrap-datepicker/issues/978
+	$.getScripts ([
+		'lib/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js',
+		'lib/bootstrap-datepicker/dist/locales/bootstrap-datepicker.fr.min.js',
+		'lib/multiselect/js/bootstrap-multiselect.js'
+	]).done (function () {
+		$('input.datepicker').datepicker({
+			format: "yyyy-mm-dd",
+		    weekStart: Config.week_start,
+			language: /[^-]*/.exec(Config.language)[0], // fr-FR does not exist in datepicker
+		    autoclose: true,
+		    todayHighlight: true
+		}).on ('hide', function (e) { // fix ractive not seing datepicker updates // onchange triggers twice
+			gallery.set ('folder.date', $(e.target).val()); // would be better $( ).trigger(change) but doesnt work
+		}).on('show.bs.modal', function(e) {
+		    e.stopPropagation(); // https://github.com/eternicode/bootstrap-datepicker/issues/978
+		});
+		$('input.datepicker').datepicker('update'); // update selected date when opening other folders
+		$('#foldergroups').multiselect({
+			onChange: function (option, checked, select) { // fix ractive not seing multiselect updates
+				gallery.set('folder.groups', $('#foldergroups').val ());
+			}
+		});
+		$('#foldergroups').multiselect('rebuild'); // if groups added during session
 	});
-	$('input.datepicker').datepicker('update'); // update selected date when opening other folders
-	$('#foldergroups').multiselect({
-		onChange: function (option, checked, select) { // fix ractive not seing multiselect updates
-			gallery.set('folder.groups', $('#foldergroups').val ());
-		}
-	});
+
 	gallery.set('folder.notify', false);
 	$('#notif_email_body').val (i18n.t('notif_email_body', {
 		user: gallery.get ('user.displayName'),

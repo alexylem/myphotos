@@ -382,16 +382,14 @@
 										<!-- Nav tabs -->
 										  <ul class="nav nav-pills">
 										    <li class="active"><a href="#appearance" data-toggle="tab">Appearance</a></li>
-										    <li><a href="#general" data-toggle="tab">System</a></li>
+										    <li><a href="#system" data-toggle="tab">System</a></li>
 										    <li><a href="#security" data-toggle="tab">Security</a></li>
 										  </ul>
 									</div>
 									<div class="modal-body form-horizontal">
-
-										  
-
-										  <!-- Tab panes -->
 										  <div class="tab-content">
+
+										  	<!-- Appearance -->
 										  	<div class="tab-pane fade in active" id="appearance">
 
 										    	<div class="form-group">
@@ -447,11 +445,10 @@
 														</span>
 													</div>
 												</div>
-
 										    </div>
 
-										  	<div class="tab-pane fade" id="general">
-
+										    <!-- System -->
+										  	<div class="tab-pane fade" id="system">
 												<div class="form-group">
 													<label for="photopath" class="col-sm-3 control-label">Photo Library Location</label>
 													<div class="col-sm-9">
@@ -485,12 +482,18 @@
 														<input class="form-control" type="text" id="ga_client_id" value="{{client.ga_client_id}}" placeholder="ex: UA-XXXX-Y">
 													</div>
 												</div>
-
+												<div class="form-group">
+													<div class="checkbox col-sm-offset-3 col-sm-9">
+													  <label>
+													    <input type="checkbox" checked="{{client.check_updates}}">
+													    Automatically check updates on startup
+													  </label>
+													</div>
+												</div>
 											</div>
 
-										    
+										    <!-- Security -->
 										    <div class="tab-pane fade" id="security">
-
 										    	<div class="form-group">
 													<label for="admins" class="col-sm-3 control-label">Admin users</label>
 													<div class="col-sm-9">
@@ -533,14 +536,6 @@
 													<label for="client_secret" class="col-sm-3 control-label">Google API Client Secret</label>
 													<div class="col-sm-9">
 														<input class="form-control" type="password" id="client_secret" value="{{server.client_secret}}">
-													</div>
-												</div>
-												<div class="form-group">
-													<div class="checkbox col-sm-offset-3 col-sm-9">
-													  <label>
-													    <input type="checkbox" checked="{{client.check_updates}}">
-													    Automatically check updates on startup
-													  </label>
 													</div>
 												</div>
 										    </div>
@@ -669,13 +664,10 @@
 
 <!-- jQuery -->
 <script src="lib/jquery/jquery-2.1.1.min.js"></script>
-<script src="lib/validation/dist/jquery.validate.min.js"></script>
-
-
 
 <!-- Ractive -->
 <script src='lib/ractive/ractive.min.js'></script>
-<!--
+<!-- manage cache locally
 <script src='http://cdn.ractivejs.org/latest/ractive.min.js'></script>
 --> 
 <script src='lib/hammerjs/hammer.min.js'></script> <!-- touch support -->
@@ -683,17 +675,15 @@
 
 <!-- Bootstrap -->
 <script src="lib/bootstrap/js/bootstrap.min.js"></script>
-<script src="lib/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
-<script src="lib/multiselect/js/bootstrap-multiselect.js"></script>
 <script src="lib/bootstrap-notify/bootstrap-notify.min.js"></script>
-<script src="lib/bootstrap-table/dist/bootstrap-table.min.js"></script> <!-- https://github.com/wenzhixin/bootstrap-table/issues/839 -->
+<!-- loaded dynamically
+<script src="lib/bootstrap-table/dist/bootstrap-table.min.js"></script> https://github.com/wenzhixin/bootstrap-table/issues/839
 <script src="lib/bootstrap-table/dist/locale/bootstrap-table-fr-FR.min.js"></script>
 <script src="lib/bootstrap-table/dist/extensions/editable/bootstrap-table-editable.min.js"></script>
 <script src="lib/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
-
+-->
 <!-- Localization -->
 <script src='lib/i18next/i18next.min.js'></script>
-<script src='lib/bootstrap-datepicker/dist/locales/bootstrap-datepicker.fr.min.js'></script>
 
 <!-- Other Plugins -->
 <script src="lib/filesize.js/lib/filesize.min.js"></script>
@@ -714,12 +704,14 @@
 </script>
 
 <!-- App -->
-<script src="config.default.js?v=2"></script>
-<script src="config.js?v=2"></script>
-<script src="js/utils.js?v=2"></script>
+<script src="config.default.js"></script>
+<script src="config.js"></script>
+<script src="js/utils.js"></script>
+<!-- loaded dynamically
 <script src="js/framework.js?v=2"></script>
 <script src="repository.js?v=2"></script>
-<script src="js/my.js?v=2"></script>
+-->
+<script src="js/my.js"></script>
 
 </body>
 </html>
