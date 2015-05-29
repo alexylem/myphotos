@@ -23,7 +23,7 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 - [X] Easily share photo albums without database
 - [X] MyPhotos reads files stored in a filesystem, works great with NAS
 - [X] Ability to change default Album covers and title
-- [X] Now supports videos that contain in their name a youtubeid between `()`
+- [X] Supports videos and youtube videos that contain in their name a youtubeid between `()`
   * ex: `tom's first steps (1a2e3e4r5t6).avi` <-- youtube id is *1a2e3e4r5t6*
 
 ### :busts_in_silhouette: Admin features & sharing

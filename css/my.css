@@ -140,6 +140,7 @@ input.error {
 	width: 204px;
 	background-size: cover;
 	background-position: center;
+	background-color: black; /* for missing thumbnails */
 }
 
 .private {
@@ -157,10 +158,9 @@ input.error {
 	width: 100%;
 }
 
-.thumb.video a {
+.thumb.video a, .thumb.youtube a {
 	background-image: url('../img/play.png');
-	background-size: 40%;
-	background-color: black;
+	background-size: 30%;
 }
 
 .thumb .cover {
