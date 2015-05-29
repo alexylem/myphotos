@@ -41,7 +41,7 @@ It is optimized for low energy computers & bandwidth, and does not require any d
 - [X] Multilanguage support (:uk: English, :fr: French) - easy to add yours
 - [X] Search albums
 - [X] Use keyboard to browse albums
-- [X] Download photos in optimized or original sizes
+- [X] Download photos or full albums in optimized and original sizes
 
 ### :fast_forward: Performance
 

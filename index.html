@@ -154,7 +154,7 @@
 					    </li>
 
 						<!-- Hide -->
-						<li class="{{#if !user.isadmin || view !== 'photo'}}hide{{/if}} {{#if photos[photoid].hidden}}active{{/if}}">
+						<li class="{{#if !user.isadmin || view !== 'photo'}}hide{{/if}}">
 							<a class="addtooltip" title="{{t('hide')}}{{^touch}} (H){{/}}" on-click="hide">
 								<span class="glyphicon glyphicon-eye-close"></span>
 								<span class="visible-xs-inline">{{t('hide')}}</span>
@@ -169,8 +169,8 @@
 							</a>
 						</li>
 
-						<!-- Download -->
-						<li class="dropdown {{#if view !== 'photo'}}hide{{/if}}">
+						<!-- Download Photo -->
+						<li class="dropdown {{^ view == 'photo'}}hide{{/}}">
 							<a class="dropdown-toggle addtooltip" title="{{t('dl_photo')}}" data-toggle="dropdown" role="button">
 								<span class="glyphicon glyphicon-download-alt"></span>
 								<span class="visible-xs-inline">{{t('dl_photo')}}</span>
@@ -178,12 +178,29 @@
 							<ul class="dropdown-menu" role="menu">
 								{{#photos[photoid]}}
 								<li><a href="{{photos[photoid].previewurl}}&d=1">
-									<span class="glyphicon glyphicon-file"></span> {{t('big')}} ({{previewsize}})</a>
+									<span class="glyphicon glyphicon-picture"></span> {{t('big')}} ({{previewsize}})</a>
 								</li>
 								<li><a href="{{photos[photoid].fileurl}}&d=1">
-									<span class="glyphicon glyphicon-file"></span> {{t('original')}} ({{size}})</a>
+									<span class="glyphicon glyphicon-picture"></span> {{t('original')}} ({{size}})</a>
 								</li>
 								{{/if}}
+							</ul>
+						</li>
+						<!-- Download Album -->
+						<li class="dropdown {{^ view == 'album'}}hide{{/}}">
+							<a class="dropdown-toggle addtooltip" title="{{t('dl_album')}}" data-toggle="dropdown" role="button">
+								<span class="glyphicon glyphicon-download-alt"></span>
+								<span class="visible-xs-inline">{{t('dl_album')}}</span>
+							</a>
+							<ul class="dropdown-menu" role="menu">
+								{{#folder}}
+								<li><a on-click="dl_album:preview">
+									<span class="glyphicon glyphicon-compressed"></span> {{t('big')}}{{#previewsize}} ({{previewsize}}){{/}}</a>
+								</li>
+								<li><a on-click="dl_album:original">
+									<span class="glyphicon glyphicon-compressed"></span> {{t('original')}}{{#originalsize}} ({{originalsize}}){{/}}</a>
+								</li>
+								{{/}}
 							</ul>
 						</li>
 						<div class="modal fade" id="folderModal" tabindex="-1" role="dialog" data-keyboard="false" data-backdrop="static">
@@ -278,7 +295,7 @@
 							<div class="modal-dialog">
 								<div class="modal-content">
 									<div class="modal-header">
-										<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
 										<h4 class="modal-title">Update Library</h4>
 									</div>
 									<div class="modal-body">

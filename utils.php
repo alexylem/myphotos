@@ -220,7 +220,41 @@ function mime_type_from_ext ($file) {
 		"z"		 => "application/x-compress",
 		"zip"	   => "application/zip"
        );
-$ext = strtolower(substr(strrchr($file, "."), 1));
-	return $mimeTypes[$ext]; // return the array value
+	$ext = strtolower(substr(strrchr($file, "."), 1));
+		return $mimeTypes[$ext]; // return the array value
 }
+
+// function to create zip archives
+// usages: 
+// myZip ('/home/domotiqul/www/', 'backups/backup.zip', ['/home/domotiqul/www/backups/'])
+// myZip (['/media/NAS/Pictures/pic1.jpg','/media/NAS/Pictures/pic2.jpg'], '/media/NAS/Pictures/album.zip')
+function myZip ($fs_source, $zipfile, $ignore_dirs = array ()) {
+	$zip = new ZipArchive();
+	if (!$zip->open($zipfile, ZipArchive::CREATE))
+		respond ("Error while creating $zipfile", true);
+	if (is_array($fs_source)) {
+		foreach ($fs_source as $absolute)
+			if (!$zip->addFile ($absolute, basename ($absolute)))
+	            respond ("Error while adding $absolute to zip archive", true);
+	} else {
+		$iter = new RecursiveDirectoryIterator($fs_source);
+		$iter->setFlags(RecursiveDirectoryIterator::SKIP_DOTS);
+		$files = new RecursiveIteratorIterator($iter, RecursiveIteratorIterator::SELF_FIRST);
+		foreach ($files as $absolute => $finfo) {
+		    if (in_array_beginning_with ($absolute, $ignore_dirs))
+		        continue;
+		    $relative = str_replace ($fs_source, '', $absolute);
+		    $filename = $finfo->getFilename ();
+		    if ($finfo->isDir ())
+		        $zip->addEmptyDir ($relative);
+		    elseif (!$zip->addFile ($absolute, $relative))
+		        respond ("Error while adding $absolute to zip archive", true);
+		}
+	}
+	$numFiles = $zip->numFiles;
+	if (!$zip->close())
+	    respond ('Error while closing the zip archive', true);
+	return true;
+}
+
 ?>

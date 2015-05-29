@@ -17,7 +17,7 @@ window.___gcfg = { lang: Config.language }; // Google sign-in in local language
 i18n.init({
 	lng: Config.language,
 	fallbackLng: Config.fallback_language,
-	useLocalStorage: (Config.log_level <= 2), // true for Production
+	//useLocalStorage: (Config.log_level <= 2), // true for Production
 	getAsync: false,
 	debug: (Config.log_level >= 4),
 	sendMissing: true,
@@ -263,6 +263,23 @@ gallery.on ('cover', function (event) {
 		}
 	});
 });
+// Download
+gallery.on ('dl_album', function (e, format) {
+	my.info (i18n.t ('dl_loading'));
+	my.get ({
+		url: 'backend.php',
+		data: {
+			action: 'list',
+			dir: gallery.get ('folder.filepath'),
+			zip: format
+		},
+		success: function (zipfile) {
+			my.success (i18n.t ('dl_ready'));
+			location.href = 'img.php?f='+zipfile+'&d=1';
+		}
+	});
+});
+
 // Keyboard shortcuts
 $(document).keydown(function(e) {
 	my.debug ('hotkey pressed', e.keyCode);
@@ -561,18 +578,19 @@ function cwd (dir) {
 			success: function (smessage) {
 				var message = JSON.parse (smessage);
 
-				gallery.set ('folder', message.folder);
-				gallery.set ('folders', message.folders);
-
 				// Sort by updated
 				message.files.sort(function compare(a,b) { return a.updated - b.updated; });
 
 				// Humanize values
+				message.folder.previewsize = message.folder.previewsize?filesize (message.folder.previewsize):'';
+				message.folder.originalsize = message.folder.originalsize?filesize (message.folder.originalsize):'';
 				$.each (message.files, function (i, file) {
 					message.files[i].size = filesize (file.size);
 					message.files[i].previewsize = filesize (file.previewsize);
 				});
 
+				gallery.set ('folder', message.folder);
+				gallery.set ('folders', message.folders);
 				gallery.set ('photos', message.files);
 
 				// Set URL hash

@@ -13,7 +13,7 @@ It completes the existing ideas from the [Github issue list](https://github.com/
 - [X] Possibility to order albums by title or newest first
 - [ ] Smart albums: tag photos to see them grouped in virtual albums from homepage
 - [/] Local favorites: people can locally mark pictures as favorites and download them all
-- [ ] Download full albums in zip
+- [X] Download full albums in zip
 - [ ] Don't compute/use file list, only myphoto.json->hidden + use service-side cache at album level
 - [ ] Fix remaining time calculation on resumes - make it client side?
 - [ ] Reset library / album if for example image quality setting is changed
@@ -24,5 +24,8 @@ It completes the existing ideas from the [Github issue list](https://github.com/
 - [X] Automatically check updates (based on config)
 - [X] Config version #
 - [X] Visual config at first login or new config version
+- [ ] Display cron command
+- [ ] System checks (php version, image & zip modules, writeable folders, browser version for clients)
+- [ ] bug when logging out in admin mode shows login btn instead of admin mode
 
 Click [here](https://github.com/alexylem/myphotos/issues/new) to submit a new feature request.

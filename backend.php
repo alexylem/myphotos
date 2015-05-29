@@ -40,13 +40,20 @@ switch($_REQUEST['action']) {
 		if (!($dir == './' || hasaccess ($visibility, @$settings->groups)))
 			respond ("You don't have access to this $visibility album. Please log back in.", true);
 
+		// zip sizes
+		$zip = $absolute.MYPHOTOS_DIR.basename($dir);
+		$optimized = $zip.'_optimized.zip';
+		$original = $zip.'_original.zip';
+
 		$folder = array (
 			'name'			=> isset($settings->name)?$settings->name:basename($dir),
 			'filepath'		=> $dir, 
 			'visibility'	=> $visibility,
 			'date'			=> @$settings->date?:date('Y-m-d', filemtime($absolute)),
 			'parentpath'	=> dirname($dir).'/',
-			'groups'		=> isadmin ()?@$settings->groups:array()
+			'groups'		=> isadmin ()?@$settings->groups:array(),
+			'previewsize'	=> file_exists($optimized)?filesize($optimized):false,
+			'originalsize'	=> file_exists($original)?filesize($original):false
 		);
 		
 		$files = array ();
@@ -94,6 +101,20 @@ switch($_REQUEST['action']) {
 				);
 		}
 
+		if (isset ($_REQUEST['zip'])) {
+			$absolutes = array ();
+			$original = ($_REQUEST['zip'] == 'original');
+			$ziprelative = $dir.MYPHOTOS_DIR.basename($dir).($original?'_original':'_optimized').'.zip';
+			$zipabsolute = $config['photopath'].$ziprelative;
+			if (!file_exists($zipabsolute)) {
+				foreach ($files as $file)
+					if (!$file['hidden'])
+						$absolutes[] = $absolute.($original?'':MYPHOTOS_DIR.PREVIEW_DIR).$file['filename'];
+				if (!myZip ($absolutes, $zipabsolute))
+					respond ('Error while creating the archive', true);
+			}
+			respond ($ziprelative);
+		} else
 		respond (json_encode(array (
 			'folder'	=> $folder,
 			'folders'	=> $folders,
