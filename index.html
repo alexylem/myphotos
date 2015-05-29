@@ -591,6 +591,12 @@
 				</div>
 			{{elseif type == 'video'}}
 				<div class="view" on-swiperight="previous" on-swipeleft="next">
+					<video width="100%" height="100%" controls>
+						<source src="{{fileurl}}" type="video/quicktime">
+					</video>
+				</div>
+			{{elseif type == 'youtube'}}
+				<div class="view" on-swiperight="previous" on-swipeleft="next">
 					<iframe class="video" width="100%" height="100%" src="{{previewurl}}" frameborder="0" allowfullscreen="true">
 					</iframe>
 				</div>
@@ -663,7 +669,7 @@
 		{{#if photos}}
 			<h5>{{t('photos')}}</h5>
 			{{#each photos}}
-			<div class="thumb {{#hidden}}{{^showhidden}}hide{{/}} private{{/}}" style="background-image: url('{{thumburl}}');">
+			<div class="thumb {{#hidden}}{{^showhidden}}hide{{/}} private{{/}} {{type}}" style="background-image: url('{{thumburl}}');">
 				<a on-click="view:{{@index}}"></a>
 			</div>
 			{{/each}}

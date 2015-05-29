@@ -1,11 +1,4 @@
 <?php
-/*
-	!!! MODIFICATION OU REPRODUCTION INTERDITE !!!
-	L.111-1 et L.123-1 du code de la propriété intellectuelle
-	En cas de demande particulière, veuillez me contacter
-	Alexandre Mély - alexandre.mely@gmail.com
-*/
-
 ini_set('display_errors', 1);
 
 // Settings
@@ -71,13 +64,14 @@ switch($_REQUEST['action']) {
 				'size'			=> $fileinfo->size,
 				'previewsize'	=> $fileinfo->previewsize
 			);
-			if ($fileinfo->type == 'video' &&
-				preg_match (YOUTUBEID_REGEX, $filename, $matches)) {
+			if ($fileinfo->type == 'video') { // video
+				if (preg_match (YOUTUBEID_REGEX, $filename, $matches)) {
 					$youtubeid = $matches[1];
+					$file['type'] = 'youtube';
 					$file['thumburl'] = str_replace (YOUTUBEID, $youtubeid, YOUTUBE_THUMB);
 					$file['previewurl'] = str_replace (YOUTUBEID, $youtubeid, YOUTUBE_PLAYER);
 				}
-			else { // image
+			} else { // image
 				$file['thumburl'] = 'img.php?f='.$dir.MYPHOTOS_DIR.THUMB_DIR.$filename;
 				$file['previewurl'] = 'img.php?f='.$dir.MYPHOTOS_DIR.PREVIEW_DIR.$filename;
 			}

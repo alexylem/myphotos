@@ -14,17 +14,18 @@ It completes the existing ideas from the [Github issue list](https://github.com/
 - [ ] Smart albums: tag photos to see them grouped in virtual albums from homepage
 - [/] Local favorites: people can locally mark pictures as favorites and download them all
 - [X] Download full albums in zip
+- [ ] Download of albums with progress bar when many pictures
 - [ ] Don't compute/use file list, only myphoto.json->hidden + use service-side cache at album level
 - [ ] Fix remaining time calculation on resumes - make it client side?
 - [ ] Reset library / album if for example image quality setting is changed
 - [/] Optimize using dev tools (ex: minifiy..)
 - [/] Dynamically load js & css for admin
 - [X] Date of evenement to sort on
-- [ ] Sare to individual people in addition to groups
+- [ ] Share to individual people in addition to groups
 - [X] Automatically check updates (based on config)
 - [X] Config version #
 - [X] Visual config at first login or new config version
-- [ ] Display cron command
+- [ ] Display cron command and how to schedule
 - [ ] System checks (php version, image & zip modules, writeable folders, browser version for clients)
 - [ ] bug when logging out in admin mode shows login btn instead of admin mode
 
