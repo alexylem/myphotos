@@ -268,8 +268,9 @@ gallery.on ('dl_album', function (e, format) {
 	my.info (i18n.t ('dl_loading'));
 	my.get ({
 		url: 'backend.php',
+		timeout: 60*1000, // 1m time to generate zip
 		data: {
-			action: 'list',
+			action: 'list', // TODO to it progressively with progress bar for big albums
 			dir: gallery.get ('folder.filepath'),
 			zip: format
 		},
