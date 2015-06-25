@@ -499,6 +499,7 @@ $('#configModal').on('show.bs.modal', function () {
 gallery.on ('saveConfig', function () {
 	$('#configModal').modal('hide');
 	this.set ('client.version', this.get ('version'));
+	this.set ('client.client_id', this.get ('server.client_id')); // needed for button in index.html
 	my.get ({
 		url: 'backend.php',
 		data: {
