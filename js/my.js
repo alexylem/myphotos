@@ -123,6 +123,7 @@ my.get({
 	url: 'plus.php',
 	data: { action: 'init' },
 	success: function (user) {
+		gallery.set ('client.client_id', 'TTTEEEESSSTTT');
 		if (user) { // logged in
 			gallery.set ('user', user);
 			ga('set', '&uid', user.email); // send user id to google analytics
@@ -140,7 +141,7 @@ my.get({
 				success: function (sdata) {
 					gallery.set ('groups', JSON.parse (sdata));
 					if (Config.check_updates)
-							gallery.fire ('checkupdates');
+						gallery.fire ('checkupdates');
 					/*
 					try { // DEBUG ractive freeze
 						gallery.set ('groups', groups);
@@ -375,26 +376,29 @@ gallery.on ('logout', function () {
 // Observers
 $('#groupsModal').on('show.bs.modal', function () {
 	
-	$.getScripts ([
-		'lib/validation/dist/jquery.validate.min.js',
-		'lib/bootstrap-table/dist/bootstrap-table.min.js',
-		'lib/bootstrap-table/dist/locale/bootstrap-table-fr-FR.min.js',
-		'lib/bootstrap-table/dist/extensions/editable/bootstrap-table-editable.min.js',
-		'lib/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js',
+	cmd ([
+			'lib/validation/dist/jquery.validate.min.js',
+			'lib/bootstrap-table/dist/bootstrap-table.min.js'
+		],[
+			'lib/bootstrap-table/dist/locale/bootstrap-table-fr-FR.min.js',
+			'lib/bootstrap-table/dist/extensions/editable/bootstrap-table-editable.min.js',
+			'lib/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js'
+		],
 		'js/framework.js',
-		'repository.js'
-	]).done (function () {
-		am.drawDatatable($('#users'), 'people');
+		'repository.js',
+		function () {
+			am.drawDatatable($('#users'), 'people');
 
-		$("#addgroupform").validate({
-			errorClass: 'alert-danger',
-			errorPlacement: function() {},
-			submitHandler: function(form) {
-				gallery.push ('groups', gallery.get ('newgroup'));
-				gallery.set ('newgroup', '');
-			}
-		});
-	});
+			$("#addgroupform").validate({
+				errorClass: 'alert-danger',
+				errorPlacement: function() {},
+				submitHandler: function(form) {
+					gallery.push ('groups', gallery.get ('newgroup'));
+					gallery.set ('newgroup', '');
+				}
+			});
+		}
+	);
 	
 });
 gallery.on ('saveGroups', function () {
@@ -412,11 +416,11 @@ gallery.on ('saveGroups', function () {
 	});
 });
 $('#folderModal').on('show.bs.modal', function () {
-	$.getScripts ([
+	cmd ([
 		'lib/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js',
 		'lib/bootstrap-datepicker/dist/locales/bootstrap-datepicker.fr.min.js',
 		'lib/multiselect/js/bootstrap-multiselect.js'
-	]).done (function () {
+	], function () {
 		$('input.datepicker').datepicker({
 			format: "yyyy-mm-dd",
 		    weekStart: Config.week_start,
@@ -437,7 +441,7 @@ $('#folderModal').on('show.bs.modal', function () {
 		});
 		$('#foldergroups').multiselect('rebuild'); // if groups added during session
 	});
-
+	
 	gallery.set('folder.notify', false);
 	$('#notif_email_body').val (i18n.t('notif_email_body', {
 		user: gallery.get ('user.displayName'),
@@ -630,7 +634,7 @@ function signInCallback(authResult) {
 			if (user.isadmin) {
 				my.get ({
 					url: 'backend.php',
-					data: { action: 'getGroups' }, // why we need to get groups now?
+					data: { action: 'getGroups' }, // why we need to get groups now? for folder edit restricted groups
 					success: function (sdata) {
 						gallery.set ('groups', JSON.parse (sdata));
 						/*

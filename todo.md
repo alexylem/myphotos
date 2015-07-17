@@ -26,7 +26,10 @@ It completes the existing ideas from the [Github issue list](https://github.com/
 - [X] Config version #
 - [X] Visual config at first login or new config version
 - [ ] Display cron command and how to schedule
-- [ ] System checks (php version, image & zip modules, writeable folders, browser version for clients)
+- [ ] System checks (php version, modules (gd, zip), writeable folders, browser version for clients)
 - [ ] bug when logging out in admin mode shows login btn instead of admin mode
+- [ ] bug when last photo is hidden black picture - islast function?
+- [ ] preview pictures not in correct res and still too big!
+- [ ] caching of preview photos doesn't seem to work anymore - maximize duration
 
 Click [here](https://github.com/alexylem/myphotos/issues/new) to submit a new feature request.

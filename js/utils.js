@@ -187,6 +187,7 @@ var my = new function () { // new is needed!
 	};
 } ();
 // Function to dynamically load multiple javascripts
+/* NOW REPLACED BY lib/cmd/cmd.js
 // usage $.getScripts (['script1.js', 'script2.js']).done (function () { dosomething });
 $.getScripts = function (srcs) {
     var scripts = $.map (srcs, function(src) {
@@ -206,7 +207,7 @@ $.getScripts = function (srcs) {
     }));
     return $.when.apply($, scripts);
 };
-
+*/
 function getUrlVars(url) {
     var vars = {};
     var parts = url.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
