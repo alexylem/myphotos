@@ -31,5 +31,6 @@ It completes the existing ideas from the [Github issue list](https://github.com/
 - [ ] bug when last photo is hidden black picture - islast function?
 - [ ] preview pictures not in correct res and still too big!
 - [ ] caching of preview photos doesn't seem to work anymore - maximize duration
+- [ ] Ignore notice errors during synchronization (ex: wideimage recoverable errors)
 
 Click [here](https://github.com/alexylem/myphotos/issues/new) to submit a new feature request.

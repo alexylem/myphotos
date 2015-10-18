@@ -281,6 +281,22 @@ gallery.on ('dl_album', function (e, format) {
 		}
 	});
 });
+// Send Report
+gallery.on ('send_report', function (e, format) {
+	my.debug ('send report, loading bowser...');
+	cmd ('lib/bowser/bowser.min.js', function () {
+		my.debug ('bowser loaded');
+		var nl='\n',
+			subject='MyPhotos Report',
+			body='URL:'+nl+
+				location.href+nl+
+				'Platform:'+nl+
+				JSON.stringify(bowser, null, '    ')+nl+
+				'Data:'+nl+
+				JSON.stringify(gallery.get(), null, '    ')+nl;
+		location.href='mailto:alexandre.mely@gmail.com?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+	});
+});
 
 // Keyboard shortcuts
 $(document).keydown(function(e) {
