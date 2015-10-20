@@ -18,6 +18,7 @@ It completes the existing ideas from the [Github issue list](https://github.com/
 - [ ] Don't compute/use file list, only myphoto.json->hidden + use service-side cache at album level
 - [ ] Fix remaining time calculation on resumes - make it client side?
 - [ ] Reset library / album if for example image quality setting is changed
+- [X] Fast Sync (discover only new folder) or deep sync only selected folder
 - [/] Optimize using dev tools (ex: minifiy..)
 - [/] Dynamically load js & css for admin
 - [X] Date of evenement to sort on
@@ -32,5 +33,6 @@ It completes the existing ideas from the [Github issue list](https://github.com/
 - [ ] preview pictures not in correct res and still too big!
 - [ ] caching of preview photos doesn't seem to work anymore - maximize duration
 - [ ] Ignore notice errors during synchronization (ex: wideimage recoverable errors)
+- [X] Send Report feature which prepares a mail with all tech details
 
 Click [here](https://github.com/alexylem/myphotos/issues/new) to submit a new feature request.

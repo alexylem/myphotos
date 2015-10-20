@@ -486,27 +486,71 @@ gallery.on ('saveFolder', function (e) {
 		}
 	});
 });
-$('#cronModal').on('shown.bs.modal', function (e) {
-  gallery.set ({
+
+/**************
+* Synchronize *
+**************/
+$('#cronModal').on('show.bs.modal', function (e) {
+  gallery.set ('cron.mode', false);
+});
+gallery.observe('cron.mode', function (mode) {
+	if (!mode) return;
+	gallery.set ({
 		'cron.class': 'primary',
 		'cron.striped': true,
 		//'cron.percentage': 100, // needed?
 		'cron.text': 'Checking what to do...'
 	});
-  my.get({
-  	url: 'cron.php',
-  	data: {action: 'genthumbs', output: 0}, // 0: Webservice
-  	timeout: 60*1000, // 1m
-  	success: function (nbtask) {
-  		gallery.set ({
-  			'cron.striped': false,
-			'cron.percentage': 0,
-			'cron.text': 'Execution of '+nbtask+' tasks...'
-  		});
-  		continueCron ();
-  	}
+	my.get({
+	  	url: 'cron.php',
+	  	data: {
+	  		action: mode,
+	  		folder: this.get ('folder.filepath'),
+	  		output: 0 // 0: Webservice
+	  	}, 
+	  	timeout: 60*1000, // 1m
+	  	success: function (nbtask) {
+	  		gallery.set ({
+	  			'cron.striped': false,
+				'cron.percentage': 0,
+				'cron.text': 'Execution of '+nbtask+' tasks...'
+	  		});
+	  		continueCron ();
+	  	}
   });
-});
+}, {init: false});
+function continueCron () {
+	if (!$('#cronModal').data('bs.modal').isShown)
+		return; // modal has been closed
+	my.get ({
+		url: 'cron.php',
+		data: {action: 'execute', output: 0},
+		timeout: 60*1000, // 1m
+		success: function (status) {
+			document.title = status.done+'/'+status.total+' - '+(status.remaining || 'estimating...');
+			gallery.set ({
+				'cron.percentage': Math.round ((status.total?status.done/status.total:1)*100),
+				'cron.progress': status.done+'/'+status.total,
+				'cron.remaining': status.remaining || 'estimating...',
+				'cron.text': status.next
+	  		});
+	  		if (status.todo)
+				continueCron ();
+			else
+				gallery.set ({
+					'cron.class': 'success',
+					'cron.text': 'Your photo library is up to date!'
+				});
+		},
+		error: function (error) {
+			gallery.set ({
+				'cron.class': 'danger',
+				'cron.text': error
+			});
+		}
+	});
+}
+
 $('#configModal').on('show.bs.modal', function () {
 	my.get({
 		url: 'backend.php',
@@ -669,36 +713,4 @@ function signInCallback(authResult) {
 			cwd (decodeURIComponent (window.location.hash.slice(1)) || './'); // why?? this causes a refresh! apparently not anymore..
 		});
 	}
-}
-
-function continueCron () {
-	if (!$('#cronModal').data('bs.modal').isShown)
-		return; // modal has been closed
-	my.get ({
-		url: 'cron.php',
-		data: {action: 'execute', output: 0},
-		timeout: 60*1000, // 1m
-		success: function (status) {
-			document.title = status.done+'/'+status.total+' - '+(status.remaining || 'estimating...');
-			gallery.set ({
-				'cron.percentage': Math.round ((status.total?status.done/status.total:1)*100),
-				'cron.progress': status.done+'/'+status.total,
-				'cron.remaining': status.remaining || 'estimating...',
-				'cron.text': status.next
-	  		});
-	  		if (status.todo)
-				continueCron ();
-			else
-				gallery.set ({
-					'cron.class': 'success',
-					'cron.text': 'Your photo library is up to date!'
-				});
-		},
-		error: function (error) {
-			gallery.set ({
-				'cron.class': 'danger',
-				'cron.text': error
-			});
-		}
-	});
 }

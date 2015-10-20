@@ -28,8 +28,9 @@ if (!isadmin ())
 
 // Values
 $actions = array (
-	'genthumbs'	=> 'Update Library (generate settings, thumbs, cache photos)',
-	'reset'		=> 'Reset (will remove all myPhotos files)' );
+	'fast'	=> 'Fast (Only look for new albums)',
+	'deep'	=> 'Deep (Re-synchronize all albums)',
+	'reset'	=> 'Reset (Will remove all myPhotos files)' );
 $outputs = array (
 	4 => 'Debug',
 	3 => 'Verbose',
@@ -42,12 +43,20 @@ $action = isset($_REQUEST['action'])?$_REQUEST['action']:'form';
 $output = isset($_REQUEST['output'])?$_REQUEST['output']:3;
 
 switch ($action) {
+	case 'fast':
+	case 'folder':
+	case 'deep':
 	case 'reset':
-	case 'genthumbs':
     	$_SESSION['tasks'] = array ();
     	$_SESSION['tasks_done'] = 0;
 
-		prepare ($config['photopath'], ($action == 'reset'), $output);
+    	$path = $config['photopath'];
+    	if ($action == 'folder') {
+    		$path .= $_REQUEST['folder'];
+    		$action = 'deep';
+    	}
+
+		prepare ($path, $action, $output);
 		$_SESSION['tasks'] = array_reverse($_SESSION['tasks']); // reverse for using pop (faster than shift)
 		$_SESSION['tasks_total'] = count($_SESSION['tasks']);
 		
@@ -105,8 +114,9 @@ switch ($action) {
 }
 
 // Main functions
-function prepare ($dir, $reset = false, $output = 'verbose') {
+function prepare ($dir, $mode = 'deep', $output = 'verbose') {
 	global $config, $summary;
+	$oldmode = $mode;
 
 	debug ("entering in $dir");
 	$dir = rtrim($dir, '\\/');
@@ -116,13 +126,14 @@ function prepare ($dir, $reset = false, $output = 'verbose') {
 	$myphotospath = $dir.'/'.MYPHOTOS_DIR;
 	if (is_dir($myphotospath)) {
 		debug ('ok it exists');
-		if ($reset) {
+		if ($mode == 'reset') {
 			info ("will delete $myphotospath");
 			addTask ('directory', 'delete', $myphotospath);
 		}
 	} else {
 		debug ("does not exist");
-		if (!$reset) {
+		if ($mode !== 'reset') {
+			$mode = 'deep';
 			info ("will create $myphotospath");
 			addTask ('directory', 'create', $myphotospath);
 		}
@@ -134,7 +145,8 @@ function prepare ($dir, $reset = false, $output = 'verbose') {
 		debug ('ok it exists');
 	} else {
 		debug ("does not exist");
-		if (!$reset) {
+		if ($mode !== 'reset') {
+			$mode = 'deep';
 			info ("will create $thumbspath");
 			addTask ('directory', 'create', $thumbspath);
 		}
@@ -146,7 +158,8 @@ function prepare ($dir, $reset = false, $output = 'verbose') {
 		debug ('ok it exists');
 	} else {
 		debug ("does not exist");
-		if (!$reset) {
+		if ($mode !== 'reset') {
+			$mode = 'deep';
 			info ("will create $previewspath");
 			addTask ('directory', 'create', $previewspath);
 		}
@@ -156,8 +169,8 @@ function prepare ($dir, $reset = false, $output = 'verbose') {
 	foreach (scandir($dir) as $f) {
 		if (strpos($f, '.') !== 0) {
 			if (is_dir("$dir/$f")) {
-				prepare("$dir/$f", $reset, $output);
-			} elseif (!$reset) {
+				prepare("$dir/$f", $oldmode, $output);
+			} elseif ($mode == 'deep') {
 				// Read extension instead of mime type for perf
 				$ext = strtolower(substr(strrchr($f, "."), 1));
 				switch ($ext) {
@@ -195,10 +208,9 @@ function prepare ($dir, $reset = false, $output = 'verbose') {
 		}
 	}
 	// At the end to make sure all thumbs/previews are generated for stats
-	debug ('checking '.SETTINGS_FILE.' exists...');
 	$jsonpath = $dir.'/'.MYPHOTOS_DIR.SETTINGS_FILE;
-	if (!$reset) {
-		info ("will create $jsonpath");
+	if ($mode == 'deep') {
+		info ("will regenerate $jsonpath");
 		addTask ('setting', 'upsert', "$jsonpath");
 	}
 }

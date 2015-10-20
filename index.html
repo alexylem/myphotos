@@ -299,18 +299,50 @@
 										<h4 class="modal-title">Update Library</h4>
 									</div>
 									<div class="modal-body">
-										<div class="progress">
-										  {{#if cron.striped}}
-											  <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 100%">
-											  </div>
-										  {{else}}
-										  	<span class="percentage">{{cron.progress}}</span>
-										  	<div class="progress-bar progress-bar-{{cron.class}} active" role="progressbar" style="width: {{cron.percentage}}%">
+										{{#if cron.mode}}
+											<div class="progress">
+												{{#if cron.striped}}
+													  <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 100%">
+													  </div>
+												{{else}}
+												  	<span class="percentage">{{cron.progress}}</span>
+												  	<div class="progress-bar progress-bar-{{cron.class}} active" role="progressbar" style="width: {{cron.percentage}}%">
+													</div>
+													<span class="remaining">{{cron.remaining}}</span>
+												{{/if}}
 											</div>
-											<span class="remaining">{{cron.remaining}}</span>
-										  {{/if}}
-										</div>
-										<p class="text-{{cron.class}}">{{cron.text}}</p>
+											<p class="text-{{cron.class}}">{{cron.text}}</p>
+										{{else}}
+											<p>Select a Synchonization mode</p>
+											<div class="radio">
+												<label>
+													<input type="radio" name="{{cron.mode}}" value="fast">
+													<span class="glyphicon glyphicon-flash" aria-hidden="true"></span> Fast-Sync
+													<p class="help-block">Only look for new Albums (fastest).</p>
+												</label>
+											</div>
+											<div class="radio">
+												<label>
+													<input type="radio" name="{{cron.mode}}" value="folder"
+														{{#if view=='home'}}disabled{{/if}}>
+													<span class="glyphicon glyphicon-screenshot" aria-hidden="true"></span> Selected Album only
+													<p class="help-block">
+														{{#if view=='home'}}
+															Only available from within an Album.
+														{{else}}
+															Synchronize <strong>{{folder.name}}</strong> and its sub-Albums.
+														{{/if}}
+													</p>
+												</label>
+											</div>
+											<div class="radio">
+												<label>
+													<input type="radio" name="{{cron.mode}}" value="deep">
+													<span class="glyphicon glyphicon-retweet" aria-hidden="true"></span> Deep (default)
+													<p class="help-block">Re-synchronize all Albums (slowest).</p>
+												</label>
+											</div>
+										{{/if}}
 									</div>
 									<div class="modal-footer">
 										{{#if cron.class == 'danger'}}
