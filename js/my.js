@@ -93,6 +93,9 @@ var gallery = new Ractive({
 				return found;
 			});
 		},
+		getpublink: function () {
+			return location.href.replace(/ /g, '%20').split('&k=')[0]+'&k='+this.get('folder.key');
+		},
 		// Groups
 		groups: [],
 		see_as: '',
@@ -123,7 +126,7 @@ my.get({
 	url: 'plus.php',
 	data: { action: 'init' },
 	success: function (user) {
-		gallery.set ('client.client_id', 'TTTEEEESSSTTT');
+		gallery.set ('client.client_id', 'TTTEEEESSSTTT'); // to be removed??
 		if (user) { // logged in
 			gallery.set ('user', user);
 			ga('set', '&uid', user.email); // send user id to google analytics
@@ -431,6 +434,9 @@ gallery.on ('saveGroups', function () {
 		}
 	});
 });
+/******************
+* Folder Settings *
+******************/
 $('#folderModal').on('show.bs.modal', function () {
 	cmd ([
 		'lib/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js',
@@ -457,14 +463,34 @@ $('#folderModal').on('show.bs.modal', function () {
 		});
 		$('#foldergroups').multiselect('rebuild'); // if groups added during session
 	});
-	
+	if (gallery.get('folder.key')) {
+		gallery.set('folder.haskey', true);
+	}
 	gallery.set('folder.notify', false);
-	$('#notif_email_body').val (i18n.t('notif_email_body', {
-		user: gallery.get ('user.displayName'),
-		name: gallery.get ('folder.name'),
-		url: location.href.replace(/ /g, '%20')
-	}));
 });
+gallery.observe ('folder.notify', function (notify) {
+	if (notify)
+		$('#notif_email_body').val (i18n.t('notif_email_body', {
+			user: gallery.get ('user.displayName'),
+			name: gallery.get ('folder.name'),
+			url: this.get('folder.haskey')?this.get ('getpublink')():location.href.replace(/ /g, '%20')
+		}));
+});
+gallery.on ('togglekey', function (e) {
+	if (!e.context.haskey) {
+		if (!this.get('folder.key'))
+			changekey ();
+	} else if (!confirm ('People using the old link will no longer be able to access this album. Are you sure?'))
+		$(e.node).prop('checked', true);
+});
+gallery.on ('changekey', function () {
+	if (confirm ('People using the old link will no longer be able to access this album. Are you sure?'))
+		changekey ();
+});
+function changekey () {
+	var newkey = Math.random().toString(36).substring(2);
+	gallery.set ('folder.key', newkey);
+}
 gallery.on ('saveFolder', function (e) {
 	$('#folderModal').modal('hide');
 	gallery.set ('folder.name',gallery.get ('folder.name') || i18n.t('untitled')); // TODO required
@@ -477,6 +503,7 @@ gallery.on ('saveFolder', function (e) {
 			name: gallery.get('folder.name'),
 			date: gallery.get('folder.date'),
 			visibility: gallery.get ('folder.visibility'),
+			key: gallery.get ('folder.key'),
 			notify: gallery.get ('folder.notify'),
 			body: $('#notif_email_body').val (),
 			groups: gallery.get ('folder.groups') || false // else undefined index groups even with []
@@ -615,7 +642,11 @@ gallery.observe( 'see_as', function (value, oldvalue) {
 });
 
 // Main functions
-function cwd (dir) {
+function cwd (hash) { // hash without the #
+	var vars = hash.split ('&k='),
+		dir = vars[0],
+		key = vars[1];
+
 	gallery.set ('loading', true);
 	gallery.set ('search', '');
 	
@@ -638,6 +669,7 @@ function cwd (dir) {
 			data: {
 				action: 'list',
 				dir: dir,
+				key: key,
 				see_as: gallery.get ('see_as')
 			},
 			timeout: 10*1000, // 10s in case HDD is on sleep
@@ -709,8 +741,8 @@ function signInCallback(authResult) {
 					}
 				});
 			}
-			my.debug ('signInCallback, calling cwd after login...'); // TODO cwd only is user was false before
-			cwd (decodeURIComponent (window.location.hash.slice(1)) || './'); // why?? this causes a refresh! apparently not anymore..
+			my.debug ('signInCallback, calling cwd after login...');
+			cwd (decodeURIComponent (window.location.hash.slice(1)) || './'); // TODO cwd only if user was false before (or not admin mode)
 		});
 	}
 }

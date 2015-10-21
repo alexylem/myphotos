@@ -22,6 +22,7 @@ It completes the existing ideas from the [Github issue list](https://github.com/
 - [/] Optimize using dev tools (ex: minifiy..)
 - [/] Dynamically load js & css for admin
 - [X] Date of evenement to sort on
+- [X] Shareable link without authentication
 - [ ] Share to individual people in addition to groups
 - [X] Automatically check updates (based on config)
 - [X] Config version #

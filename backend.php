@@ -30,7 +30,7 @@ switch($_REQUEST['action']) {
 		$settings = json_decode($json);
 		$visibility = @$settings->visibility?:$config['defaultvisibility'];
 		
-		if (!($dir == './' || hasaccess ($visibility, @$settings->groups)))
+		if (!($dir == './' || hasaccess ($visibility, @$settings->groups, @$settings->key)))
 			respond ("You don't have access to this $visibility album. Please log back in.", true);
 
 		// zip sizes
@@ -40,8 +40,9 @@ switch($_REQUEST['action']) {
 
 		$folder = array (
 			'name'			=> isset($settings->name)?$settings->name:basename($dir),
-			'filepath'		=> $dir, 
+			'filepath'		=> $dir,
 			'visibility'	=> $visibility,
+			'key'			=> @$settings->key,
 			'date'			=> @$settings->date?:date('Y-m-d', filemtime($absolute)),
 			'parentpath'	=> dirname($dir).'/',
 			'groups'		=> isadmin ()?@$settings->groups:array(),
@@ -158,6 +159,8 @@ switch($_REQUEST['action']) {
 			$settings['cover'] = $_REQUEST['cover'];
 		if (isset ($_REQUEST['visibility']))
 			$settings['visibility'] = $_REQUEST['visibility'];
+		if (isset ($_REQUEST['key']))
+			$settings['key'] = $_REQUEST['key'];
 		if (isset ($_REQUEST['groups']))
 			$settings['groups'] = $_REQUEST['groups'];
 		if (isset ($_REQUEST['filename'])) {
@@ -292,7 +295,7 @@ function emailsInGroups ($groups) {
 	return $emails;
 }
 
-function hasaccess ($visibility, $groups) {
+function hasaccess ($visibility, $groups, $key = false) {
 	if ($visibility == 'public')
 		return true;
 	$see_as = isset ($_REQUEST['see_as'])?$_REQUEST['see_as']:false;
@@ -303,6 +306,8 @@ function hasaccess ($visibility, $groups) {
 			return true;
 	}
 	if ($visibility == 'restricted') {
+		if ($key && isset ($_REQUEST['key']) && $_REQUEST['key'] == $key)
+			return true;
 		if (!isset ($_SESSION['me']) || !is_array($groups))
 			return false;
 		if (!isset ($_SESSION['groups'])) {

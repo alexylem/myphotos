@@ -247,6 +247,22 @@
 											</select>
 											<div class="checkbox">
 												<label>
+													<input on-click="togglekey" type="checkbox" checked="{{folder.haskey}}">
+													Activate Public Shareable link
+												</label>
+											</div>
+											{{#folder.haskey}}
+												<div class="input-group input-group-sm">
+													<span class="input-group-btn">
+														<button title="change key" on-click="changekey" class="btn btn-default addtooltip" type="button">
+															<span class="glyphicon glyphicon-retweet"></span>
+														</button>
+													</span>
+													<input type="text" class="form-control" value="{{getpublink()}}" readonly onfocus="this.select();">
+												</div>
+											{{/if}}
+											<div class="checkbox">
+												<label>
 													<input type="checkbox" checked="{{folder.notify}}">
 													Send email notifications to people from these groups
 												</label>
