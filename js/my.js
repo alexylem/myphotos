@@ -503,7 +503,7 @@ gallery.on ('saveFolder', function (e) {
 			name: gallery.get('folder.name'),
 			date: gallery.get('folder.date'),
 			visibility: gallery.get ('folder.visibility'),
-			key: gallery.get ('folder.key'),
+			key: gallery.get ('folder.haskey') && gallery.get ('folder.key'),
 			notify: gallery.get ('folder.notify'),
 			body: $('#notif_email_body').val (),
 			groups: gallery.get ('folder.groups') || false // else undefined index groups even with []
