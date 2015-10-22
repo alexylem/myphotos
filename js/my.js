@@ -480,8 +480,11 @@ gallery.on ('togglekey', function (e) {
 	if (!e.context.haskey) {
 		if (!this.get('folder.key'))
 			changekey ();
-	} else if (!confirm ('People using the old link will no longer be able to access this album. Are you sure?'))
+	} else if (!confirm ('People using the old link will no longer be able to access this album. Are you sure?')) {
 		$(e.node).prop('checked', true);
+		this.set ('folder.key', '');
+	}
+		
 });
 gallery.on ('changekey', function () {
 	if (confirm ('People using the old link will no longer be able to access this album. Are you sure?'))
@@ -503,7 +506,7 @@ gallery.on ('saveFolder', function (e) {
 			name: gallery.get('folder.name'),
 			date: gallery.get('folder.date'),
 			visibility: gallery.get ('folder.visibility'),
-			key: gallery.get ('folder.haskey')?gallery.get ('folder.key'):'',
+			key: gallery.get ('folder.key'),
 			notify: gallery.get ('folder.notify'),
 			body: $('#notif_email_body').val (),
 			groups: gallery.get ('folder.groups') || false // else undefined index groups even with []
