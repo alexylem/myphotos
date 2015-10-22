@@ -480,11 +480,10 @@ gallery.on ('togglekey', function (e) {
 	if (!e.context.haskey) {
 		if (!this.get('folder.key'))
 			changekey ();
-	} else if (!confirm ('People using the old link will no longer be able to access this album. Are you sure?')) {
-		$(e.node).prop('checked', true);
+	} else if (confirm ('People using the old link will no longer be able to access this album. Are you sure?'))
 		this.set ('folder.key', '');
-	}
-		
+	else
+		$(e.node).prop('checked', true);
 });
 gallery.on ('changekey', function () {
 	if (confirm ('People using the old link will no longer be able to access this album. Are you sure?'))
