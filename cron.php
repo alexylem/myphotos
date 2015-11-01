@@ -237,16 +237,20 @@ function manage ($nb) {
 						$json = file_get_contents($file);
 						$old_settings = json_decode($json);
 						$new_name = isset ($old_settings->name)?$old_settings->name:basename($dir);
+						$new_date = isset ($old_settings->date)?$old_settings->date:filemtime($dir);
 						$old_files = isset ($old_settings->files)?$old_settings->files:array ();
 						$new_cover = $old_settings->cover;
 						$new_visibility = $old_settings->visibility;
+						$new_key = isset ($old_settings->key)?$old_settings->key:'';
 						$new_groups = isset ($old_settings->groups)?$old_settings->groups:array ();
 					}
 					else {
 						$old_files = array ();
 						$new_name = basename($dir);
+						$new_date = filemtime($dir);
 						$new_cover = count($medias)?$medias[0]:false;
 						$new_visibility = $config['defaultvisibility'];
+						$new_key = '';
 						$new_groups = array ();
 					}
 /*
@@ -277,9 +281,11 @@ $new_files
 					}
 					$settings = array (
 						'name' => $new_name,
+						'date' => $new_date,
 						'files' => $new_files,
 						'cover' => $new_cover,
 						'visibility' => $new_visibility,
+						'key' => $new_key,
 						'groups' => $new_groups
 					);
 					if ($simulate)
