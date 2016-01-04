@@ -3,7 +3,7 @@
 	projectpages: [ // false to disable
 		{icon: "home", title: "iHome", url: "http://domotiquefacile.fr/ihome/index.html" }
 		{icon: "play-circle", title: "Launcher", url: "http://domotiquefacile.fr/launcher/" }
-		{icon: "picture", title: "MyPhotos", url: "https://github.com/alexylem/myphotos#myphotos"}
+		{icon: "picture", title: "MyPhotos", url: "http://alexylem.github.io/myphotos/"}
 		{icon: false, title: "♠ Coinche", url: "http://alexylem.github.io/coinche/"}
 		{icon: "wrench", title: "Builder" }
 		{icon: "bullhorn", title: "ProjectPage", url: "http://alexylem.github.io/projectpage/"}
@@ -11,7 +11,7 @@
 	]
 	comments: true
 	disqus_shortname: coinche
-	theme: false
+	theme: slate
 	sections: [
 		{
 			type: jumbotron
